@@ -1,0 +1,26 @@
+# Saves are re-fetched every run, no reason to keep them
+saves/
+saves_drive/
+*.dat
+
+# Spreadsheets from the old local-only version, unused now
+*.xlsx
+*.csv
+
+# Logs and junk
+auto.log
+auto.err
+__pycache__/
+*.pyc
+
+# NOTE: do not ignore the files below, the workflow has to commit them
+#   state.json        comparison baseline between runs
+#   worlds/*.json     per-mod level counts
+#   pvz_totals.json   rolled-up table the README is built from
+#   sources.json      OBB URLs extracted from the APKs
+#   links.json        mod download pages, hand-maintained
+#   assets/bar/*.svg  progress bars, redrawn every run
+#   assets/tag/*.svg  version badges, redrawn every run
+
+# macOS junk
+.DS_Store

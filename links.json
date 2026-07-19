@@ -1,0 +1,16 @@
+{
+ "_note": [
+  "Where each mod is published. Hand-maintained: nothing writes to this file,",
+  "so these links survive every regeneration. The key is the package suffix.",
+  "",
+  "These are the mods' own public download pages, NOT the private save folder",
+  "that DRIVE_FOLDER_ID points at. Keep it that way: this repo is public."
+ ],
+ "rfl": "https://drive.google.com/drive/folders/1y5lVZh-flKWxpeXSFYJprzJlL4Jlcfm4",
+ "cld": "https://drive.google.com/drive/folders/1MiMd_ecvIIH3XGcs8NeK7oLUxzvOf4OH",
+ "adm": "https://drive.google.com/drive/folders/12Cm7Ojau_LsQnllR3LFMq0mkEoDNko7Y",
+ "rqm": "https://drive.google.com/drive/folders/1A45mhlvghNYLBXI9HJqjdHyO6MvUdW29",
+ "auz": "https://drive.google.com/drive/folders/1ckXFy-1cv7Ka0eCxOXMweHWb_atzOc1z",
+ "spi": "https://peakedcomedy.itch.io/spice-reseasoned",
+ "fln": "https://drive.google.com/drive/folders/1v2jT-DF6bmuP6drWfAd66EbDM_G072cd"
+}

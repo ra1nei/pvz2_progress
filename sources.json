@@ -1,0 +1,121 @@
+{
+ "com.ea.game.pvz2_adm": {
+  "apk_size": 27752117,
+  "candidates": [
+   "http://www.dom.com/path",
+   "https://config.unityads.unitychina.cn/webview/",
+   "https://github.com/TheShero/TheShero/releases/download/v1.0.2/main.675.com.ea.game.pvz2_adm.obb",
+   "https://ping1.tnt-ea.com",
+   "https://www.linkedin.com",
+   "https://www.paypal.com"
+  ],
+  "obb_url": "https://github.com/TheShero/TheShero/releases/download/v1.0.2/main.675.com.ea.game.pvz2_adm.obb"
+ },
+ "com.ea.game.pvz2_auz": {
+  "apk_size": 27834043,
+  "candidates": [
+   "http://www.dom.com/path",
+   "https://config.unityads.unitychina.cn/webview/",
+   "https://github.com/PvZ2OBBHost/PvZ2AltverZOBB/releases/download/v1.8.2d/main.675.com.ea.game.pvz2_auz.obb",
+   "https://ping1.tnt-ea.com",
+   "https://www.linkedin.com",
+   "https://www.paypal.com"
+  ],
+  "obb_url": "https://github.com/PvZ2OBBHost/PvZ2AltverZOBB/releases/download/v1.8.2d/main.675.com.ea.game.pvz2_auz.obb"
+ },
+ "com.ea.game.pvz2_cld": {
+  "apk_size": 27227827,
+  "candidates": [
+   "http://www.dom.com/path",
+   "https://config.unityads.unitychina.cn/webview/",
+   "https://github.com/Milkypug2/pvz2collided/releases/download/v1.1.0/main.675.com.ea.game.pvz2_cld.obb",
+   "https://ping1.tnt-ea.com",
+   "https://www.linkedin.com",
+   "https://www.paypal.com"
+  ],
+  "obb_url": "https://github.com/Milkypug2/pvz2collided/releases/download/v1.1.0/main.675.com.ea.game.pvz2_cld.obb"
+ },
+ "com.ea.game.pvz2_fln": {
+  "apk_size": 26183612,
+  "candidates": [
+   "http://www.dom.com/path",
+   "https://config.unityads.unitychina.cn/webview/",
+   "https://ping1.tnt-ea.com",
+   "https://www.linkedin.com",
+   "https://www.paypal.com"
+  ]
+ },
+ "com.ea.game.pvz2_rfl": {
+  "apk_size": 36787898,
+  "candidates": [
+   "http://www.dom.com/path",
+   "https://config.unityads.unitychina.cn/webview/",
+   "https://github.com/lantern-fans/obbybackup/releases/download/1.4.2-R1/main.675.com.ea.game.pvz2_rfl.obb",
+   "https://ping1.tnt-ea.com",
+   "https://www.linkedin.com",
+   "https://www.paypal.com"
+  ],
+  "obb_url": "https://github.com/lantern-fans/obbybackup/releases/download/1.4.2-R1/main.675.com.ea.game.pvz2_rfl.obb"
+ },
+ "com.ea.game.pvz2_rqm": {
+  "apk_size": 44698085,
+  "candidates": [
+   "http://dev.tapjoy.comfor",
+   "http://tech.tapjoy.com/product-overview/sdk-change-log/tapjoy-and-identifiers",
+   "http://whatwg.org/C",
+   "http://whatwg.org/html/common-microsyntaxes.html",
+   "http://whatwg.org/html/webappapis.html",
+   "http://www.dom.com/path",
+   "http://xmlpull.org/v1/doc/features.html",
+   "https://analytics.rayjump.com",
+   "https://aomedia.org/emsg/ID3",
+   "https://api.appodealx.com",
+   "https://api.appodealx.com/init",
+   "https://api.appodealx.com/openrtb3/auction",
+   "https://cdn-adn-https.rayjump.com/cdn-adn/v2/portal/19/08/20/11/06/5d5b63cb457e2.js",
+   "https://check.rayjump.com",
+   "https://config.unityads.unitychina.cn/webview/",
+   "https://configure.rayjump.com",
+   "https://connect.tapjoy.com/",
+   "https://d1tru86qrby720.cloudfront.net/hostsetting",
+   "https://dev.tapjoy.com/sdk-integration/",
+   "https://developer.apple.com/streaming/emsg-id3"
+  ],
+  "obb_url": "https://github.com/PvZ2OBBHost/PvZ2RequiemOBB/releases/download/v1.2.2b/main.702.com.ea.game.pvz2_rqm.obb"
+ },
+ "com.ea.game.pvz2_sol": {
+  "apk_size": 26998451,
+  "candidates": [
+   "http://www.dom.com/path",
+   "https://config.unityads.unitychina.cn/webview/",
+   "https://ping1.tnt-ea.com",
+   "https://www.linkedin.com",
+   "https://www.paypal.com"
+  ]
+ },
+ "com.ea.game.pvz2_spi": {
+  "apk_size": 44767717,
+  "candidates": [
+   "http://dev.tapjoy.comfor",
+   "http://tech.tapjoy.com/product-overview/sdk-change-log/tapjoy-and-identifiers",
+   "http://whatwg.org/C",
+   "http://whatwg.org/html/common-microsyntaxes.html",
+   "http://whatwg.org/html/webappapis.html",
+   "http://www.dom.com/path",
+   "http://xmlpull.org/v1/doc/features.html",
+   "https://analytics.rayjump.com",
+   "https://aomedia.org/emsg/ID3",
+   "https://api.appodealx.com",
+   "https://api.appodealx.com/init",
+   "https://api.appodealx.com/openrtb3/auction",
+   "https://cdn-adn-https.rayjump.com/cdn-adn/v2/portal/19/08/20/11/06/5d5b63cb457e2.js",
+   "https://check.rayjump.com",
+   "https://config.unityads.unitychina.cn/webview/",
+   "https://configure.rayjump.com",
+   "https://connect.tapjoy.com/",
+   "https://d1tru86qrby720.cloudfront.net/hostsetting",
+   "https://dev.tapjoy.com/sdk-integration/",
+   "https://developer.apple.com/streaming/emsg-id3"
+  ]
+ }
+}

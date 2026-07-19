@@ -1,0 +1,34 @@
+{
+ "mods": {
+  "com.ea.game.pvz2_adm": {
+   "done": 81,
+   "total": 112
+  },
+  "com.ea.game.pvz2_auz": {
+   "done": 42,
+   "total": 467
+  },
+  "com.ea.game.pvz2_cld": {
+   "done": 65,
+   "total": 71
+  },
+  "com.ea.game.pvz2_fln": {
+   "done": 2,
+   "total": 215
+  },
+  "com.ea.game.pvz2_rfl": {
+   "done": 578,
+   "total": 578
+  },
+  "com.ea.game.pvz2_rqm": {
+   "done": 22,
+   "total": 184
+  },
+  "com.ea.game.pvz2_spi": {
+   "done": 3,
+   "total": 58
+  }
+ },
+ "releases": {},
+ "totals_md5_nagged": "f4b9a6034afa312a5d5312566c6efa21"
+}

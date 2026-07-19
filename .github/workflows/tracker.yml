@@ -1,0 +1,53 @@
+name: PvZ2 progress tracker
+
+# Runs every 6 hours. Use "Run workflow" on the Actions tab to trigger it now.
+# The Drive folder is public, so it is read through its share link, and results
+# are committed back to this repo rather than written to Drive.
+on:
+  schedule:
+    - cron: '17 */6 * * *'      # minute 17 to dodge GitHub's peak load
+  workflow_dispatch:
+
+permissions:
+  contents: write               # to commit state.json, worlds/, pvz_totals.json
+
+concurrency:
+  group: pvz2-tracker
+  cancel-in-progress: false     # never cut a run short and leave state half-written
+
+jobs:
+  track:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install zstd
+        # Only needed for mods whose OBB uses zstd (Reflourished). zlib mods
+        # work with the standard library alone.
+        run: pip install --quiet zstandard
+
+      - name: Run tracker
+        env:
+          GITHUB_TOKEN: ${{ github.token }}   # raises the API limit to 5000/hour
+          # Set as secrets so the Drive folder ids stay out of a public repo.
+          DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
+          LOGO_FOLDER_ID: ${{ secrets.LOGO_FOLDER_ID }}
+        run: python3 ci.py
+
+      - name: Commit results
+        run: |
+          # The runner is disposable. Without a commit the next run loses its
+          # comparison baseline and the README never updates.
+          git config user.name  "pvz2-tracker[bot]"
+          git config user.email "pvz2-tracker@users.noreply.github.com"
+          git add -A state.json worlds pvz_totals.json README.md assets 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "nothing changed"
+          else
+            git commit -m "tracker: $(date -u '+%Y-%m-%d %H:%M') UTC"
+            git push
+          fi
