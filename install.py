@@ -29,8 +29,10 @@ import subprocess
 import sys
 
 import pvz.drive as drive
-from pvz.device import find_adb, sh
+from pvz import norm
+from pvz.device import pick_device, find_adb, sh
 from pvz.github import GH, latest_release
+from pvz import keymap
 from sync import (SAVE_PATHS, SAVES, cleared, save_paths, refresh_saves,
                        connect)
 
@@ -65,6 +67,25 @@ def progress(name):
 
 # ---------------------------------------------------------------- discovery
 
+def drive_files(items, ext):
+    """Files ending in `ext` in a Drive folder listing, and one level below.
+
+    Mods do not agree on where the builds go. Some leave them at the top of the
+    folder, Solstice sorts them into APKs and OBB, so looking only at the top
+    reports a mod as shipping neither.
+    """
+    out = {n: i for n, (i, is_dir) in items.items()
+           if not is_dir and n.lower().endswith(ext)}
+    for n, (i, is_dir) in items.items():
+        if is_dir and ext.lstrip('.') in norm(n):
+            try:
+                out.update({x: y for x, (y, sub) in drive.list_folder(i).items()
+                            if not sub and x.lower().endswith(ext)})
+            except Exception:
+                pass
+    return out
+
+
 def scan():
     """Find each mod's APK in its Drive folder and its OBB source.
 
@@ -91,29 +112,29 @@ def scan():
         except Exception as e:
             print(f'{sfx:<5} cannot read the Drive folder: {e}')
             continue
+        if not items:
+            # Empty is not the same as "no APK there". A machine whose HTTPS is
+            # broken gets an empty listing for every mod, and treating that as
+            # fact used to wipe the ids that were already known good.
+            print(f'{sfx:<5} the folder listing came back empty, leaving what '
+                  f'is already known alone')
+            continue
         # An OBB in the folder is only worth looking for when GitHub has none.
-        # Several mods keep theirs one level down, in a folder called OBB.
         if not rec['obb_url']:
-            obbs = {n: i for n, (i, is_dir) in items.items()
-                    if not is_dir and n.lower().endswith('.obb')}
-            for n, (i, is_dir) in items.items():
-                if is_dir and 'obb' in drive.norm(n):
-                    try:
-                        obbs.update({x: y for x, (y, d2) in drive.list_folder(i).items()
-                                     if not d2 and x.lower().endswith('.obb')})
-                    except Exception:
-                        pass
+            obbs = drive_files(items, '.obb')
             if len(obbs) == 1:
                 rec['obb_name'], rec['obb_id'] = next(iter(obbs.items()))
                 print(f'{sfx:<5} OBB in Drive: {rec["obb_name"]}')
             elif obbs:
                 print(f'{sfx:<5} {len(obbs)} OBBs in Drive, none chosen: {sorted(obbs)}')
 
-        apks = {n: i for n, (i, is_dir) in items.items()
-                if not is_dir and n.lower().endswith('.apk')}
+        apks = drive_files(items, '.apk')
         if not apks:
-            print(f'{sfx:<5} no APK in the folder')
-            rec.pop('apk_id', None)
+            # The folder read fine and genuinely holds no APK. Keep the id
+            # anyway: it worked before, and a file that moved is far more
+            # likely than one that is gone for good.
+            print(f'{sfx:<5} no APK in the folder'
+                  + (', keeping the one already recorded' if rec.get('apk_id') else ''))
         elif len(apks) == 1:
             n, i = next(iter(apks.items()))
             rec['apk_name'], rec['apk_id'] = n, i
@@ -163,12 +184,25 @@ def obb_on_device(adb, dev, pkg):
     for line in out.splitlines():
         if '.obb' in line:
             p = line.split()
-            kich = next((int(x) for x in p if x.isdigit() and int(x) > 1000), 0)
-            return p[-1], kich
+            size = next((int(x) for x in p if x.isdigit() and int(x) > 1000), 0)
+            return p[-1], size
     return None, 0
 
 
 # ---------------------------------------------------------------- install
+
+def drop(path):
+    """Delete a bad download, and survive not being allowed to.
+
+    Windows hands out WinError 32 whenever anything still holds the file, and
+    an antivirus scanning what was just written counts. Leaving a junk file
+    behind is a nuisance; dying halfway through ten mods is worse.
+    """
+    try:
+        os.remove(path)
+    except OSError as e:
+        print(f'      (could not delete {os.path.basename(path)}: {e.strerror})')
+
 
 def fetch_apk(sfx, rec):
     """Fetch the APK. `apk_url` wins over the Drive id when both are set.
@@ -197,20 +231,33 @@ def fetch_apk(sfx, rec):
             return None
     else:
         return None
+    # Every check below closes the file before deleting it. Windows refuses to
+    # unlink a file anything still holds open, so removing it from inside the
+    # `with` that opened it crashed the whole run there while passing on macOS.
     with open(dest, 'rb') as f:
-        if f.read(2) != b'PK':
-            print('      not an APK (no zip header), refusing to install it')
-            os.remove(dest)
-            return None
+        head = f.read(2)
+    if head != b'PK':
+        n = os.path.getsize(dest)
+        print(f'      not an APK: {n:,} bytes starting {head!r}, refusing to '
+              f'install it')
+        if n < 4000:
+            with open(dest, 'rb') as f:
+                snippet = f.read(300).decode('utf-8', 'replace').strip()
+            print(f'      what came back instead: {snippet[:200]}')
+        drop(dest)
+        return None
+
     import zipfile
     try:
-        if 'AndroidManifest.xml' not in zipfile.ZipFile(dest).namelist():
+        with zipfile.ZipFile(dest) as z:
+            ok = 'AndroidManifest.xml' in z.namelist()
+        if not ok:
             print('      zip without AndroidManifest.xml, not an APK')
-            os.remove(dest)
+            drop(dest)
             return None
     except zipfile.BadZipFile:
         print('      corrupt download')
-        os.remove(dest)
+        drop(dest)
         return None
 
     now = sha256(dest)
@@ -222,6 +269,24 @@ def fetch_apk(sfx, rec):
         print(f'        was {ghi[:16]}...  now {now[:16]}...')
     rec['apk_sha256'] = now
     return dest
+
+
+def obb_wanted(rec):
+    """(name, size) the device should end up with, without downloading it.
+
+    GitHub lists its assets, so both are known for a couple of KB of API. Drive
+    tells you nothing without fetching, so size comes back 0 there and the
+    caller falls back to comparing the name.
+    """
+    m = GH.search(rec.get('obb_url') or '')
+    if m:
+        rel = latest_release(m.group(1), m.group(2))
+        asset = next((a for a in (rel or {}).get('assets', [])
+                      if a['name'].endswith('.obb')), None)
+        return (asset['name'], asset['size']) if asset else (None, 0)
+    if rec.get('obb_id'):
+        return rec.get('obb_name') or '', 0
+    return None, 0
 
 
 def fetch_obb(sfx, rec):
@@ -295,13 +360,27 @@ def install_one(adb, dev, sfx, cfg, force=False):
             print(f'   clean install failed too: {(r.stdout + r.stderr).strip()[:160]}')
             return False
     print('   APK installed')
+    # A new package starts with no key mapping at all, so hand it the shared
+    # one. Host side, nothing to do with the device.
+    keymap.apply(pkg, force)
 
-    obb, size = fetch_obb(sfx, rec)
-    write_config(cfg)
-    if obb:
-        name, was = obb_on_device(adb, dev, pkg)
-        if was == size and name == os.path.basename(obb):
-            print(f'   OBB already current ({size / 1048576:.0f}MB)')
+    # Ask what the device already has BEFORE fetching anything. An OBB runs to
+    # 1.3 GB, and a machine that is merely being re-run would otherwise
+    # download every one of them only to find it had them already.
+    want, want_size = obb_wanted(rec)
+    have, have_size = obb_on_device(adb, dev, pkg)
+    if not want:
+        print('   no OBB source; the mod will download its own on first run')
+    elif have == want and (have_size == want_size or not want_size):
+        # Drive gives no size in advance, so there the name is all there is to
+        # go on. A rebuild published under the same name looks identical; that
+        # is the same blind spot the amber badge already stands for.
+        print(f'   OBB already there ({have_size / 1048576:.0f}MB), not downloading')
+    else:
+        obb, size = fetch_obb(sfx, rec)
+        write_config(cfg)
+        if not obb:
+            print('   OBB download failed, leaving the one on the device alone')
         else:
             sh(adb, 'shell', f'mkdir -p /sdcard/Android/obb/{pkg}',
                serial=dev, check=False)
@@ -310,8 +389,7 @@ def install_one(adb, dev, sfx, cfg, force=False):
                             f'/sdcard/Android/obb/{pkg}/{os.path.basename(obb)}'],
                            capture_output=True)
             print('   OBB in place')
-    else:
-        print('   no OBB source; the mod will download its own on first run')
+    write_config(cfg)
 
     # Prefer the repo save: it is the one the other machine just played.
     refresh_saves()
@@ -367,9 +445,33 @@ def status(adb, dev, cfg):
               f'{f"{size / 1048576:.0f}MB" if size else "-"}')
 
 
+def keymaps(only, force=False):
+    """Give every mod you play the shared keyboard layout.
+
+    Runs without a device: the files live on this computer, not on the
+    emulator. Which is also why it can be run before anything is installed.
+    """
+    d = keymap.folder()
+    if not d:
+        print('No BlueStacks keymap folder here. Key mapping is a BlueStacks '
+              'feature and its file format is its own, so there is nothing to '
+              'write on another emulator.')
+        return
+    print(f'{d}\n')
+    known = set(played_mods()) | {k for k in read_config() if not k.startswith('_')}
+    for sfx in (only or sorted(known)):
+        if sfx not in known:
+            # A typo would otherwise leave a layout filed under a package that
+            # does not exist, which nothing would ever read or clean up.
+            print(f'  {sfx:<5} not a mod here: {", ".join(sorted(known))}')
+            continue
+        print(f'  {sfx:<5} {keymap.apply(PKG.format(sfx), force, quiet=True)}')
+
+
 def main():
     ap = argparse.ArgumentParser(description='Install the PvZ2 mods you play onto this machine')
-    ap.add_argument('action', choices=['scan', 'pick', 'status', 'auto', 'install'])
+    ap.add_argument('action',
+                    choices=['scan', 'pick', 'status', 'auto', 'install', 'keymap'])
     ap.add_argument('args', nargs='*')
     ap.add_argument('--device')
     ap.add_argument('--force', action='store_true',
@@ -378,6 +480,8 @@ def main():
 
     if a.action == 'scan':
         return scan()
+    if a.action == 'keymap':
+        return keymaps(a.args, a.force)
     if a.action == 'pick':
         if len(a.args) != 2:
             sys.exit('usage: install.py pick <suffix> "<apk name>"')
@@ -389,7 +493,7 @@ def main():
 
     adb = find_adb()
     devs = connect(adb)
-    dev = a.device or (devs[0] if devs else None)
+    dev = a.device or pick_device(adb, devs)
     if not dev:
         sys.exit('No device. Start the emulator and try again.')
 
