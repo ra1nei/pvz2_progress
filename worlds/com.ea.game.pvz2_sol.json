@@ -1,0 +1,3922 @@
+{
+ "_fingerprint": {
+  "source": "/sdcard/Android/obb/com.ea.game.pvz2_sol/main.675.com.ea.game.pvz2_sol.obb",
+  "size": 789479424,
+  "mtime": 1784801173
+ },
+ "_quest": {
+  "world": {
+   "out_of_content": "OUT_OF_CONTENT_4",
+   "egypt20": "FINISH_EGYPT_PT2",
+   "lostcity11": "UNLOCK_LOSTCITY_PT2",
+   "lostcity20": "FINISH_LOSTCITY_PT2",
+   "dark11": "UNLOCK_DARK_PT2",
+   "dark20": "FINISH_DARK_PT2",
+   "pirate11": "UNLOCK_PIRATE_PT2",
+   "pirate20": "FINISH_PIRATE_PT2",
+   "iceage11": "UNLOCK_ICEAGE_PT2",
+   "iceage20": "FINISH_ICEAGE_PT2",
+   "cowboy11": "UNLOCK_COWBOY_PT2",
+   "cowboy20": "FINISH_COWBOY_PT2",
+   "beach11": "UNLOCK_BEACH_PT2",
+   "beach20": "FINISH_BEACH_PT2",
+   "dino11": "UNLOCK_DINO_PT2",
+   "dino20": "FINISH_DINO_PT2",
+   "future11": "UNLOCK_FUTURE_PT2",
+   "future20": "FINISH_FUTURE_PT2",
+   "eighties11": "UNLOCK_EIGHTIES_PT2",
+   "eighties20": "FINISH_EIGHTIES_PT2",
+   "checkpoints/check_eighties10": "FINISH_HARDCORE",
+   "challenges/epic_challenge_lostcity19": "EPIC_QUEST_LOSTCITY19_VET",
+   "challenges/epic_dark16": "EPIC_QUEST_DARK16_VET",
+   "challenges/epic_beach15": "EPIC_QUEST_BEACH15_VET",
+   "challenges/epic_dino20": "EPIC_QUEST_DINO20_VET",
+   "challenges/epic_future20": "EPIC_QUEST_FUTURE20_VET"
+  },
+  "quest": {
+   "egypt_night16": "EPIC_QUEST_EGYPT_NIGHT_2_CONT",
+   "egypt_night17": "EPIC_QUEST_EGYPT_NIGHT_2_CONT",
+   "egypt_night18": "EPIC_QUEST_EGYPT_NIGHT_2_CONT",
+   "egypt_night19": "EPIC_QUEST_EGYPT_NIGHT_2_CONT",
+   "egypt_night20": "EPIC_QUEST_EGYPT_NIGHT_2_CONT",
+   "lostcity_night11": "EPIC_QUEST_LOSTCITY_NIGHT_2",
+   "lostcity_night12": "EPIC_QUEST_LOSTCITY_NIGHT_2",
+   "lostcity_night13": "EPIC_QUEST_LOSTCITY_NIGHT_2",
+   "lostcity_night14": "EPIC_QUEST_LOSTCITY_NIGHT_2",
+   "lostcity_night15": "EPIC_QUEST_LOSTCITY_NIGHT_2",
+   "lostcity_night16": "EPIC_QUEST_LOSTCITY_NIGHT_2_CONT",
+   "lostcity_night17": "EPIC_QUEST_LOSTCITY_NIGHT_2_CONT",
+   "lostcity_night18": "EPIC_QUEST_LOSTCITY_NIGHT_2_CONT",
+   "lostcity_night19": "EPIC_QUEST_LOSTCITY_NIGHT_2_CONT",
+   "lostcity_night20": "EPIC_QUEST_LOSTCITY_NIGHT_2_CONT",
+   "dark_day11": "EPIC_QUEST_DARK_DAY_2",
+   "dark_day12": "EPIC_QUEST_DARK_DAY_2",
+   "dark_day13": "EPIC_QUEST_DARK_DAY_2",
+   "dark_day14": "EPIC_QUEST_DARK_DAY_2",
+   "dark_day15": "EPIC_QUEST_DARK_DAY_2",
+   "dark_day16": "EPIC_QUEST_DARK_DAY_2",
+   "cowboy_night11": "EPIC_QUEST_COWBOY_NIGHT_2",
+   "cowboy_night12": "EPIC_QUEST_COWBOY_NIGHT_2",
+   "cowboy_night13": "EPIC_QUEST_COWBOY_NIGHT_2",
+   "cowboy_night14": "EPIC_QUEST_COWBOY_NIGHT_2",
+   "cowboy_night15": "EPIC_QUEST_COWBOY_NIGHT_2",
+   "cowboy_night16": "EPIC_QUEST_COWBOY_NIGHT_2_CONT",
+   "cowboy_night17": "EPIC_QUEST_COWBOY_NIGHT_2_CONT",
+   "cowboy_night18": "EPIC_QUEST_COWBOY_NIGHT_2_CONT",
+   "cowboy_night19": "EPIC_QUEST_COWBOY_NIGHT_2_CONT",
+   "cowboy_night20": "EPIC_QUEST_COWBOY_NIGHT_2_CONT",
+   "beach_night1": "EPIC_QUEST_BEACH_NIGHT",
+   "beach_night2": "EPIC_QUEST_BEACH_NIGHT",
+   "beach_night3": "EPIC_QUEST_BEACH_NIGHT",
+   "beach_night4": "EPIC_QUEST_BEACH_NIGHT",
+   "beach_night5": "EPIC_QUEST_BEACH_NIGHT",
+   "beach_night6": "EPIC_QUEST_BEACH_NIGHT",
+   "beach_night11": "EPIC_QUEST_BEACH_NIGHT_2",
+   "beach_night12": "EPIC_QUEST_BEACH_NIGHT_2",
+   "beach_night13": "EPIC_QUEST_BEACH_NIGHT_2",
+   "beach_night14": "EPIC_QUEST_BEACH_NIGHT_2",
+   "beach_night15": "EPIC_QUEST_BEACH_NIGHT_2",
+   "beach_night16": "EPIC_QUEST_BEACH_NIGHT_2_CONT",
+   "beach_night17": "EPIC_QUEST_BEACH_NIGHT_2_CONT",
+   "beach_night18": "EPIC_QUEST_BEACH_NIGHT_2_CONT",
+   "beach_night19": "EPIC_QUEST_BEACH_NIGHT_2_CONT",
+   "beach_night20": "EPIC_QUEST_BEACH_NIGHT_2_CONT",
+   "dino_night11": "EPIC_QUEST_DINO_NIGHT_2",
+   "dino_night12": "EPIC_QUEST_DINO_NIGHT_2",
+   "dino_night13": "EPIC_QUEST_DINO_NIGHT_2",
+   "dino_night14": "EPIC_QUEST_DINO_NIGHT_2",
+   "dino_night15": "EPIC_QUEST_DINO_NIGHT_2",
+   "dino_night16": "EPIC_QUEST_DINO_NIGHT_2_CONT",
+   "dino_night17": "EPIC_QUEST_DINO_NIGHT_2_CONT",
+   "dino_night18": "EPIC_QUEST_DINO_NIGHT_2_CONT",
+   "dino_night19": "EPIC_QUEST_DINO_NIGHT_2_CONT",
+   "dino_night20": "EPIC_QUEST_DINO_NIGHT_2_CONT",
+   "challenges/epic_sunbean1": "EPIC_QUEST_SUNBEAN",
+   "challenges/epic_sunbean2": "EPIC_QUEST_SUNBEAN",
+   "challenges/epic_sunbean3": "EPIC_QUEST_SUNBEAN",
+   "challenges/epic_sunbean4": "EPIC_QUEST_SUNBEAN",
+   "challenges/epic_sunbean5": "EPIC_QUEST_SUNBEAN",
+   "challenges/epic_sunbean6": "EPIC_QUEST_SUNBEAN",
+   "challenges/epic_springbean1": "EPIC_QUEST_SPRINGBEAN",
+   "challenges/epic_springbean2": "EPIC_QUEST_SPRINGBEAN",
+   "challenges/epic_springbean3": "EPIC_QUEST_SPRINGBEAN",
+   "challenges/epic_springbean4": "EPIC_QUEST_SPRINGBEAN",
+   "challenges/epic_springbean5": "EPIC_QUEST_SPRINGBEAN",
+   "challenges/epic_springbean6": "EPIC_QUEST_SPRINGBEAN",
+   "challenges/epic_springbean7": "EPIC_QUEST_SPRINGBEAN",
+   "challenges/epic_springbean8": "EPIC_QUEST_SPRINGBEAN",
+   "challenges/epic_strawburst1": "EPIC_QUEST_STRAWBURST",
+   "challenges/epic_strawburst2": "EPIC_QUEST_STRAWBURST",
+   "challenges/epic_strawburst3": "EPIC_QUEST_STRAWBURST",
+   "challenges/epic_strawburst4": "EPIC_QUEST_STRAWBURST",
+   "challenges/epic_strawburst5": "EPIC_QUEST_STRAWBURST",
+   "challenges/epic_strawburst6": "EPIC_QUEST_STRAWBURST",
+   "challenges/epic_shadowleaf1": "EPIC_QUEST_SHADOWLEAF",
+   "challenges/epic_shadowleaf2": "EPIC_QUEST_SHADOWLEAF",
+   "challenges/epic_shadowleaf3": "EPIC_QUEST_SHADOWLEAF",
+   "challenges/epic_shadowleaf4": "EPIC_QUEST_SHADOWLEAF",
+   "challenges/epic_shadowleaf5": "EPIC_QUEST_SHADOWLEAF",
+   "challenges/epic_shadowleaf6": "EPIC_QUEST_SHADOWLEAF",
+   "challenges/epic_banana1": "EPIC_QUEST_BANANA",
+   "challenges/epic_banana2": "EPIC_QUEST_BANANA",
+   "challenges/epic_banana3": "EPIC_QUEST_BANANA",
+   "challenges/epic_banana4": "EPIC_QUEST_BANANA",
+   "challenges/epic_banana5": "EPIC_QUEST_BANANA",
+   "challenges/epic_banana6": "EPIC_QUEST_BANANA",
+   "challenges/epic_wintermelon1": "EPIC_QUEST_WINTER_MELON",
+   "challenges/epic_wintermelon2": "EPIC_QUEST_WINTER_MELON",
+   "challenges/epic_wintermelon3": "EPIC_QUEST_WINTER_MELON",
+   "challenges/epic_wintermelon4": "EPIC_QUEST_WINTER_MELON",
+   "challenges/epic_wintermelon5": "EPIC_QUEST_WINTER_MELON",
+   "challenges/epic_wintermelon6": "EPIC_QUEST_WINTER_MELON",
+   "challenges/epic_crystallshroom1": "EPIC_QUEST_CRYSTALLSHROOM",
+   "challenges/epic_crystallshroom2": "EPIC_QUEST_CRYSTALLSHROOM",
+   "challenges/epic_crystallshroom3": "EPIC_QUEST_CRYSTALLSHROOM",
+   "challenges/epic_crystallshroom4": "EPIC_QUEST_CRYSTALLSHROOM",
+   "challenges/epic_crystallshroom5": "EPIC_QUEST_CRYSTALLSHROOM",
+   "challenges/epic_crystallshroom6": "EPIC_QUEST_CRYSTALLSHROOM_CONT",
+   "challenges/epic_crystallshroom7": "EPIC_QUEST_CRYSTALLSHROOM_CONT",
+   "challenges/epic_crystallshroom8": "EPIC_QUEST_CRYSTALLSHROOM_CONT",
+   "challenges/epic_crystallshroom9": "EPIC_QUEST_CRYSTALLSHROOM_CONT",
+   "challenges/epic_crystallshroom10": "EPIC_QUEST_CRYSTALLSHROOM_CONT",
+   "warp/party7": "WARP_PARTY_REDO_CHAIN_2",
+   "warp/party8": "WARP_PARTY_REDO_CHAIN_2",
+   "warp/party9": "WARP_PARTY_REDO_CHAIN_2",
+   "warp/party11": "WARP_PARTY_REDO_CHAIN_2",
+   "warp/party12": "WARP_PARTY_REDO_CHAIN_2",
+   "warp/party13": "WARP_PARTY_REDO_CHAIN_3",
+   "warp/party14": "WARP_PARTY_REDO_CHAIN_3",
+   "warp/party16": "WARP_PARTY_REDO_CHAIN_3",
+   "warp/party18": "WARP_PARTY_REDO_CHAIN_3",
+   "warp/party19": "WARP_PARTY_REDO_CHAIN_4",
+   "warp/party20": "WARP_PARTY_REDO_CHAIN_4",
+   "warp/party21": "WARP_PARTY_REDO_CHAIN_4",
+   "warp/party22": "WARP_PARTY_REDO_CHAIN_4",
+   "warp/party24": "WARP_PARTY_REDO_CHAIN_4",
+   "warp/party25": "WARP_PARTY_REDO_CHAIN_5",
+   "warp/party26": "WARP_PARTY_REDO_CHAIN_5",
+   "warp/party28": "WARP_PARTY_REDO_CHAIN_5",
+   "warp/party29": "WARP_PARTY_REDO_CHAIN_5",
+   "warp/party32": "WARP_PARTY_REDO_CHAIN_6",
+   "warp/party34": "WARP_PARTY_REDO_CHAIN_6",
+   "warp/party36": "WARP_PARTY_REDO_CHAIN_6",
+   "warp/party37": "WARP_PARTY_REDO_CHAIN_7",
+   "warp/party39": "WARP_PARTY_REDO_CHAIN_7",
+   "warp/party40": "WARP_PARTY_REDO_CHAIN_7",
+   "warp/party41": "WARP_PARTY_REDO_CHAIN_7",
+   "warp/party43": "WARP_PARTY_REDO_CHAIN_8",
+   "warp/party44": "WARP_PARTY_REDO_CHAIN_8",
+   "warp/party45": "WARP_PARTY_REDO_CHAIN_8",
+   "warp/party46": "WARP_PARTY_REDO_CHAIN_8",
+   "warp/party47": "WARP_PARTY_REDO_CHAIN_8",
+   "warp/party49": "WARP_PARTY_REDO_CHAIN_9",
+   "warp/party52": "WARP_PARTY_REDO_CHAIN_9",
+   "warp/party54": "WARP_PARTY_REDO_CHAIN_9",
+   "warp/party58": "WARP_PARTY_REDO_CHAIN_10",
+   "warp/party60": "WARP_PARTY_REDO_CHAIN_10",
+   "warp/party61": "WARP_PARTY_REDO_CHAIN_11",
+   "warp/party64": "WARP_PARTY_REDO_CHAIN_11",
+   "warp/party65": "WARP_PARTY_REDO_CHAIN_11",
+   "warp/party66": "WARP_PARTY_REDO_CHAIN_11",
+   "warp/party67": "WARP_PARTY_REDO_CHAIN_12",
+   "warp/party68": "WARP_PARTY_REDO_CHAIN_12",
+   "warp/party69": "WARP_PARTY_REDO_CHAIN_12",
+   "warp/party70": "WARP_PARTY_REDO_CHAIN_12",
+   "warp/party71": "WARP_PARTY_REDO_CHAIN_12",
+   "warp/party72": "WARP_PARTY_REDO_CHAIN_12",
+   "warp/party73": "WARP_PARTY_REDO_CHAIN_13",
+   "warp/party74": "WARP_PARTY_REDO_CHAIN_13",
+   "warp/party75": "WARP_PARTY_REDO_CHAIN_13",
+   "warp/party76": "WARP_PARTY_REDO_CHAIN_13",
+   "warp/party77": "WARP_PARTY_REDO_CHAIN_13",
+   "warp/party78": "WARP_PARTY_REDO_CHAIN_13",
+   "warp/party79": "WARP_PARTY_REDO_CHAIN_14",
+   "warp/party80": "WARP_PARTY_REDO_CHAIN_14",
+   "warp/party81": "WARP_PARTY_REDO_CHAIN_14",
+   "warp/party82": "WARP_PARTY_REDO_CHAIN_14",
+   "warp/party83": "WARP_PARTY_REDO_CHAIN_14",
+   "warp/party85": "WARP_PARTY_REDO_CHAIN_15",
+   "warp/party86": "WARP_PARTY_REDO_CHAIN_15",
+   "warp/party87": "WARP_PARTY_REDO_CHAIN_15",
+   "warp/party88": "WARP_PARTY_REDO_CHAIN_15",
+   "warp/party89": "WARP_PARTY_REDO_CHAIN_15",
+   "warp/party93": "WARP_PARTY_REDO_CHAIN_16",
+   "warp/party94": "WARP_PARTY_REDO_CHAIN_16",
+   "warp/party95": "WARP_PARTY_REDO_CHAIN_16",
+   "warp/party96": "WARP_PARTY_REDO_CHAIN_16",
+   "warp/party97": "WARP_PARTY_REDO_CHAIN_17",
+   "warp/party98": "WARP_PARTY_REDO_CHAIN_17",
+   "warp/party99": "WARP_PARTY_REDO_CHAIN_17",
+   "warp/party100": "WARP_PARTY_REDO_CHAIN_17",
+   "warp/party101": "WARP_PARTY_REDO_CHAIN_17",
+   "warp/party102": "WARP_PARTY_REDO_CHAIN_17",
+   "warp/party105": "WARP_PARTY_REDO_CHAIN_18",
+   "warp/party108": "WARP_PARTY_REDO_CHAIN_18",
+   "warp/party109": "WARP_PARTY_REDO_CHAIN_19",
+   "warp/party110": "WARP_PARTY_REDO_CHAIN_19",
+   "warp/party111": "WARP_PARTY_REDO_CHAIN_19",
+   "warp/party112": "WARP_PARTY_REDO_CHAIN_19",
+   "warp/party114": "WARP_PARTY_REDO_CHAIN_19",
+   "warp/party116": "WARP_PARTY_REDO_CHAIN_20",
+   "warp/party119": "WARP_PARTY_REDO_CHAIN_20",
+   "warp/party120": "WARP_PARTY_REDO_CHAIN_20",
+   "warp/party121": "WARP_PARTY_REDO_CHAIN_21",
+   "warp/party122": "WARP_PARTY_REDO_CHAIN_21",
+   "warp/party123": "WARP_PARTY_REDO_CHAIN_21",
+   "warp/party124": "WARP_PARTY_REDO_CHAIN_21",
+   "warp/party125": "WARP_PARTY_REDO_CHAIN_21",
+   "warp/party126": "WARP_PARTY_REDO_CHAIN_21",
+   "warp/party128": "WARP_PARTY_REDO_CHAIN_22",
+   "warp/party130": "WARP_PARTY_REDO_CHAIN_22",
+   "warp/party131": "WARP_PARTY_REDO_CHAIN_22",
+   "warp/party132": "WARP_PARTY_REDO_CHAIN_22",
+   "warp/party133": "WARP_PARTY_REDO_CHAIN_23",
+   "warp/party134": "WARP_PARTY_REDO_CHAIN_23",
+   "warp/party135": "WARP_PARTY_REDO_CHAIN_23",
+   "warp/party136": "WARP_PARTY_REDO_CHAIN_23",
+   "warp/party137": "WARP_PARTY_REDO_CHAIN_23",
+   "warp/party138": "WARP_PARTY_REDO_CHAIN_23",
+   "warp/party139": "WARP_PARTY_REDO_CHAIN_24",
+   "warp/party142": "WARP_PARTY_REDO_CHAIN_24",
+   "warp/party143": "WARP_PARTY_REDO_CHAIN_24",
+   "warp/party146": "WARP_PARTY_REDO_CHAIN_25",
+   "warp/party147": "WARP_PARTY_REDO_CHAIN_25",
+   "warp/party149": "WARP_PARTY_REDO_CHAIN_25",
+   "warp/party153": "WARP_PARTY_REDO_CHAIN_26",
+   "warp/party154": "WARP_PARTY_REDO_CHAIN_26",
+   "warp/party156": "WARP_PARTY_REDO_CHAIN_26",
+   "warp/party158": "WARP_PARTY_REDO_CHAIN_27",
+   "warp/party160": "WARP_PARTY_REDO_CHAIN_27",
+   "warp/party162": "WARP_PARTY_REDO_CHAIN_27",
+   "warp/party163": "WARP_PARTY_REDO_CHAIN_28",
+   "warp/party165": "WARP_PARTY_REDO_CHAIN_28",
+   "warp/party166": "WARP_PARTY_REDO_CHAIN_28",
+   "warp/party167": "WARP_PARTY_REDO_CHAIN_28",
+   "warp/party169": "WARP_PARTY_REDO_CHAIN_28"
+  }
+ },
+ "_note": [
+  "Generated by pvz/worlds.py, which overwrites this file. Do not edit.",
+  "counted=false: hidden on the map and no gate leads to it, so it is",
+  "  leftover vanilla data rather than content.",
+  "reason='reached through a hub': hidden from the main map but opened by",
+  "  a gate, which is how Reflourished's Travel Log worlds work. Counted.",
+  "excluded: Danger Rooms, which the game leaves out of its own total.",
+  "opens: a Travel-Log-style hub. Its own nodes are counted, but the",
+  "  worlds it opens ship no world map, so THEIR levels are not in the",
+  "  total. Reflourished's Travel Log hides ~480 levels this way.",
+  "_untracked: every WORLDMAPLIST world with no map package at all.",
+  "_quest: levels the quest registry reaches that no world map shows.",
+  "  'quest' is the Epic chains, 'world' is everything else, and the",
+  "  value against each level is the quest that has to be finished."
+ ],
+ "_untracked": [],
+ "worlds": {
+  "1": {
+   "name": "tutorial",
+   "code": "tutorial",
+   "order": 1,
+   "counted": false,
+   "total": 6,
+   "nodes": [
+    [
+     1,
+     "tutorial_level_tutorial1",
+     ""
+    ],
+    [
+     2,
+     "tutorial_level_tutorial2",
+     ""
+    ],
+    [
+     3,
+     "tutorial_level_tutorial3",
+     ""
+    ],
+    [
+     4,
+     "tutorial_level_tutorialmines",
+     ""
+    ],
+    [
+     5,
+     "tutorial_level_tutorial4",
+     ""
+    ],
+    [
+     6,
+     "tutorial_level_intro1",
+     ""
+    ]
+   ],
+   "excluded": [],
+   "reason": "hidden"
+  },
+  "101": {
+   "name": "hardcore",
+   "code": "hardcore",
+   "order": 2,
+   "counted": false,
+   "total": 101,
+   "nodes": [
+    [
+     1,
+     "hardcore_level_0",
+     "normal"
+    ],
+    [
+     2,
+     "hardcore_egypt_level_1",
+     "normal"
+    ],
+    [
+     3,
+     "hardcore_egypt_level_2",
+     "normal"
+    ],
+    [
+     4,
+     "hardcore_egypt_level_3",
+     "minigame"
+    ],
+    [
+     5,
+     "hardcore_egypt_level_4",
+     "minigame"
+    ],
+    [
+     6,
+     "hardcore_egypt_level_5",
+     "normal"
+    ],
+    [
+     7,
+     "hardcore_egypt_level_6",
+     "normal"
+    ],
+    [
+     8,
+     "hardcore_egypt_level_7",
+     "normal"
+    ],
+    [
+     9,
+     "hardcore_egypt_level_8",
+     "normal"
+    ],
+    [
+     10,
+     "hardcore_egypt_level_9",
+     "minigame"
+    ],
+    [
+     11,
+     "hardcore_egypt_level_10",
+     "minigame"
+    ],
+    [
+     12,
+     "hardcore_lostcity_level_1",
+     "normal"
+    ],
+    [
+     13,
+     "hardcore_lostcity_level_2",
+     "normal"
+    ],
+    [
+     14,
+     "hardcore_lostcity_level_3",
+     "normal"
+    ],
+    [
+     15,
+     "hardcore_lostcity_level_4",
+     "normal"
+    ],
+    [
+     16,
+     "hardcore_lostcity_level_5",
+     "minigame"
+    ],
+    [
+     17,
+     "hardcore_lostcity_level_6",
+     "normal"
+    ],
+    [
+     18,
+     "hardcore_lostcity_level_7",
+     "minigame"
+    ],
+    [
+     19,
+     "hardcore_lostcity_level_8",
+     "normal"
+    ],
+    [
+     20,
+     "hardcore_lostcity_level_9",
+     "minigame"
+    ],
+    [
+     21,
+     "hardcore_lostcity_level_10",
+     "normal"
+    ],
+    [
+     22,
+     "hardcore_dark_level_1",
+     "normal"
+    ],
+    [
+     23,
+     "hardcore_dark_level_2",
+     "normal"
+    ],
+    [
+     24,
+     "hardcore_dark_level_3",
+     "normal"
+    ],
+    [
+     25,
+     "hardcore_dark_level_4",
+     "minigame"
+    ],
+    [
+     26,
+     "hardcore_dark_level_5",
+     "minigame"
+    ],
+    [
+     27,
+     "hardcore_dark_level_6",
+     "normal"
+    ],
+    [
+     28,
+     "hardcore_dark_level_7",
+     "minigame"
+    ],
+    [
+     29,
+     "hardcore_dark_level_8",
+     "normal"
+    ],
+    [
+     30,
+     "hardcore_dark_level_9",
+     "minigame"
+    ],
+    [
+     31,
+     "hardcore_dark_level_10",
+     "normal"
+    ],
+    [
+     32,
+     "hardcore_pirate_level_1",
+     "normal"
+    ],
+    [
+     33,
+     "hardcore_pirate_level_2",
+     "normal"
+    ],
+    [
+     34,
+     "hardcore_pirate_level_3",
+     "minigame"
+    ],
+    [
+     35,
+     "hardcore_pirate_level_4",
+     "normal"
+    ],
+    [
+     36,
+     "hardcore_pirate_level_5",
+     "normal"
+    ],
+    [
+     37,
+     "hardcore_pirate_level_6",
+     "normal"
+    ],
+    [
+     38,
+     "hardcore_pirate_level_7",
+     "normal"
+    ],
+    [
+     39,
+     "hardcore_pirate_level_8",
+     "minigame"
+    ],
+    [
+     40,
+     "hardcore_pirate_level_9",
+     "minigame"
+    ],
+    [
+     41,
+     "hardcore_pirate_level_10",
+     "normal"
+    ],
+    [
+     42,
+     "hardcore_iceage_level_1",
+     "normal"
+    ],
+    [
+     43,
+     "hardcore_iceage_level_2",
+     "normal"
+    ],
+    [
+     44,
+     "hardcore_iceage_level_3",
+     "minigame"
+    ],
+    [
+     45,
+     "hardcore_iceage_level_4",
+     "normal"
+    ],
+    [
+     46,
+     "hardcore_iceage_level_5",
+     "minigame"
+    ],
+    [
+     47,
+     "hardcore_iceage_level_6",
+     "normal"
+    ],
+    [
+     48,
+     "hardcore_iceage_level_7",
+     "minigame"
+    ],
+    [
+     49,
+     "hardcore_iceage_level_8",
+     "normal"
+    ],
+    [
+     50,
+     "hardcore_iceage_level_9",
+     "minigame"
+    ],
+    [
+     51,
+     "hardcore_iceage_level_10",
+     "normal"
+    ],
+    [
+     52,
+     "hardcore_cowboy_level_1",
+     "normal"
+    ],
+    [
+     53,
+     "hardcore_cowboy_level_2",
+     "normal"
+    ],
+    [
+     54,
+     "hardcore_cowboy_level_3",
+     "normal"
+    ],
+    [
+     55,
+     "hardcore_cowboy_level_4",
+     "normal"
+    ],
+    [
+     56,
+     "hardcore_cowboy_level_5",
+     "minigame"
+    ],
+    [
+     57,
+     "hardcore_cowboy_level_6",
+     "minigame"
+    ],
+    [
+     58,
+     "hardcore_cowboy_level_7",
+     "normal"
+    ],
+    [
+     59,
+     "hardcore_cowboy_level_8",
+     "minigame"
+    ],
+    [
+     60,
+     "hardcore_cowboy_level_9",
+     "minigame"
+    ],
+    [
+     61,
+     "hardcore_cowboy_level_10",
+     "normal"
+    ],
+    [
+     62,
+     "hardcore_beach_level_1",
+     "normal"
+    ],
+    [
+     63,
+     "hardcore_beach_level_2",
+     "minigame"
+    ],
+    [
+     64,
+     "hardcore_beach_level_3",
+     "normal"
+    ],
+    [
+     65,
+     "hardcore_beach_level_4",
+     "normal"
+    ],
+    [
+     66,
+     "hardcore_beach_level_5",
+     "normal"
+    ],
+    [
+     67,
+     "hardcore_beach_level_6",
+     "minigame"
+    ],
+    [
+     68,
+     "hardcore_beach_level_7",
+     "normal"
+    ],
+    [
+     69,
+     "hardcore_beach_level_8",
+     "normal"
+    ],
+    [
+     70,
+     "hardcore_beach_level_9",
+     "normal"
+    ],
+    [
+     71,
+     "hardcore_beach_level_10",
+     "normal"
+    ],
+    [
+     72,
+     "hardcore_dino_level_1",
+     "normal"
+    ],
+    [
+     73,
+     "hardcore_dino_level_2",
+     "normal"
+    ],
+    [
+     74,
+     "hardcore_dino_level_3",
+     "minigame"
+    ],
+    [
+     75,
+     "hardcore_dino_level_4",
+     "normal"
+    ],
+    [
+     76,
+     "hardcore_dino_level_5",
+     "normal"
+    ],
+    [
+     77,
+     "hardcore_dino_level_6",
+     "normal"
+    ],
+    [
+     78,
+     "hardcore_dino_level_7",
+     "minigame"
+    ],
+    [
+     79,
+     "hardcore_dino_level_8",
+     "minigame"
+    ],
+    [
+     80,
+     "hardcore_dino_level_9",
+     "minigame"
+    ],
+    [
+     81,
+     "hardcore_dino_level_10",
+     "normal"
+    ],
+    [
+     82,
+     "hardcore_future_level_1",
+     "normal"
+    ],
+    [
+     83,
+     "hardcore_future_level_2",
+     "normal"
+    ],
+    [
+     84,
+     "hardcore_future_level_3",
+     "minigame"
+    ],
+    [
+     85,
+     "hardcore_future_level_4",
+     "minigame"
+    ],
+    [
+     86,
+     "hardcore_future_level_5",
+     "normal"
+    ],
+    [
+     87,
+     "hardcore_future_level_6",
+     "minigame"
+    ],
+    [
+     88,
+     "hardcore_future_level_7",
+     "normal"
+    ],
+    [
+     89,
+     "hardcore_future_level_8",
+     "normal"
+    ],
+    [
+     90,
+     "hardcore_future_level_9",
+     "minigame"
+    ],
+    [
+     91,
+     "hardcore_future_level_10",
+     "normal"
+    ],
+    [
+     92,
+     "hardcore_eighties_level_1",
+     "normal"
+    ],
+    [
+     93,
+     "hardcore_eighties_level_2",
+     "normal"
+    ],
+    [
+     94,
+     "hardcore_eighties_level_3",
+     "minigame"
+    ],
+    [
+     95,
+     "hardcore_eighties_level_4",
+     "normal"
+    ],
+    [
+     96,
+     "hardcore_eighties_level_5",
+     "normal"
+    ],
+    [
+     97,
+     "hardcore_eighties_level_6",
+     "minigame"
+    ],
+    [
+     98,
+     "hardcore_eighties_level_7",
+     "normal"
+    ],
+    [
+     99,
+     "hardcore_eighties_level_8",
+     "normal"
+    ],
+    [
+     100,
+     "hardcore_eighties_level_9",
+     "minigame"
+    ],
+    [
+     101,
+     "hardcore_eighties_level_10",
+     "normal"
+    ]
+   ],
+   "excluded": [],
+   "reason": "hidden"
+  },
+  "2": {
+   "name": "egypt",
+   "code": "egypt",
+   "order": 3,
+   "counted": true,
+   "total": 21,
+   "nodes": [
+    [
+     1,
+     "egypt_level_1",
+     "normal"
+    ],
+    [
+     3,
+     "egypt_level_2",
+     "normal"
+    ],
+    [
+     6,
+     "egypt_level_4",
+     "normal"
+    ],
+    [
+     8,
+     "egypt_level_5",
+     "normal"
+    ],
+    [
+     10,
+     "egypt_level_6",
+     "minigame"
+    ],
+    [
+     11,
+     "egypt_level_7",
+     "normal"
+    ],
+    [
+     14,
+     "egypt_level_9",
+     "minigame"
+    ],
+    [
+     15,
+     "egypt_level_8",
+     "normal"
+    ],
+    [
+     17,
+     "egypt_level_13",
+     "normal"
+    ],
+    [
+     17,
+     "egypt_level_10",
+     "miniboss"
+    ],
+    [
+     19,
+     "egypt_gate",
+     "normal"
+    ],
+    [
+     34,
+     "egypt_secret_1",
+     "normal"
+    ],
+    [
+     35,
+     "egypt_secret_2",
+     "normal"
+    ],
+    [
+     58,
+     "egypt_night_level_1",
+     "normal"
+    ],
+    [
+     59,
+     "egypt_night_level_2",
+     "minigame"
+    ],
+    [
+     60,
+     "egypt_night_level_3",
+     "normal"
+    ],
+    [
+     61,
+     "egypt_night_level_4",
+     "minigame"
+    ],
+    [
+     62,
+     "egypt_night_level_5",
+     "minigame"
+    ],
+    [
+     63,
+     "egypt_night_level_6",
+     "miniboss"
+    ],
+    [
+     68,
+     "egypt_secret_0",
+     "normal"
+    ],
+    [
+     79,
+     "egypt_level_3",
+     "minigame"
+    ]
+   ],
+   "excluded": []
+  },
+  "9": {
+   "name": "lostcity",
+   "code": "lostcity",
+   "order": 4,
+   "counted": true,
+   "total": 20,
+   "nodes": [
+    [
+     2,
+     "lostcity_level_1",
+     "normal"
+    ],
+    [
+     4,
+     "lostcity_level_2",
+     "normal"
+    ],
+    [
+     5,
+     "lostcity_level_3",
+     "normal"
+    ],
+    [
+     7,
+     "lostcity_level_4",
+     "minigame"
+    ],
+    [
+     10,
+     "lostcity_level_6",
+     "normal"
+    ],
+    [
+     12,
+     "lostcity_level_7",
+     "minigame"
+    ],
+    [
+     13,
+     "lostcity_level_8",
+     "minigame"
+    ],
+    [
+     15,
+     "lostcity_level_9",
+     "minigame"
+    ],
+    [
+     17,
+     "iceage_level_4",
+     "normal"
+    ],
+    [
+     33,
+     "lostcity_secret_1",
+     "normal"
+    ],
+    [
+     34,
+     "lostcity_secret_2",
+     "normal"
+    ],
+    [
+     44,
+     "lostcity_gate",
+     "normal"
+    ],
+    [
+     45,
+     "lostcity_level_10",
+     "miniboss"
+    ],
+    [
+     46,
+     "night_lostcity_level_1",
+     "normal"
+    ],
+    [
+     47,
+     "night_lostcity_level_2",
+     "normal"
+    ],
+    [
+     48,
+     "night_lostcity_level_3",
+     "minigame"
+    ],
+    [
+     49,
+     "night_lostcity_level_4",
+     "minigame"
+    ],
+    [
+     50,
+     "night_lostcity_level_5",
+     "minigame"
+    ],
+    [
+     51,
+     "night_lostcity_level_6",
+     "miniboss"
+    ],
+    [
+     91,
+     "lostcity_level_5",
+     "minigame"
+    ]
+   ],
+   "excluded": [
+    [
+     70,
+     "lostcity_level_danger_room",
+     "danger"
+    ]
+   ]
+  },
+  "6": {
+   "name": "dark",
+   "code": "dark",
+   "order": 5,
+   "counted": true,
+   "total": 19,
+   "nodes": [
+    [
+     2,
+     "dark_level_1",
+     "normal"
+    ],
+    [
+     4,
+     "dark_level_2",
+     "normal"
+    ],
+    [
+     6,
+     "dark_level_3",
+     "minigame"
+    ],
+    [
+     8,
+     "dark_level_4",
+     "minigame"
+    ],
+    [
+     11,
+     "dark_level_6",
+     "normal"
+    ],
+    [
+     12,
+     "dark_level_7",
+     "minigame"
+    ],
+    [
+     14,
+     "dark_level_8",
+     "minigame"
+    ],
+    [
+     16,
+     "dark_level_9",
+     "normal"
+    ],
+    [
+     18,
+     "dark_level_10",
+     "miniboss"
+    ],
+    [
+     22,
+     "dark_gate",
+     "normal"
+    ],
+    [
+     24,
+     "dark_level_5",
+     "normal"
+    ],
+    [
+     35,
+     "dark_secret_1",
+     "minigame"
+    ],
+    [
+     36,
+     "dark_secret_2",
+     "minigame"
+    ],
+    [
+     44,
+     "day_dark_level_1",
+     "normal"
+    ],
+    [
+     45,
+     "day_dark_level_2",
+     "minigame"
+    ],
+    [
+     46,
+     "day_dark_level_3",
+     "minigame"
+    ],
+    [
+     47,
+     "day_dark_level_4",
+     "minigame"
+    ],
+    [
+     48,
+     "day_dark_level_5",
+     "normal"
+    ],
+    [
+     49,
+     "day_dark_level_6",
+     "miniboss"
+    ]
+   ],
+   "excluded": [
+    [
+     34,
+     "dark_level_danger_room",
+     "danger"
+    ]
+   ]
+  },
+  "3": {
+   "name": "pirate",
+   "code": "pirate",
+   "order": 6,
+   "counted": true,
+   "total": 13,
+   "nodes": [
+    [
+     2,
+     "pirate_level_1",
+     "normal"
+    ],
+    [
+     3,
+     "pirate_level_2",
+     "normal"
+    ],
+    [
+     5,
+     "pirate_level_3",
+     "minigame"
+    ],
+    [
+     6,
+     "pirate_level_4",
+     "normal"
+    ],
+    [
+     10,
+     "pirate_level_6",
+     "minigame"
+    ],
+    [
+     11,
+     "pirate_level_7",
+     "normal"
+    ],
+    [
+     13,
+     "pirate_level_8",
+     "minigame"
+    ],
+    [
+     14,
+     "pirate_level_9",
+     "minigame"
+    ],
+    [
+     20,
+     "pirate_gate",
+     "normal"
+    ],
+    [
+     30,
+     "pirate_level_5",
+     "normal"
+    ],
+    [
+     34,
+     "pirate_secret_1",
+     "normal"
+    ],
+    [
+     35,
+     "pirate_secret_2",
+     "normal"
+    ],
+    [
+     37,
+     "pirate_level_10",
+     "miniboss"
+    ]
+   ],
+   "excluded": [
+    [
+     33,
+     "pirate_level_dangerroom",
+     "danger"
+    ]
+   ]
+  },
+  "8": {
+   "name": "iceage",
+   "code": "iceage",
+   "order": 7,
+   "counted": true,
+   "total": 17,
+   "nodes": [
+    [
+     1,
+     "iceage_level_1",
+     "normal"
+    ],
+    [
+     3,
+     "iceage_level_2",
+     "normal"
+    ],
+    [
+     5,
+     "iceage_level_3",
+     "minigame"
+    ],
+    [
+     6,
+     "iceage_level_4A",
+     "minigame"
+    ],
+    [
+     10,
+     "iceage_level_6",
+     "minigame"
+    ],
+    [
+     12,
+     "iceage_level_7",
+     "normal"
+    ],
+    [
+     13,
+     "iceage_level_8",
+     "normal"
+    ],
+    [
+     15,
+     "iceage_level_9",
+     "minigame"
+    ],
+    [
+     34,
+     "iceage_secret_1",
+     "minigame"
+    ],
+    [
+     35,
+     "iceage_secret_2",
+     "minigame"
+    ],
+    [
+     48,
+     "iceage_level_5",
+     "normal"
+    ],
+    [
+     51,
+     "iceage_level_10",
+     "miniboss"
+    ],
+    [
+     55,
+     "iceage_gate",
+     "normal"
+    ],
+    [
+     100,
+     "shuffling_revenge",
+     "miniboss"
+    ],
+    [
+     101,
+     "pepperpult_1",
+     "minigame"
+    ],
+    [
+     102,
+     "pepperpult_2",
+     "minigame"
+    ],
+    [
+     103,
+     "pepperpult_3",
+     "miniboss"
+    ]
+   ],
+   "excluded": []
+  },
+  "4": {
+   "name": "cowboy",
+   "code": "cowboy",
+   "order": 8,
+   "counted": true,
+   "total": 20,
+   "nodes": [
+    [
+     1,
+     "cowboy_level_1",
+     "normal"
+    ],
+    [
+     3,
+     "cowboy_level_2",
+     "normal"
+    ],
+    [
+     4,
+     "cowboy_level_3",
+     "minigame"
+    ],
+    [
+     6,
+     "cowboy_level_4",
+     "normal"
+    ],
+    [
+     9,
+     "cowboy_level_6",
+     "normal"
+    ],
+    [
+     11,
+     "cowboy_level_7",
+     "minigame"
+    ],
+    [
+     12,
+     "cowboy_level_8",
+     "normal"
+    ],
+    [
+     13,
+     "cowboy_level_5",
+     "normal"
+    ],
+    [
+     14,
+     "cowboy_level_9",
+     "minigame"
+    ],
+    [
+     17,
+     "cowboy_level_10",
+     "miniboss"
+    ],
+    [
+     18,
+     "cowboy_gate",
+     "normal"
+    ],
+    [
+     33,
+     "cowboy_secret_1",
+     "minigame"
+    ],
+    [
+     34,
+     "cowboy_secret_2",
+     "normal"
+    ],
+    [
+     35,
+     "night_cowboy_level_1",
+     "normal"
+    ],
+    [
+     36,
+     "night_cowboy_level_2",
+     "normal"
+    ],
+    [
+     37,
+     "night_cowboy_level_3",
+     "normal"
+    ],
+    [
+     38,
+     "night_cowboy_level_4",
+     "minigame"
+    ],
+    [
+     39,
+     "night_cowboy_level_5",
+     "minigame"
+    ],
+    [
+     40,
+     "night_cowboy_level_6",
+     "miniboss"
+    ],
+    [
+     46,
+     "challenge_cowboy_level_9",
+     "minigame"
+    ]
+   ],
+   "excluded": []
+  },
+  "7": {
+   "name": "beach",
+   "code": "beach",
+   "order": 9,
+   "counted": true,
+   "total": 15,
+   "nodes": [
+    [
+     1,
+     "beach_level_1",
+     "normal"
+    ],
+    [
+     3,
+     "beach_level_2",
+     "normal"
+    ],
+    [
+     5,
+     "beach_level_3",
+     "minigame"
+    ],
+    [
+     6,
+     "beach_level_4",
+     "minigame"
+    ],
+    [
+     8,
+     "beach_level_5",
+     "normal"
+    ],
+    [
+     8,
+     "check_level_beach5",
+     "normal"
+    ],
+    [
+     9,
+     "beach_level_6",
+     "normal"
+    ],
+    [
+     11,
+     "beach_level_7",
+     "normal"
+    ],
+    [
+     12,
+     "beach_level_8",
+     "minigame"
+    ],
+    [
+     14,
+     "beach_level_9",
+     "minigame"
+    ],
+    [
+     16,
+     "beach_level_10",
+     "miniboss"
+    ],
+    [
+     16,
+     "check_level_beach10",
+     "normal"
+    ],
+    [
+     18,
+     "beach_gate",
+     "normal"
+    ],
+    [
+     33,
+     "beach_secret_1",
+     "minigame"
+    ],
+    [
+     34,
+     "beach_secret_2",
+     "normal"
+    ]
+   ],
+   "excluded": []
+  },
+  "10": {
+   "name": "dino",
+   "code": "dino",
+   "order": 10,
+   "counted": true,
+   "total": 23,
+   "nodes": [
+    [
+     1,
+     "dino_level_1",
+     "normal"
+    ],
+    [
+     3,
+     "dino_level_2",
+     "normal"
+    ],
+    [
+     4,
+     "dino_level_3",
+     "normal"
+    ],
+    [
+     6,
+     "dino_level_4",
+     "minigame"
+    ],
+    [
+     9,
+     "dino_level_6",
+     "minigame"
+    ],
+    [
+     11,
+     "dino_level_7",
+     "normal"
+    ],
+    [
+     12,
+     "dino_level_8",
+     "minigame"
+    ],
+    [
+     14,
+     "dino_level_9",
+     "minigame"
+    ],
+    [
+     17,
+     "dino_level_10",
+     "miniboss"
+    ],
+    [
+     18,
+     "dino_gate",
+     "normal"
+    ],
+    [
+     22,
+     "dino_level_5",
+     "normal"
+    ],
+    [
+     23,
+     "dino_night_1",
+     "normal"
+    ],
+    [
+     24,
+     "dino_night_2",
+     "minigame"
+    ],
+    [
+     25,
+     "dino_night_3",
+     "minigame"
+    ],
+    [
+     26,
+     "dino_night_4",
+     "minigame"
+    ],
+    [
+     27,
+     "dino_night_5",
+     "minigame"
+    ],
+    [
+     28,
+     "dino_night_6",
+     "miniboss"
+    ],
+    [
+     40,
+     "homing_1",
+     "minigame"
+    ],
+    [
+     41,
+     "homing_2",
+     "normal"
+    ],
+    [
+     42,
+     "homing_3",
+     "minigame"
+    ],
+    [
+     43,
+     "dino_secret_1",
+     "normal"
+    ],
+    [
+     44,
+     "dino_secret_2",
+     "normal"
+    ],
+    [
+     47,
+     "homing_4",
+     "miniboss"
+    ]
+   ],
+   "excluded": []
+  },
+  "11": {
+   "name": "future",
+   "code": "future",
+   "order": 11,
+   "counted": true,
+   "total": 16,
+   "nodes": [
+    [
+     1,
+     "future_level_1",
+     "normal"
+    ],
+    [
+     3,
+     "future_level_2",
+     "normal"
+    ],
+    [
+     5,
+     "future_level_3",
+     "normal"
+    ],
+    [
+     6,
+     "future_level_4",
+     "minigame"
+    ],
+    [
+     8,
+     "citron_level_1",
+     "minigame"
+    ],
+    [
+     9,
+     "citron_level_2",
+     "minigame"
+    ],
+    [
+     10,
+     "citron_level_3",
+     "miniboss"
+    ],
+    [
+     13,
+     "future_level_5",
+     "normal"
+    ],
+    [
+     18,
+     "secret_level_17",
+     "minigame"
+    ],
+    [
+     20,
+     "future_level_6",
+     "normal"
+    ],
+    [
+     21,
+     "future_level_7",
+     "minigame"
+    ],
+    [
+     23,
+     "future_level_8",
+     "minigame"
+    ],
+    [
+     25,
+     "future_level_9",
+     "minigame"
+    ],
+    [
+     27,
+     "future_level_10",
+     "miniboss"
+    ],
+    [
+     28,
+     "future_gate",
+     "normal"
+    ],
+    [
+     29,
+     "secret_level_18",
+     "minigame"
+    ]
+   ],
+   "excluded": []
+  },
+  "12": {
+   "name": "eighties",
+   "code": "eighties",
+   "order": 12,
+   "counted": true,
+   "total": 17,
+   "nodes": [
+    [
+     0,
+     "eighties_level_0",
+     "normal"
+    ],
+    [
+     1,
+     "eighties_level_1",
+     "normal"
+    ],
+    [
+     2,
+     "eighties_level_2",
+     "normal"
+    ],
+    [
+     3,
+     "eighties_level_3",
+     "minigame"
+    ],
+    [
+     5,
+     "eighties_level_4",
+     "normal"
+    ],
+    [
+     7,
+     "eighties_level_5",
+     "normal"
+    ],
+    [
+     8,
+     "eighties_level_6",
+     "minigame"
+    ],
+    [
+     9,
+     "eighties_secret_19",
+     "minigame"
+    ],
+    [
+     13,
+     "eighties_level_8",
+     "normal"
+    ],
+    [
+     15,
+     "eighties_level_9",
+     "minigame"
+    ],
+    [
+     16,
+     "eighties_level_10",
+     "miniboss"
+    ],
+    [
+     18,
+     "eighties_secret_20",
+     "miniboss"
+    ],
+    [
+     23,
+     "electricblueberry_level_3",
+     "normal"
+    ],
+    [
+     24,
+     "electricblueberry_level_2",
+     "normal"
+    ],
+    [
+     25,
+     "electricblueberry_level_1",
+     "minigame"
+    ],
+    [
+     26,
+     "electricblueberry_level_4",
+     "miniboss"
+    ],
+    [
+     27,
+     "eighties_level_7",
+     "normal"
+    ]
+   ],
+   "excluded": []
+  },
+  "13": {
+   "name": "modern",
+   "code": "modern",
+   "order": 13,
+   "counted": true,
+   "total": 52,
+   "nodes": [
+    [
+     2,
+     "modern_gate",
+     "normal"
+    ],
+    [
+     2,
+     "",
+     "minigame"
+    ],
+    [
+     2,
+     "survival_grab",
+     "minigame"
+    ],
+    [
+     2,
+     "survival_column",
+     "minigame"
+    ],
+    [
+     2,
+     "survival_escalation",
+     "minigame"
+    ],
+    [
+     2,
+     "survival_overclock",
+     "minigame"
+    ],
+    [
+     2,
+     "survival_gargantuar",
+     "minigame"
+    ],
+    [
+     4,
+     "minigame_goldcapture",
+     "minigame"
+    ],
+    [
+     5,
+     "minigame_goodfarmer",
+     "minigame"
+    ],
+    [
+     6,
+     "minigame_garliqour",
+     "minigame"
+    ],
+    [
+     7,
+     "minigame_gashorror",
+     "minigame"
+    ],
+    [
+     8,
+     "minigame_reclaim",
+     "minigame"
+    ],
+    [
+     9,
+     "bowling_1",
+     "minigame"
+    ],
+    [
+     10,
+     "bowling_2",
+     "minigame"
+    ],
+    [
+     11,
+     "bowling_3",
+     "minigame"
+    ],
+    [
+     12,
+     "bowling_4",
+     "minigame"
+    ],
+    [
+     13,
+     "minigame_cba",
+     "minigame"
+    ],
+    [
+     14,
+     "bowling_5",
+     "minigame"
+    ],
+    [
+     15,
+     "ig_1",
+     "minigame"
+    ],
+    [
+     16,
+     "ig_2",
+     "minigame"
+    ],
+    [
+     17,
+     "ig_3",
+     "minigame"
+    ],
+    [
+     18,
+     "ig_4",
+     "minigame"
+    ],
+    [
+     19,
+     "ig_5",
+     "minigame"
+    ],
+    [
+     20,
+     "ig_6",
+     "minigame"
+    ],
+    [
+     21,
+     "mineset_1",
+     "minigame"
+    ],
+    [
+     22,
+     "mineset_2",
+     "minigame"
+    ],
+    [
+     23,
+     "mineset_3",
+     "minigame"
+    ],
+    [
+     24,
+     "mineset_4",
+     "minigame"
+    ],
+    [
+     25,
+     "mineset_5",
+     "minigame"
+    ],
+    [
+     26,
+     "overleft_1",
+     "minigame"
+    ],
+    [
+     27,
+     "overleft_2",
+     "minigame"
+    ],
+    [
+     28,
+     "overleft_3",
+     "minigame"
+    ],
+    [
+     29,
+     "overleft_4",
+     "minigame"
+    ],
+    [
+     30,
+     "overleft_5",
+     "minigame"
+    ],
+    [
+     31,
+     "puzzle_1",
+     "minigame"
+    ],
+    [
+     32,
+     "puzzle_2",
+     "minigame"
+    ],
+    [
+     33,
+     "puzzle_3",
+     "minigame"
+    ],
+    [
+     34,
+     "puzzle_4",
+     "minigame"
+    ],
+    [
+     36,
+     "minigame_sleepwalk",
+     "minigame"
+    ],
+    [
+     37,
+     "minigame_crack",
+     "minigame"
+    ],
+    [
+     38,
+     "minigame_inscrypiton",
+     "minigame"
+    ],
+    [
+     39,
+     "minigame_meat",
+     "minigame"
+    ],
+    [
+     40,
+     "minigame_encrouch",
+     "minigame"
+    ],
+    [
+     41,
+     "minigame_missplace",
+     "minigame"
+    ],
+    [
+     42,
+     "minigame_solarbank",
+     "minigame"
+    ],
+    [
+     43,
+     "minigame_nutshell",
+     "minigame"
+    ],
+    [
+     44,
+     "minigame_cryo",
+     "minigame"
+    ],
+    [
+     45,
+     "minigame_pink",
+     "minigame"
+    ],
+    [
+     46,
+     "minigame_protect",
+     "minigame"
+    ],
+    [
+     47,
+     "minigame_split",
+     "minigame"
+    ],
+    [
+     48,
+     "minigame_parrot",
+     "minigame"
+    ],
+    [
+     49,
+     "modern_level_tickdown",
+     "minigame"
+    ]
+   ],
+   "excluded": [
+    [
+     3,
+     "modern_level_dangerroom",
+     "danger"
+    ]
+   ]
+  },
+  "102": {
+   "name": "training",
+   "code": "training",
+   "order": 14,
+   "counted": false,
+   "total": 112,
+   "nodes": [
+    [
+     1,
+     "training_gate_level",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_a1",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_a2",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_a3",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_a4",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_a5",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_a6",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_a7",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_a8",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_a9",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_a10",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_a11",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_a12",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_a13",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_b1",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_b2",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_b3",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_b4",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_b5",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_b6",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_b7",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_b8",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_b9",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_b10",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_b11",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_b12",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_b13",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_c1",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_c2",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_c3",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_c4",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_c5",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_c6",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_c7",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_c8",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_c9",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_c10",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_c11",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_c12",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_c13",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_d1",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_d2",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_d3",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_d4",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_d5",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_d6",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_d7",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_d8",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_d9",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_d10",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_d11",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_d12",
+     "normal"
+    ],
+    [
+     1,
+     "dynamic_island_d13",
+     "normal"
+    ],
+    [
+     2,
+     "modern_level_botanical1",
+     "normal"
+    ],
+    [
+     3,
+     "modern_level_botanical2",
+     "normal"
+    ],
+    [
+     4,
+     "modern_level_botanical3",
+     "normal"
+    ],
+    [
+     5,
+     "modern_level_botanical4",
+     "normal"
+    ],
+    [
+     6,
+     "modern_level_overleft1",
+     "normal"
+    ],
+    [
+     7,
+     "modern_level_overleft2",
+     "normal"
+    ],
+    [
+     8,
+     "modern_level_overleft3",
+     "normal"
+    ],
+    [
+     9,
+     "modern_level_overleft4",
+     "normal"
+    ],
+    [
+     10,
+     "modern_level_overleft5",
+     "normal"
+    ],
+    [
+     11,
+     "modern_level_origin1",
+     "normal"
+    ],
+    [
+     12,
+     "modern_level_origin2",
+     "normal"
+    ],
+    [
+     13,
+     "modern_level_origin3",
+     "normal"
+    ],
+    [
+     14,
+     "modern_level_origin4",
+     "normal"
+    ],
+    [
+     15,
+     "modern_level_deadend1",
+     "normal"
+    ],
+    [
+     16,
+     "modern_level_deadend2",
+     "normal"
+    ],
+    [
+     17,
+     "modern_level_deadend3",
+     "normal"
+    ],
+    [
+     18,
+     "modern_level_deadend4",
+     "normal"
+    ],
+    [
+     19,
+     "modern_level_deadend5",
+     "normal"
+    ],
+    [
+     20,
+     "modern_level_deadend6",
+     "normal"
+    ],
+    [
+     21,
+     "modern_level_bowling1",
+     "normal"
+    ],
+    [
+     22,
+     "modern_level_bowling2",
+     "normal"
+    ],
+    [
+     23,
+     "modern_level_bowling3",
+     "normal"
+    ],
+    [
+     24,
+     "modern_level_bowling4",
+     "normal"
+    ],
+    [
+     25,
+     "modern_level_bowling5",
+     "normal"
+    ],
+    [
+     26,
+     "modern_level_bowling6",
+     "normal"
+    ],
+    [
+     27,
+     "modern_level_bowling7",
+     "normal"
+    ],
+    [
+     28,
+     "modern_level_bowling8",
+     "normal"
+    ],
+    [
+     29,
+     "modern_level_bowling9",
+     "normal"
+    ],
+    [
+     30,
+     "modern_level_bowling10",
+     "normal"
+    ],
+    [
+     31,
+     "modern_level_invisighoul1",
+     "normal"
+    ],
+    [
+     32,
+     "modern_level_invisighoul2",
+     "normal"
+    ],
+    [
+     33,
+     "modern_level_invisighoul3",
+     "normal"
+    ],
+    [
+     34,
+     "modern_level_invisighoul4",
+     "normal"
+    ],
+    [
+     35,
+     "modern_level_invisighoul5",
+     "normal"
+    ],
+    [
+     36,
+     "modern_level_invisighoul6",
+     "normal"
+    ],
+    [
+     47,
+     "modern_level_plant_puzzle_1",
+     "normal"
+    ],
+    [
+     48,
+     "modern_level_plant_puzzle_2",
+     "normal"
+    ],
+    [
+     49,
+     "modern_level_plant_puzzle_3",
+     "normal"
+    ],
+    [
+     50,
+     "modern_level_plant_puzzle_4",
+     "normal"
+    ],
+    [
+     51,
+     "modern_level_plant_puzzle_5",
+     "normal"
+    ],
+    [
+     52,
+     "modern_level_plant_puzzle_6",
+     "normal"
+    ],
+    [
+     53,
+     "modern_level_plant_puzzle_7",
+     "normal"
+    ],
+    [
+     54,
+     "modern_level_plant_puzzle_8",
+     "normal"
+    ],
+    [
+     69,
+     "challenges_epic_mini1",
+     "normal"
+    ],
+    [
+     70,
+     "challenges_epic_mini2",
+     "normal"
+    ],
+    [
+     71,
+     "challenges_epic_mini3",
+     "normal"
+    ],
+    [
+     72,
+     "challenges_epic_mini4",
+     "normal"
+    ],
+    [
+     73,
+     "challenges_epic_mini5",
+     "normal"
+    ],
+    [
+     74,
+     "challenges_epic_mini6",
+     "normal"
+    ],
+    [
+     75,
+     "challenges_epic_mini7",
+     "normal"
+    ],
+    [
+     76,
+     "challenges_epic_mini8",
+     "normal"
+    ],
+    [
+     77,
+     "challenges_epic_mini9",
+     "normal"
+    ],
+    [
+     78,
+     "challenges_epic_mini10",
+     "normal"
+    ],
+    [
+     79,
+     "warp_party_48",
+     "normal"
+    ],
+    [
+     80,
+     "warp_party_50",
+     "normal"
+    ],
+    [
+     81,
+     "warp_party_53",
+     "normal"
+    ],
+    [
+     82,
+     "warp_party_55",
+     "normal"
+    ],
+    [
+     83,
+     "warp_party_57",
+     "normal"
+    ],
+    [
+     84,
+     "warp_party_59",
+     "normal"
+    ]
+   ],
+   "excluded": [
+    [
+     55,
+     "training_level_dangerroom",
+     "danger"
+    ]
+   ],
+   "reason": "hidden"
+  },
+  "103": {
+   "name": "izombie",
+   "code": "izombie",
+   "order": 15,
+   "counted": false,
+   "total": 43,
+   "nodes": [
+    [
+     1,
+     "izombie_level_0001",
+     "normal"
+    ],
+    [
+     2,
+     "izombie_level_0002",
+     "normal"
+    ],
+    [
+     2,
+     "izombie_level_endless",
+     "minigame"
+    ],
+    [
+     3,
+     "izombie_level_0101",
+     "minigame"
+    ],
+    [
+     4,
+     "izombie_level_0102",
+     "minigame"
+    ],
+    [
+     5,
+     "izombie_level_0103",
+     "minigame"
+    ],
+    [
+     6,
+     "izombie_level_0104",
+     "minigame"
+    ],
+    [
+     7,
+     "izombie_level_0105",
+     "minigame"
+    ],
+    [
+     8,
+     "izombie_level_0106",
+     "minigame"
+    ],
+    [
+     9,
+     "izombie_level_0107",
+     "minigame"
+    ],
+    [
+     10,
+     "izombie_level_0108",
+     "minigame"
+    ],
+    [
+     11,
+     "izombie_level_0201",
+     "minigame"
+    ],
+    [
+     12,
+     "izombie_level_0202",
+     "minigame"
+    ],
+    [
+     13,
+     "izombie_level_0203",
+     "minigame"
+    ],
+    [
+     14,
+     "izombie_level_0204",
+     "minigame"
+    ],
+    [
+     15,
+     "izombie_level_0205",
+     "minigame"
+    ],
+    [
+     16,
+     "izombie_level_0206",
+     "minigame"
+    ],
+    [
+     17,
+     "izombie_level_0207",
+     "minigame"
+    ],
+    [
+     18,
+     "izombie_level_0208",
+     "minigame"
+    ],
+    [
+     19,
+     "izombie_level_0301",
+     "minigame"
+    ],
+    [
+     20,
+     "izombie_level_0302",
+     "minigame"
+    ],
+    [
+     21,
+     "izombie_level_0303",
+     "minigame"
+    ],
+    [
+     22,
+     "izombie_level_0304",
+     "minigame"
+    ],
+    [
+     23,
+     "izombie_level_0305",
+     "minigame"
+    ],
+    [
+     24,
+     "izombie_level_0306",
+     "minigame"
+    ],
+    [
+     25,
+     "izombie_level_0307",
+     "minigame"
+    ],
+    [
+     26,
+     "izombie_level_0308",
+     "minigame"
+    ],
+    [
+     27,
+     "izombie_level_0401",
+     "normal"
+    ],
+    [
+     28,
+     "izombie_level_0402",
+     "normal"
+    ],
+    [
+     29,
+     "izombie_level_0403",
+     "normal"
+    ],
+    [
+     30,
+     "izombie_level_0404",
+     "normal"
+    ],
+    [
+     31,
+     "izombie_level_0405",
+     "normal"
+    ],
+    [
+     32,
+     "izombie_level_0406",
+     "minigame"
+    ],
+    [
+     33,
+     "izombie_level_0407",
+     "normal"
+    ],
+    [
+     34,
+     "izombie_level_0408",
+     "normal"
+    ],
+    [
+     35,
+     "izombie_level_0601",
+     "normal"
+    ],
+    [
+     36,
+     "izombie_level_0602",
+     "normal"
+    ],
+    [
+     37,
+     "izombie_level_0603",
+     "minigame"
+    ],
+    [
+     38,
+     "izombie_level_0604",
+     "normal"
+    ],
+    [
+     39,
+     "izombie_level_0605",
+     "normal"
+    ],
+    [
+     40,
+     "izombie_level_0606",
+     "normal"
+    ],
+    [
+     41,
+     "izombie_level_0607",
+     "normal"
+    ],
+    [
+     42,
+     "izombie_level_0608",
+     "normal"
+    ]
+   ],
+   "excluded": [],
+   "reason": "hidden"
+  },
+  "100": {
+   "name": "community",
+   "code": "community",
+   "order": 16,
+   "counted": false,
+   "total": 195,
+   "nodes": [
+    [
+     2,
+     "community_level_0",
+     "normal"
+    ],
+    [
+     3,
+     "community_level_mememan_boxingarena",
+     "normal"
+    ],
+    [
+     4,
+     "community_level_mememan_speedsurf",
+     "normal"
+    ],
+    [
+     5,
+     "community_level_mememan_nuclearpower",
+     "normal"
+    ],
+    [
+     6,
+     "community_level_ender_allloutattack",
+     "normal"
+    ],
+    [
+     7,
+     "community_level_ender_ancientmausoleum",
+     "normal"
+    ],
+    [
+     8,
+     "community_level_ender_ridingshotgun",
+     "normal"
+    ],
+    [
+     9,
+     "community_level_ender_hindertimber",
+     "normal"
+    ],
+    [
+     10,
+     "community_level_ender_goldenbalance",
+     "normal"
+    ],
+    [
+     11,
+     "community_level_ender_frozonelayer",
+     "normal"
+    ],
+    [
+     12,
+     "community_level_ender_dhq_heatwave",
+     "normal"
+    ],
+    [
+     13,
+     "community_level_ender_debugtrap",
+     "normal"
+    ],
+    [
+     14,
+     "community_level_ender_flamewalkers",
+     "normal"
+    ],
+    [
+     15,
+     "community_level_ender_nullandvoid",
+     "normal"
+    ],
+    [
+     16,
+     "community_level_ender_precipitation",
+     "normal"
+    ],
+    [
+     17,
+     "community_level_ender_rainbowroad",
+     "normal"
+    ],
+    [
+     18,
+     "community_level_ender_stalkshift",
+     "normal"
+    ],
+    [
+     20,
+     "community_level_dt_wall_alignment",
+     "normal"
+    ],
+    [
+     22,
+     "community_level_dt_bugshield",
+     "normal"
+    ],
+    [
+     24,
+     "community_level_dt_farflungfuture",
+     "normal"
+    ],
+    [
+     25,
+     "community_level_dt_iceburn",
+     "normal"
+    ],
+    [
+     26,
+     "community_level_dt_macenaries",
+     "normal"
+    ],
+    [
+     27,
+     "community_level_dt_minesafety",
+     "normal"
+    ],
+    [
+     28,
+     "community_level_dt_moldtrap",
+     "normal"
+    ],
+    [
+     29,
+     "community_level_dt_powergrid",
+     "normal"
+    ],
+    [
+     30,
+     "community_level_dt_runngun",
+     "normal"
+    ],
+    [
+     31,
+     "community_level_dt_sonicwaves",
+     "normal"
+    ],
+    [
+     32,
+     "community_level_dt_summoning",
+     "normal"
+    ],
+    [
+     33,
+     "community_level_dt_techshow",
+     "normal"
+    ],
+    [
+     35,
+     "community_level_theshero_chess",
+     "normal"
+    ],
+    [
+     36,
+     "community_level_theshero_blastingrace",
+     "normal"
+    ],
+    [
+     37,
+     "community_level_yericky_wildbattle",
+     "normal"
+    ],
+    [
+     38,
+     "community_level_yericky_supermelonbros",
+     "normal"
+    ],
+    [
+     39,
+     "community_level_yericky_sunsnipers",
+     "normal"
+    ],
+    [
+     40,
+     "community_level_yericky_skirmishinthesea",
+     "normal"
+    ],
+    [
+     41,
+     "community_level_yericky_lostnight",
+     "normal"
+    ],
+    [
+     42,
+     "community_level_yericky_hauntedcastle",
+     "normal"
+    ],
+    [
+     43,
+     "community_level_yericky_ghosttown",
+     "normal"
+    ],
+    [
+     44,
+     "community_level_yericky_basicburster",
+     "normal"
+    ],
+    [
+     45,
+     "community_level_yericky_riseofdarkness",
+     "normal"
+    ],
+    [
+     46,
+     "community_level_beepboop_goldenrain",
+     "normal"
+    ],
+    [
+     47,
+     "community_level_beepboop_intotheforest",
+     "normal"
+    ],
+    [
+     48,
+     "community_level_beepboop_prehistorictemple",
+     "normal"
+    ],
+    [
+     49,
+     "community_level_beepboop_zombiemagnet",
+     "normal"
+    ],
+    [
+     50,
+     "community_level_caelum_defrostation",
+     "normal"
+    ],
+    [
+     51,
+     "community_level_caelum_eyeofthestorm",
+     "normal"
+    ],
+    [
+     52,
+     "community_level_caelum_lostintime",
+     "normal"
+    ],
+    [
+     53,
+     "community_level_caelum_mobilebattery",
+     "normal"
+    ],
+    [
+     54,
+     "community_level_caelum_returntosender",
+     "normal"
+    ],
+    [
+     55,
+     "community_level_caelum_serpiaapama",
+     "normal"
+    ],
+    [
+     58,
+     "community_level_beepboop_loadedandlocked",
+     "normal"
+    ],
+    [
+     59,
+     "community_level_beepboop_notallthatglitters",
+     "normal"
+    ],
+    [
+     60,
+     "community_level_beepboop_sunlock",
+     "normal"
+    ],
+    [
+     61,
+     "community_level_beepboop_sunreserves",
+     "normal"
+    ],
+    [
+     62,
+     "community_level_beepboop_catwalk",
+     "normal"
+    ],
+    [
+     63,
+     "community_level_akee_fishychips",
+     "normal"
+    ],
+    [
+     64,
+     "community_level_stuff_avianland",
+     "normal"
+    ],
+    [
+     68,
+     "community_level_jungletyrant_daredevilsspeed",
+     "normal"
+    ],
+    [
+     69,
+     "community_level_jungletyrant_buggyjungles",
+     "normal"
+    ],
+    [
+     70,
+     "community_level_akee_themagickingdom",
+     "normal"
+    ],
+    [
+     72,
+     "community_level_creeps_rediscoveringrhythm",
+     "normal"
+    ],
+    [
+     73,
+     "community_level_creeps_dancingqueens",
+     "normal"
+    ],
+    [
+     74,
+     "community_level_creeps_trulymetal",
+     "normal"
+    ],
+    [
+     75,
+     "community_level_dhq_jugglernaut",
+     "normal"
+    ],
+    [
+     77,
+     "community_level_dhq_runesconservation",
+     "normal"
+    ],
+    [
+     78,
+     "community_level_dhq_tombcurses",
+     "normal"
+    ],
+    [
+     79,
+     "community_level_dhq_twp_burningday",
+     "normal"
+    ],
+    [
+     80,
+     "community_level_dhq_twp_rainforest",
+     "normal"
+    ],
+    [
+     81,
+     "community_level_dhq_twp_seafog",
+     "normal"
+    ],
+    [
+     82,
+     "community_level_dhq_twp_snowday",
+     "normal"
+    ],
+    [
+     94,
+     "community_level_poss_aimtowin",
+     "normal"
+    ],
+    [
+     95,
+     "community_level_poss_cannonshipbattlefield",
+     "normal"
+    ],
+    [
+     96,
+     "community_level_poss_hookedin",
+     "normal"
+    ],
+    [
+     97,
+     "community_level_poss_splitgrid",
+     "normal"
+    ],
+    [
+     98,
+     "community_level_beetsa_firepower",
+     "normal"
+    ],
+    [
+     99,
+     "community_level_beetsa_headsniper",
+     "normal"
+    ],
+    [
+     100,
+     "community_level_beetsa_highzapvoltages",
+     "normal"
+    ],
+    [
+     101,
+     "community_level_beetsa_oldtimeyrailways",
+     "normal"
+    ],
+    [
+     102,
+     "community_level_beetsa_protechedcamsite",
+     "normal"
+    ],
+    [
+     103,
+     "community_level_beetsa_speedyproblem",
+     "normal"
+    ],
+    [
+     104,
+     "community_level_beetsa_zombiesmelter",
+     "normal"
+    ],
+    [
+     105,
+     "community_level_imagi_electricalmanagement",
+     "normal"
+    ],
+    [
+     106,
+     "community_level_imagi_seedsoftime",
+     "normal"
+    ],
+    [
+     107,
+     "community_level_imagi_speeddance",
+     "normal"
+    ],
+    [
+     108,
+     "community_level_imagi_squareisland",
+     "normal"
+    ],
+    [
+     109,
+     "community_level_imagi_strikethrough",
+     "normal"
+    ],
+    [
+     110,
+     "community_level_imagi_twinthreat",
+     "normal"
+    ],
+    [
+     111,
+     "community_level_malex_feelingblue",
+     "normal"
+    ],
+    [
+     112,
+     "community_level_malex_poweroflove",
+     "normal"
+    ],
+    [
+     113,
+     "community_level_malex_concealedsnowstorm",
+     "normal"
+    ],
+    [
+     114,
+     "community_level_malex_extremeseasidesports",
+     "normal"
+    ],
+    [
+     115,
+     "community_level_malex_movingmovers",
+     "normal"
+    ],
+    [
+     116,
+     "community_level_malex_sunstrike",
+     "normal"
+    ],
+    [
+     117,
+     "community_level_malex_synthserfs",
+     "normal"
+    ],
+    [
+     118,
+     "community_level_malex_caverave",
+     "normal"
+    ],
+    [
+     119,
+     "community_level_malex_bugthugs",
+     "normal"
+    ],
+    [
+     120,
+     "community_level_malex_therealmarsh",
+     "normal"
+    ],
+    [
+     121,
+     "community_level_malex_unthawediceage",
+     "normal"
+    ],
+    [
+     122,
+     "community_level_dt_hardcore",
+     "normal"
+    ],
+    [
+     123,
+     "community_level_dt_hauntedhighway",
+     "normal"
+    ],
+    [
+     125,
+     "community_level_dt_herdprotection",
+     "normal"
+    ],
+    [
+     126,
+     "community_level_dt_sheepforce",
+     "normal"
+    ],
+    [
+     128,
+     "community_level_caelum_honeytrap",
+     "normal"
+    ],
+    [
+     130,
+     "community_level_ender_dischargefield",
+     "normal"
+    ],
+    [
+     131,
+     "community_level_ender_fatazomgana",
+     "normal"
+    ],
+    [
+     132,
+     "community_level_ender_fissureblister",
+     "normal"
+    ],
+    [
+     133,
+     "community_level_ender_metaforce",
+     "normal"
+    ],
+    [
+     134,
+     "community_level_ender_plaques",
+     "normal"
+    ],
+    [
+     135,
+     "community_level_dt_raidleader",
+     "normal"
+    ],
+    [
+     136,
+     "community_level_dt_safeharbour",
+     "normal"
+    ],
+    [
+     137,
+     "community_level_dt_wilddancer",
+     "normal"
+    ],
+    [
+     138,
+     "community_level_giang_landowner",
+     "normal"
+    ],
+    [
+     139,
+     "community_level_nutshade_psychapath",
+     "normal"
+    ],
+    [
+     141,
+     "community_level_bread_flyingtroubles",
+     "normal"
+    ],
+    [
+     142,
+     "community_level_username_rainbowroad",
+     "normal"
+    ],
+    [
+     143,
+     "community_level_malex_airboarder",
+     "normal"
+    ],
+    [
+     144,
+     "community_level_malex_flipperflop",
+     "normal"
+    ],
+    [
+     145,
+     "community_level_vin_vip",
+     "normal"
+    ],
+    [
+     146,
+     "community_level_vin_nothernlight",
+     "normal"
+    ],
+    [
+     147,
+     "community_level_vin_nethersgate",
+     "normal"
+    ],
+    [
+     148,
+     "community_level_vin_deflection",
+     "normal"
+    ],
+    [
+     149,
+     "community_level_trin_healingskill",
+     "normal"
+    ],
+    [
+     150,
+     "community_level_ree_brokenline",
+     "normal"
+    ],
+    [
+     151,
+     "community_level_ree_friendlyfire",
+     "normal"
+    ],
+    [
+     152,
+     "community_level_ree_friendlynether",
+     "normal"
+    ],
+    [
+     153,
+     "community_level_ree_goldenshovel",
+     "normal"
+    ],
+    [
+     154,
+     "community_level_ree_iao",
+     "normal"
+    ],
+    [
+     155,
+     "community_level_ree_powersource",
+     "normal"
+    ],
+    [
+     156,
+     "community_level_ree_strawburstplayground",
+     "normal"
+    ],
+    [
+     157,
+     "community_level_locko_artillerymaintenance",
+     "normal"
+    ],
+    [
+     158,
+     "community_level_locko_bowlinsspecialday",
+     "normal"
+    ],
+    [
+     159,
+     "community_level_locko_dinotamer",
+     "normal"
+    ],
+    [
+     160,
+     "community_level_locko_elitesquad",
+     "normal"
+    ],
+    [
+     161,
+     "community_level_locko_emergencybutton",
+     "normal"
+    ],
+    [
+     162,
+     "community_level_locko_explosivetrap",
+     "normal"
+    ],
+    [
+     163,
+     "community_level_locko_flashbang",
+     "normal"
+    ],
+    [
+     164,
+     "community_level_locko_infestedjungle",
+     "normal"
+    ],
+    [
+     165,
+     "community_level_locko_piecebypiece",
+     "normal"
+    ],
+    [
+     166,
+     "community_level_locko_poweredrails",
+     "normal"
+    ],
+    [
+     167,
+     "community_level_locko_roottenweb",
+     "normal"
+    ],
+    [
+     168,
+     "community_level_locko_spicyice",
+     "normal"
+    ],
+    [
+     169,
+     "community_level_locko_swingingnight",
+     "normal"
+    ],
+    [
+     170,
+     "community_level_locko_thefreezer",
+     "normal"
+    ],
+    [
+     171,
+     "community_level_locko_thepainter",
+     "normal"
+    ],
+    [
+     172,
+     "community_level_locko_tidalwaves",
+     "normal"
+    ],
+    [
+     173,
+     "community_level_locko_unholycruzade",
+     "normal"
+    ],
+    [
+     174,
+     "community_level_locko_zombietamer",
+     "normal"
+    ],
+    [
+     175,
+     "community_level_dt_objective_escort",
+     "normal"
+    ],
+    [
+     176,
+     "warp_party_3",
+     "normal"
+    ],
+    [
+     177,
+     "warp_party_5",
+     "normal"
+    ],
+    [
+     178,
+     "warp_party_6",
+     "normal"
+    ],
+    [
+     179,
+     "warp_party_10",
+     "normal"
+    ],
+    [
+     180,
+     "warp_party_15",
+     "normal"
+    ],
+    [
+     181,
+     "warp_party_17",
+     "normal"
+    ],
+    [
+     182,
+     "warp_party_23",
+     "normal"
+    ],
+    [
+     183,
+     "warp_party_27",
+     "normal"
+    ],
+    [
+     184,
+     "warp_party_30",
+     "normal"
+    ],
+    [
+     185,
+     "warp_party_31",
+     "normal"
+    ],
+    [
+     186,
+     "warp_party_33",
+     "normal"
+    ],
+    [
+     187,
+     "warp_party_35",
+     "normal"
+    ],
+    [
+     188,
+     "community_level_pony_nightrunning",
+     "normal"
+    ],
+    [
+     189,
+     "warp_party_38",
+     "normal"
+    ],
+    [
+     190,
+     "warp_party_42",
+     "normal"
+    ],
+    [
+     191,
+     "warp_party_51",
+     "normal"
+    ],
+    [
+     192,
+     "warp_party_56",
+     "normal"
+    ],
+    [
+     193,
+     "warp_party_62",
+     "normal"
+    ],
+    [
+     194,
+     "warp_party_63",
+     "normal"
+    ],
+    [
+     195,
+     "warp_party_84",
+     "normal"
+    ],
+    [
+     196,
+     "warp_party_90",
+     "normal"
+    ],
+    [
+     197,
+     "warp_party_91",
+     "normal"
+    ],
+    [
+     198,
+     "warp_party_92",
+     "normal"
+    ],
+    [
+     199,
+     "warp_party_103",
+     "normal"
+    ],
+    [
+     200,
+     "warp_party_104",
+     "normal"
+    ],
+    [
+     201,
+     "warp_party_106",
+     "normal"
+    ],
+    [
+     202,
+     "warp_party_107",
+     "normal"
+    ],
+    [
+     203,
+     "warp_party_113",
+     "normal"
+    ],
+    [
+     204,
+     "warp_party_115",
+     "normal"
+    ],
+    [
+     205,
+     "warp_party_117",
+     "normal"
+    ],
+    [
+     206,
+     "warp_party_118",
+     "normal"
+    ],
+    [
+     207,
+     "warp_party_152",
+     "normal"
+    ],
+    [
+     208,
+     "warp_party_129",
+     "normal"
+    ],
+    [
+     209,
+     "warp_party_161",
+     "normal"
+    ],
+    [
+     210,
+     "warp_party_155",
+     "normal"
+    ],
+    [
+     211,
+     "warp_party_159",
+     "normal"
+    ],
+    [
+     212,
+     "warp_party_127",
+     "normal"
+    ],
+    [
+     213,
+     "warp_party_168",
+     "normal"
+    ],
+    [
+     214,
+     "warp_party_150",
+     "normal"
+    ],
+    [
+     215,
+     "warp_party_141",
+     "normal"
+    ],
+    [
+     216,
+     "warp_party_144",
+     "normal"
+    ],
+    [
+     217,
+     "warp_party_145",
+     "normal"
+    ],
+    [
+     218,
+     "warp_party_164",
+     "normal"
+    ],
+    [
+     219,
+     "warp_party_148",
+     "normal"
+    ],
+    [
+     220,
+     "warp_party_151",
+     "normal"
+    ],
+    [
+     221,
+     "warp_party_157",
+     "normal"
+    ],
+    [
+     222,
+     "warp_party_140",
+     "normal"
+    ]
+   ],
+   "excluded": [],
+   "reason": "hidden"
+  }
+ },
+ "_display_name": "Solstice"
+}

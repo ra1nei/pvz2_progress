@@ -27,8 +27,22 @@
   "com.ea.game.pvz2_spi": {
    "done": 3,
    "total": 58
+  },
+  "com.ea.game.pvz2_sol": {
+   "done": 0,
+   "total": 259
+  },
+  "com.ea.game.pvz2_pen": {
+   "done": 11,
+   "total": 102
+  },
+  "com.ea.game.pvz2_rsn": {
+   "done": 2,
+   "total": 169
   }
  },
- "releases": {},
+ "releases": {
+  "pen": "v1.3.1b"
+ },
  "totals_md5_nagged": "f4b9a6034afa312a5d5312566c6efa21"
 }

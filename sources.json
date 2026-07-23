@@ -117,5 +117,20 @@
    "https://dev.tapjoy.com/sdk-integration/",
    "https://developer.apple.com/streaming/emsg-id3"
   ]
+ },
+ "com.ea.game.pvz2_pen": {
+  "apk_size": 27137124,
+  "candidates": [
+   "http://www.dom.com/path",
+   "https://config.unityads.unitychina.cn/webview/",
+   "https://github.com/PvZ2OBBHost/PvZ2PenumbraOBB/releases/download/v1.3.1b/main.675.com.ea.game.pvz2_pen.obb",
+   "https://ping1.tnt-ea.com",
+   "https://www.linkedin.com",
+   "https://www.paypal.com"
+  ],
+  "obb_url": "https://github.com/PvZ2OBBHost/PvZ2PenumbraOBB/releases/download/v1.3.1b/main.675.com.ea.game.pvz2_pen.obb"
+ },
+ "com.ea.game.pvz2_rsn": {
+  "obb_url": "https://github.com/PvZ2OBBHost/PvZ2ResonanceOBB/releases/download/v1.2.1b/main.675.com.ea.game.pvz2_rsn.obb"
  }
 }

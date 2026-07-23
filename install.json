@@ -17,7 +17,8 @@
  "adm": {
   "obb_url": "https://github.com/TheShero/TheShero/releases/download/v1.0.2/main.675.com.ea.game.pvz2_adm.obb",
   "apk_name": "Addendum1.0.2.apk",
-  "apk_id": "1FYw8MtX6s9i4-UBeH-FciexyhTW7KtRr"
+  "apk_id": "1FYw8MtX6s9i4-UBeH-FciexyhTW7KtRr",
+  "apk_sha256": "46aa49dcf6f5fc01dee8e1796cb13cf99ca866018c995f8d75de4762910c4078"
  },
  "auz": {
   "obb_url": "https://github.com/PvZ2OBBHost/PvZ2AltverZOBB/releases/download/v1.8.2d/main.675.com.ea.game.pvz2_auz.obb",
@@ -40,13 +41,17 @@
    "fallenAPK64.apk": "1uQNQ6s3laqlk3PW2SXTzqvu_OTqcZ5fm"
   },
   "apk_name": "fallenAPK64.apk",
-  "apk_id": "1uQNQ6s3laqlk3PW2SXTzqvu_OTqcZ5fm",
   "obb_name": "main.675.com.ea.game.pvz2_fln.obb",
-  "obb_id": "1GPxictYa4XnO0nvSbtbMTSK2yjLTbKBi"
+  "obb_id": "1GPxictYa4XnO0nvSbtbMTSK2yjLTbKBi",
+  "apk_id": "1uQNQ6s3laqlk3PW2SXTzqvu_OTqcZ5fm"
  },
  "rfl": {
   "obb_url": "https://github.com/lantern-fans/obbybackup/releases/download/1.4.2-R1/main.675.com.ea.game.pvz2_rfl.obb",
   "apk_name": "PvZ2 Reflourished 1.4.2.apk",
+  "apk_choices": {
+   "PvZ2 Reflourished 1.4.2.apk": "1rhnJA3zz_scB78fib5HPoNcEan-LNbMf",
+   "PvZ2 Reflourished 1.4.2 (Alt Download).apk": "1EP9en2FjYbDn2IC3qLIdBwW94HPfcHMP"
+  },
   "apk_id": "1rhnJA3zz_scB78fib5HPoNcEan-LNbMf"
  },
  "rqm": {
@@ -56,5 +61,22 @@
  "spi": {
   "apk_url": "",
   "obb_url": ""
+ },
+ "sol": {
+  "obb_url": "",
+  "obb_name": "main.675.com.ea.game.pvz2_sol.obb",
+  "obb_id": "1trA4aQl-g3EBxOhA7Y_aAR_mQEIUjRJx",
+  "apk_name": "Solstice_64Bit.apk",
+  "apk_id": "1-Oc8y8jDA1MPxWn3WpCWGmHvV-pcJbix"
+ },
+ "pen": {
+  "obb_url": "https://github.com/PvZ2OBBHost/PvZ2PenumbraOBB/releases/download/v1.3.1b/main.675.com.ea.game.pvz2_pen.obb",
+  "apk_name": "PEN.apk",
+  "apk_id": "1ohDOrahJ9-ZIWJwcxiaMpGOqAuWJ6H4G"
+ },
+ "rsn": {
+  "obb_url": "https://github.com/PvZ2OBBHost/PvZ2ResonanceOBB/releases/download/v1.2.1b/main.675.com.ea.game.pvz2_rsn.obb",
+  "apk_name": "RSN.apk",
+  "apk_id": "1UyzLSOxDzXUxtQPCYWmKpjjWAE2sAaCC"
  }
 }

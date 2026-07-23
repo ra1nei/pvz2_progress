@@ -3,8 +3,8 @@
   "Where each mod is published. Hand-maintained: nothing writes to this file,",
   "so these links survive every regeneration. The key is the package suffix.",
   "",
-  "These are the mods' own public download pages, NOT the private save folder",
-  "that DRIVE_FOLDER_ID points at. Keep it that way: this repo is public."
+  "These are the mods' own public download pages. install.py reads the APK",
+  "and OBB out of them, so a wrong link means a mod that cannot be installed."
  ],
  "rfl": "https://drive.google.com/drive/folders/1y5lVZh-flKWxpeXSFYJprzJlL4Jlcfm4",
  "cld": "https://drive.google.com/drive/folders/1MiMd_ecvIIH3XGcs8NeK7oLUxzvOf4OH",
@@ -12,5 +12,8 @@
  "rqm": "https://drive.google.com/drive/folders/1A45mhlvghNYLBXI9HJqjdHyO6MvUdW29",
  "auz": "https://drive.google.com/drive/folders/1ckXFy-1cv7Ka0eCxOXMweHWb_atzOc1z",
  "spi": "https://peakedcomedy.itch.io/spice-reseasoned",
- "fln": "https://drive.google.com/drive/folders/1v2jT-DF6bmuP6drWfAd66EbDM_G072cd"
+ "fln": "https://drive.google.com/drive/folders/1v2jT-DF6bmuP6drWfAd66EbDM_G072cd",
+ "sol": "https://drive.google.com/drive/folders/1UxRE6BW69D1QKfCusDfPxDV5jXU_kkLO",
+ "rsn": "https://drive.google.com/drive/folders/1QqS4lTbGtVvNR_kxPz9PwBRCk5yNKhAI",
+ "pen": "https://drive.google.com/drive/folders/1GDnnr2nrWFBupEFWUvYN5EOP6x7QsnQL"
 }
