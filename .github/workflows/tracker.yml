@@ -1,9 +1,15 @@
 name: PvZ2 progress tracker
 
-# Runs every 6 hours. Use "Run workflow" on the Actions tab to trigger it now.
-# The Drive folder is public, so it is read through its share link, and results
-# are committed back to this repo rather than written to Drive.
+# Rebuilds the progress table. Saves come from saves/ in this repo, level
+# counts from each mod's OBB over HTTP Range, and the result is committed back
+# here. Use "Run workflow" on the Actions tab to trigger it by hand.
 on:
+  # A pushed save is a finished session, so rebuild the table right then.
+  # Scoped to saves/ on purpose: this workflow commits README.md and state.json
+  # itself, and a broader filter would make it retrigger itself forever.
+  push:
+    paths:
+      - 'saves/**'
   schedule:
     - cron: '17 */6 * * *'      # minute 17 to dodge GitHub's peak load
   workflow_dispatch:
@@ -36,7 +42,7 @@ jobs:
           # Set as secrets so the Drive folder ids stay out of a public repo.
           DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
           LOGO_FOLDER_ID: ${{ secrets.LOGO_FOLDER_ID }}
-        run: python3 ci.py
+        run: python3 track.py
 
       - name: Commit results
         run: |
