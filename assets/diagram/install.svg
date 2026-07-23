@@ -1,0 +1,160 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="1190" viewBox="0 0 1040 1190" role="img" aria-labelledby="t d">
+<title id="t">What install.py does, branch by branch</title>
+<desc id="d">A flowchart of install.py auto: it reads saves/ to see which mods you play, fetches each APK and OBB from wherever that mod publishes, installs both and puts your latest save in place. The signature refusal and the --force path around it are shown in full.</desc>
+<style>
+  .bg   { fill: #ffffff; }
+  .box  { fill: #f6f8fa; stroke: #d0d7de; stroke-width: 1; }
+  .cmdb { fill: #ddf4ff; stroke: #54aeff; stroke-width: 1.4; }
+  .okb  { fill: #dafbe1; stroke: #4ac26b; stroke-width: 1; }
+  .warnb{ fill: #fff8c5; stroke: #d4a72c; stroke-width: 1; }
+  .stopb{ fill: #ffebe9; stroke: #ff8182; stroke-width: 1; }
+  .noteb{ fill: #f6f8fa; stroke: #d0d7de; stroke-width: 1; stroke-dasharray: 4 3; }
+  .deci { fill: #fbefff; stroke: #c297ff; stroke-width: 1.2; }
+  .h    { fill: #1f2328; font: 600 13px -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .s    { fill: #59636e; font: 400 11px -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .cmd  { fill: #1f2328; font: 600 12.5px ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .mono { fill: #59636e; font: 400 10.5px ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .edge { stroke: #8c959f; stroke-width: 1.5; fill: none; }
+  .ah   { stroke: #8c959f; fill: none; }
+  .elbl { fill: #1f2328; font: 500 10.5px -apple-system, "Segoe UI", sans-serif; }
+  .sect { fill: #1f2328; font: 700 15px -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .cap  { fill: #59636e; font: italic 400 11px -apple-system, "Segoe UI", sans-serif; }
+  @media (prefers-color-scheme: dark) {
+    .bg   { fill: #0d1117; }
+    .box  { fill: #161b22; stroke: #30363d; }
+    .cmdb { fill: #121d2f; stroke: #1f6feb; }
+    .okb  { fill: #12261e; stroke: #238636; }
+    .warnb{ fill: #272115; stroke: #9e6a03; }
+    .stopb{ fill: #25171c; stroke: #f85149; }
+    .noteb{ fill: #161b22; stroke: #30363d; }
+    .deci { fill: #21162d; stroke: #8957e5; }
+    .h    { fill: #e6edf3; }
+    .s    { fill: #8b949e; }
+    .cmd  { fill: #e6edf3; }
+    .mono { fill: #8b949e; }
+    .edge { stroke: #6e7681; }
+    .ah   { stroke: #6e7681; }
+    .elbl { fill: #e6edf3; }
+    .sect { fill: #e6edf3; }
+    .cap  { fill: #8b949e; }
+  }
+</style>
+<defs>
+  <marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path class="ah" d="M2 1L8 5L2 9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+<rect class="bg" width="1040" height="1190"/>
+<text class="sect" x="20" y="34">python3 install.py auto</text>
+<text class="cap" x="20" y="54" text-anchor="start">Takes a machine from nothing to playable. install.py install &lt;mod&gt; is the same path for one mod.</text>
+<rect class="cmdb" x="325" y="72" width="250" height="44" rx="6"/>
+<text class="cmd" x="450.0" y="98.0" text-anchor="middle">install.py auto</text>
+<rect class="box" x="325" y="146" width="250" height="52" rx="6"/>
+<text class="h" x="450.0" y="168.2" text-anchor="middle">reads saves/</text>
+<text class="s" x="450.0" y="183.8" text-anchor="middle">a save is proof you play that mod</text>
+<rect class="deci" x="305" y="238" width="290" height="52" rx="14"/>
+<text class="h" x="450.0" y="260.2" text-anchor="middle">is it already installed,</text>
+<text class="h" x="450.0" y="275.8" text-anchor="middle">at this version?</text>
+<rect class="okb" x="655" y="242" width="265" height="44" rx="6"/>
+<text class="s" x="787.5" y="260.2" text-anchor="middle">nothing to do, moves on</text>
+<text class="s" x="787.5" y="275.8" text-anchor="middle">to the next mod</text>
+<rect class="deci" x="305" y="340" width="290" height="52" rx="14"/>
+<text class="h" x="450.0" y="370.0" text-anchor="middle">where does the APK come from?</text>
+<rect class="stopb" x="655" y="297" width="265" height="50" rx="6"/>
+<text class="mono" x="787.5" y="318.2" text-anchor="middle">no APK in the folder</text>
+<text class="s" x="787.5" y="333.8" text-anchor="middle">this mod is skipped entirely</text>
+<rect class="box" x="325" y="432" width="250" height="56" rx="6"/>
+<text class="h" x="450.0" y="456.2" text-anchor="middle">downloads the APK</text>
+<text class="s" x="450.0" y="471.8" text-anchor="middle">apk_url wins over the Drive id</text>
+<rect class="deci" x="305" y="524" width="290" height="52" rx="14"/>
+<text class="h" x="450.0" y="554.0" text-anchor="middle">adb install -r</text>
+<rect class="warnb" x="655" y="517" width="265" height="62" rx="6"/>
+<text class="mono" x="787.5" y="536.5" text-anchor="middle">INSTALL_FAILED_</text>
+<text class="mono" x="787.5" y="552.0" text-anchor="middle">UPDATE_INCOMPATIBLE</text>
+<text class="s" x="787.5" y="567.5" text-anchor="middle">the rebuild is signed with another key</text>
+<rect class="deci" x="305" y="628" width="290" height="52" rx="14"/>
+<text class="h" x="450.0" y="650.2" text-anchor="middle">is the OBB already there,</text>
+<text class="h" x="450.0" y="665.8" text-anchor="middle">at the right size?</text>
+<rect class="box" x="655" y="632" width="265" height="44" rx="6"/>
+<text class="s" x="787.5" y="650.2" text-anchor="middle">keeps it, saves a download</text>
+<text class="s" x="787.5" y="665.8" text-anchor="middle">of up to 1.3 GB</text>
+<rect class="box" x="325" y="776" width="250" height="56" rx="6"/>
+<text class="h" x="450.0" y="800.2" text-anchor="middle">downloads the OBB</text>
+<text class="s" x="450.0" y="815.8" text-anchor="middle">GitHub Releases, else Drive</text>
+<rect class="box" x="325" y="858" width="250" height="50" rx="6"/>
+<text class="h" x="450.0" y="879.2" text-anchor="middle">pushes it to the device</text>
+<text class="s" x="450.0" y="894.8" text-anchor="middle">700 MB to 1.3 GB, a few seconds</text>
+<rect class="deci" x="305" y="934" width="290" height="52" rx="14"/>
+<text class="h" x="450.0" y="964.0" text-anchor="middle">does the save folder exist?</text>
+<rect class="box" x="655" y="938" width="265" height="44" rx="6"/>
+<text class="s" x="787.5" y="956.2" text-anchor="middle">a fresh app has not made one,</text>
+<text class="s" x="787.5" y="971.8" text-anchor="middle">so it is created here</text>
+<rect class="box" x="325" y="1020" width="250" height="46" rx="6"/>
+<text class="s" x="450.0" y="1047.0" text-anchor="middle">drops your latest save in</text>
+<rect class="okb" x="305" y="1090" width="290" height="50" rx="6"/>
+<text class="h" x="450.0" y="1111.2" text-anchor="middle">playable, at the progress</text>
+<text class="h" x="450.0" y="1126.8" text-anchor="middle">the other machine left off at</text>
+<rect class="box" x="28" y="560" width="216" height="132" rx="6"/>
+<text class="cmd" x="136.0" y="591.2" text-anchor="middle">--force</text>
+<text class="s" x="136.0" y="606.8" text-anchor="middle">1. pulls the save off the device</text>
+<text class="s" x="136.0" y="622.2" text-anchor="middle">2. uninstalls the app</text>
+<text class="s" x="136.0" y="637.8" text-anchor="middle">3. installs the new APK</text>
+<text class="s" x="136.0" y="653.2" text-anchor="middle">4. puts the save back, preferring</text>
+<text class="s" x="136.0" y="668.8" text-anchor="middle">   the copy in saves/</text>
+<path class="edge" d="M450.0 116 L450.0 144" marker-end="url(#a)"/>
+<path class="edge" d="M450.0 198 L450.0 236" marker-end="url(#a)"/>
+<path class="edge" d="M595 264.0 L653 264.0" marker-end="url(#a)"/>
+<text class="elbl" x="625.0" y="257.0" text-anchor="middle">yes</text>
+<path class="edge" d="M450.0 290 L450.0 338" marker-end="url(#a)"/>
+<text class="elbl" x="458.0" y="306.5" text-anchor="middle">no, or a new version</text>
+<path class="edge" d="M595 366.0 L653 322.0" marker-end="url(#a)"/>
+<text class="elbl" x="625.0" y="359.0" text-anchor="middle">nowhere</text>
+<path class="edge" d="M450.0 392 L450.0 430" marker-end="url(#a)"/>
+<text class="elbl" x="458.0" y="406.0" text-anchor="middle">a direct link, or its Drive folder</text>
+<path class="edge" d="M450.0 488 L450.0 522" marker-end="url(#a)"/>
+<path class="edge" d="M595 550.0 L653 548.0" marker-end="url(#a)"/>
+<text class="elbl" x="625.0" y="543.0" text-anchor="middle">refused</text>
+<path class="edge" d="M450.0 576 L450.0 626" marker-end="url(#a)"/>
+<text class="elbl" x="458.0" y="593.0" text-anchor="middle">installed</text>
+<path class="edge" d="M595 654.0 L653 654.0" marker-end="url(#a)"/>
+<text class="elbl" x="625.0" y="647.0" text-anchor="middle">yes</text>
+<path class="edge" d="M450.0 680 L450.0 774" marker-end="url(#a)"/>
+<text class="elbl" x="458.0" y="708.0" text-anchor="middle">no, or the wrong size</text>
+<path class="edge" d="M450.0 832 L450.0 856" marker-end="url(#a)"/>
+<path class="edge" d="M450.0 908 L450.0 932" marker-end="url(#a)"/>
+<path class="edge" d="M595 960.0 L653 960.0" marker-end="url(#a)"/>
+<text class="elbl" x="625.0" y="953.0" text-anchor="middle">no</text>
+<path class="edge" d="M450.0 986 L450.0 1018" marker-end="url(#a)"/>
+<text class="elbl" x="458.0" y="998.5" text-anchor="middle">yes</text>
+<path class="edge" d="M450.0 1066 L450.0 1088" marker-end="url(#a)"/>
+<path class="edge" d="M655 548 L622 548 L622 500 L136 500 L136 558" marker-end="url(#a)" stroke-dasharray="4 3"/>
+<text class="elbl" x="612" y="494" text-anchor="end">so you rerun it with</text>
+<path class="edge" d="M136 692 L136 752 L448 752" marker-end="url(#a)" stroke-dasharray="4 3"/>
+<text class="elbl" x="150" y="746" text-anchor="start">then it carries on here</text>
+<rect class="noteb" x="20" y="238" width="220" height="100" rx="6"/>
+<text class="h" x="130.0" y="261.0" text-anchor="middle">Which mods it picks</text>
+<text class="s" x="130.0" y="276.5" text-anchor="middle">Whatever has a save in saves/.</text>
+<text class="s" x="130.0" y="292.0" text-anchor="middle">You never list them: playing a mod</text>
+<text class="s" x="130.0" y="307.5" text-anchor="middle">anywhere is what puts its save here,</text>
+<text class="s" x="130.0" y="323.0" text-anchor="middle">and that is the whole signal.</text>
+<rect class="noteb" x="655" y="358" width="265" height="92" rx="6"/>
+<text class="h" x="787.5" y="377.0" text-anchor="middle">Right now this hits rqm and spi</text>
+<text class="s" x="787.5" y="392.5" text-anchor="middle">Requiem hands out MediaFire links inside a</text>
+<text class="s" x="787.5" y="408.0" text-anchor="middle">text file, Spice publishes on itch.io. Neither</text>
+<text class="s" x="787.5" y="423.5" text-anchor="middle">can be scraped, so paste a direct .apk link</text>
+<text class="s" x="787.5" y="439.0" text-anchor="middle">into that mod&#x27;s apk_url in install.json.</text>
+<rect class="noteb" x="20" y="830" width="220" height="116" rx="6"/>
+<text class="h" x="130.0" y="853.2" text-anchor="middle">Your save is never at risk</text>
+<text class="s" x="130.0" y="868.8" text-anchor="middle">Even the uninstall path keeps it:</text>
+<text class="s" x="130.0" y="884.2" text-anchor="middle">the file is copied off before</text>
+<text class="s" x="130.0" y="899.8" text-anchor="middle">anything is removed and put back</text>
+<text class="s" x="130.0" y="915.2" text-anchor="middle">after. And the real copy lives in</text>
+<text class="s" x="130.0" y="930.8" text-anchor="middle">saves/ here regardless.</text>
+<rect class="noteb" x="655" y="1016" width="265" height="92" rx="6"/>
+<text class="h" x="787.5" y="1035.0" text-anchor="middle">The table and your machine drift apart</text>
+<text class="s" x="787.5" y="1050.5" text-anchor="middle">The level count re-reads itself whenever a</text>
+<text class="s" x="787.5" y="1066.0" text-anchor="middle">mod publishes a new build. The copy on your</text>
+<text class="s" x="787.5" y="1081.5" text-anchor="middle">machine only changes when you install it. So</text>
+<text class="s" x="787.5" y="1097.0" text-anchor="middle">the table can read v1.4.2 while yours says v1.4.0.</text>
+<text class="cap" x="520.0" y="1172" text-anchor="middle">install.py status prints both versions side by side, which is how you know an update is waiting.</text>
+</svg>

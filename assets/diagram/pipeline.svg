@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="880" height="620" viewBox="0 0 880 620" role="img" aria-labelledby="t d">
 <title id="t">How the progress number is produced</title>
-<desc id="d">The save file on the emulator becomes the top half of the fraction and the mod's OBB becomes the bottom half. Both are read by ci.py on GitHub Actions, which rewrites the table in README.md.</desc>
+<desc id="d">The save file on the emulator becomes the top half of the fraction and the mod's OBB becomes the bottom half. Both are read by track.py on GitHub Actions, which rewrites the table in README.md.</desc>
 <style>
   .bg   { fill: #ffffff; }
   .box  { fill: #f6f8fa; stroke: #d0d7de; stroke-width: 1; }
@@ -49,7 +49,7 @@
 <text class="s" x="650" y="116" text-anchor="middle">changes only when the author rebuilds</text>
 
 <line class="arr" x1="230" y1="130" x2="230" y2="196" marker-end="url(#a)"/>
-<text class="lbl" x="242" y="156">sync_save.py play</text>
+<text class="lbl" x="242" y="156">sync.py play</text>
 <text class="s" x="242" y="174">pulls first, then pushes after</text>
 
 <line class="arr" x1="650" y1="130" x2="650" y2="196" marker-end="url(#a)"/>
@@ -70,7 +70,7 @@
 <path class="arr" d="M650 274 L650 320 L480 320 L480 356" marker-end="url(#a)"/>
 
 <rect class="boxc" x="280" y="358" width="320" height="76" rx="6"/>
-<text class="h" x="440" y="384" text-anchor="middle">GitHub Actions runs ci.py</text>
+<text class="h" x="440" y="384" text-anchor="middle">GitHub Actions runs track.py</text>
 <text class="s" x="440" y="405" text-anchor="middle">nothing runs on your own computer</text>
 <text class="s" x="440" y="422" text-anchor="middle">it commits the result straight back here</text>
 

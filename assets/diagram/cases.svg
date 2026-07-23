@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="880" height="600" viewBox="0 0 880 600" role="img" aria-labelledby="t d">
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="620" viewBox="0 0 880 620" role="img" aria-labelledby="t d">
 <title id="t">Which command to run in each situation</title>
 <desc id="d">Four situations side by side: playing a session, setting up a machine with no mods installed, applying an update, and adding a mod never played before. Each column lists the commands in order.</desc>
 <style>
@@ -36,7 +36,7 @@
     <path class="ah" d="M2 1L8 5L2 9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
   </marker>
 </defs>
-<rect class="bg" width="880" height="600"/>
+<rect class="bg" width="880" height="620"/>
 
 <!-- ============ lane 1: playing ============ -->
 <rect class="hd1" x="10" y="16" width="200" height="52" rx="6"/>
@@ -45,7 +45,7 @@
 
 <line class="arr" x1="110" y1="68" x2="110" y2="94" marker-end="url(#a)"/>
 <rect class="box" x="10" y="96" width="200" height="70" rx="6"/>
-<text class="cmd" x="110" y="120" text-anchor="middle">sync_save.py play</text>
+<text class="cmd" x="110" y="120" text-anchor="middle">sync.py play</text>
 <text class="s" x="110" y="139" text-anchor="middle">pulls, opens the emulator,</text>
 <text class="s" x="110" y="155" text-anchor="middle">waits, pushes when you quit</text>
 
@@ -67,7 +67,7 @@
 
 <line class="arr" x1="330" y1="68" x2="330" y2="94" marker-end="url(#a)"/>
 <rect class="box" x="230" y="96" width="200" height="70" rx="6"/>
-<text class="cmd" x="330" y="120" text-anchor="middle">install_mod.py auto</text>
+<text class="cmd" x="330" y="120" text-anchor="middle">install.py auto</text>
 <text class="s" x="330" y="139" text-anchor="middle">reads saves/ to see what</text>
 <text class="s" x="330" y="155" text-anchor="middle">you play, then fetches it</text>
 
@@ -81,7 +81,7 @@
 <text class="h" x="330" y="300" text-anchor="middle">First time only</text>
 <text class="s" x="330" y="318" text-anchor="middle">no save folder exists yet:</text>
 <text class="s" x="330" y="334" text-anchor="middle">open the mod once, then</text>
-<text class="cmd" x="330" y="352" text-anchor="middle">sync_save.py pull</text>
+<text class="cmd" x="330" y="352" text-anchor="middle">sync.py pull</text>
 
 <!-- ============ lane 3: update ============ -->
 <rect class="hd3" x="450" y="16" width="200" height="52" rx="6"/>
@@ -90,13 +90,13 @@
 
 <line class="arr" x1="550" y1="68" x2="550" y2="94" marker-end="url(#a)"/>
 <rect class="box" x="450" y="96" width="200" height="70" rx="6"/>
-<text class="cmd" x="550" y="120" text-anchor="middle">install_mod.py status</text>
+<text class="cmd" x="550" y="120" text-anchor="middle">install.py status</text>
 <text class="s" x="550" y="139" text-anchor="middle">shows installed version</text>
 <text class="s" x="550" y="155" text-anchor="middle">next to published one</text>
 
 <line class="arr" x1="550" y1="166" x2="550" y2="192" marker-end="url(#a)"/>
 <rect class="box" x="450" y="194" width="200" height="56" rx="6"/>
-<text class="cmd" x="550" y="215" text-anchor="middle">install_mod.py install cld</text>
+<text class="cmd" x="550" y="215" text-anchor="middle">install.py install cld</text>
 <text class="s" x="550" y="234" text-anchor="middle">when the two differ</text>
 
 <line class="arr" x1="550" y1="250" x2="550" y2="276" marker-end="url(#a)"/>
@@ -118,17 +118,17 @@
 
 <line class="arr" x1="770" y1="148" x2="770" y2="170" marker-end="url(#a)"/>
 <rect class="box" x="670" y="172" width="200" height="48" rx="6"/>
-<text class="cmd" x="770" y="194" text-anchor="middle">add_mod.py</text>
-<text class="s" x="770" y="211" text-anchor="middle">counts its levels</text>
+<text class="cmd" x="770" y="192" text-anchor="middle">addmod.py &lt;pkg&gt;</text>
+<text class="cmd" x="770" y="208" text-anchor="middle">--link &lt;page&gt;</text>
 
 <line class="arr" x1="770" y1="220" x2="770" y2="242" marker-end="url(#a)"/>
 <rect class="box" x="670" y="244" width="200" height="48" rx="6"/>
-<text class="cmd" x="770" y="266" text-anchor="middle">edit links.json</text>
-<text class="s" x="770" y="283" text-anchor="middle">where it is published</text>
+<text class="s" x="770" y="264" text-anchor="middle">counts its levels, names it</text>
+<text class="s" x="770" y="280" text-anchor="middle">from its own APK</text>
 
 <line class="arr" x1="770" y1="292" x2="770" y2="314" marker-end="url(#a)"/>
 <rect class="box" x="670" y="316" width="200" height="48" rx="6"/>
-<text class="cmd" x="770" y="338" text-anchor="middle">install_mod.py scan</text>
+<text class="cmd" x="770" y="338" text-anchor="middle">install.py scan</text>
 <text class="s" x="770" y="355" text-anchor="middle">finds its APK and OBB</text>
 
 <!-- ============ footer ============ -->
@@ -148,6 +148,7 @@
 <text class="s" x="470" y="500">still reads 65, and the next push erases level 80 without warning.</text>
 <text class="s" x="470" y="516">So play refuses to start at all if it could not sync first.</text>
 
-<text class="cap" x="440" y="560" text-anchor="middle">Blue badge in the table: the level count is re-checked against GitHub every run.</text>
-<text class="cap" x="440" y="578" text-anchor="middle">Amber badge: the mod publishes elsewhere, so nothing can watch it and the total may go stale.</text>
+<text class="cap" x="440" y="560" text-anchor="middle">A new mod also needs its logo dropped into assets/logo, named after the package suffix.</text>
+<text class="cap" x="440" y="578" text-anchor="middle">Blue badge in the table: the level count is re-checked against GitHub every run.</text>
+<text class="cap" x="440" y="596" text-anchor="middle">Amber badge: the mod publishes elsewhere, so nothing can watch it and the total may go stale.</text>
 </svg>
