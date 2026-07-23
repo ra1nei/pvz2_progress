@@ -1,0 +1,417 @@
+#!/usr/bin/env python3
+"""Keep the PvZ2 saves in step across machines without anyone remembering to.
+
+    python3 sync.py play     pull, start the emulator, push when it closes
+    python3 sync.py pull     newest saves -> device (do this before playing)
+    python3 sync.py push     device -> saves/, committed and pushed
+    python3 sync.py find     locate the save files on the device
+
+The saves live in this repo under saves/, which is also where the tracker reads
+them. Pushing them is what rebuilds the table: the workflow runs on any push
+touching saves/, so finishing a session updates the README on its own.
+
+`play` is the whole point. Pulling by hand is easy to forget, and forgetting is
+not merely inconvenient: play on a stale save and the next push overwrites
+progress made on the other machine. So `play` pulls first, and refuses to start
+the emulator if that pull fails.
+
+It then watches, and each time you leave a mod its save goes up right away
+rather than waiting for the emulator to close. Quit a session badly and only
+the mod you were in at the time is at risk, instead of everything you played.
+
+Do not run `pull` with the mod open. The game holds its progress in memory and
+writes it out on exit, so anything pushed underneath it is overwritten the
+moment you close the game. `play` sequences this correctly on its own.
+
+Nothing here is tied to one machine: the emulator is found per OS, adb is
+connected on whichever port it answers, and the save path is searched for and
+then cached.
+"""
+import argparse
+import json
+import os
+import platform
+import re
+import shutil
+import subprocess
+import sys
+import time
+
+from pvz.device import devices, find_adb, list_mods, sh
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+SAVES = os.path.join(HERE, 'saves')
+CACHE = os.path.join(HERE, 'save_paths.json')
+TMP = os.path.join(HERE, 'saves_out')
+
+# Where PvZ2 keeps pp.dat. Ordered most to least likely; the real path is found
+# by trying each and checking the RTON magic, never by trusting this list.
+# No_Backup is where it actually lives, next to global_save_data and the CDN
+# folder. /data/data is listed for rooted setups only: on a stock BlueStacks
+# the shell user cannot read it.
+SAVE_PATHS = [
+    '/sdcard/Android/data/{pkg}/files/No_Backup/pp.dat',
+    '/storage/emulated/0/Android/data/{pkg}/files/No_Backup/pp.dat',
+    '/sdcard/Android/data/{pkg}/files/pp.dat',
+    '/data/data/{pkg}/files/No_Backup/pp.dat',
+    '/data/data/{pkg}/files/pp.dat',
+]
+
+# Searched when none of the above hit. Rooted at the app's own directories, not
+# at /sdcard: Android 11 and up serve /sdcard/Android/data through a FUSE mount
+# that `find` cannot walk, so a search from the top returns nothing at all even
+# though the file is right there.
+SEARCH_ROOTS = [
+    '/sdcard/Android/data/{pkg}/files',
+    '/storage/emulated/0/Android/data/{pkg}/files',
+    '/data/data/{pkg}/files',
+]
+
+# Emulators do not appear in `adb devices` until something connects to them.
+# BlueStacks answers on 5555, the second instance on 5556; the others are here
+# so a different emulator works without being told which.
+PORTS = ['127.0.0.1:5555', '127.0.0.1:5556', '127.0.0.1:5554',
+        '127.0.0.1:62001', '127.0.0.1:21503', '127.0.0.1:7555']
+
+# Default install locations, so --exe is only needed for an unusual setup.
+EMULATORS = {
+    'Darwin': ['/Applications/BlueStacks.app',
+               '/Applications/BlueStacks 5.app'],
+    'Windows': [r'C:\Program Files\BlueStacks_nxt\HD-Player.exe',
+                r'C:\Program Files (x86)\BlueStacks_nxt\HD-Player.exe'],
+    'Linux': [],
+}
+
+
+# ---------------------------------------------------------------- device
+
+def connect(adb):
+    """Devices, connecting to the usual emulator ports first if none show up."""
+    d = devices(adb)
+    if d:
+        return d
+    for c in PORTS:
+        subprocess.run([adb, 'connect', c], capture_output=True, timeout=15)
+    d = devices(adb)
+    if d:
+        print(f'  connected: {", ".join(d)}')
+    return d
+
+
+def is_save(adb, dev, path):
+    """True when `path` on the device really is an RTON save."""
+    r = subprocess.run([adb, '-s', dev, 'exec-out',
+                        f"dd if='{path}' bs=4 count=1 2>/dev/null"],
+                       capture_output=True)
+    return r.stdout[:4] == b'RTON'
+
+
+def find_save_path(adb, dev, pkg):
+    """The save path for `pkg` on this device, or None."""
+    for c in SAVE_PATHS:
+        p = c.format(pkg=pkg)
+        if is_save(adb, dev, p):
+            return p
+    for g in SEARCH_ROOTS:
+        out = sh(adb, 'shell',
+                 f"find {g.format(pkg=pkg)} -name 'pp*.dat' 2>/dev/null | head -10",
+                 serial=dev, check=False)
+        for p in out.splitlines():
+            p = p.strip()
+            if p and is_save(adb, dev, p):
+                return p
+    return None
+
+
+def save_paths(adb, dev, pkgs):
+    """{package: device path}, cached so the search runs once per machine."""
+    cache = json.load(open(CACHE, encoding='utf-8')) if os.path.exists(CACHE) else {}
+    changed = False
+    out = {}
+    for pkg in pkgs:
+        p = cache.get(pkg)
+        if p and is_save(adb, dev, p):
+            out[pkg] = p
+            continue
+        p = find_save_path(adb, dev, pkg)
+        if p:
+            out[pkg] = cache[pkg] = p
+            changed = True
+    if changed:
+        json.dump(cache, open(CACHE, 'w'), indent=1)
+    return out
+
+
+def cleared(path):
+    """Cleared events in a save file, read straight from wmed.
+
+    Used as the guard against overwriting a newer save with an older one. It
+    needs no world data, so it works for mods the tracker has never counted.
+    """
+    from pvz.rton import decode
+    from pvz.save import player_info
+    info = player_info(decode(path)['data'])
+    return sum(len([e for e in w.get('e', []) if 'i' in e])
+               for w in info.get('wmed', []))
+
+
+# ---------------------------------------------------------------- git
+
+def git(*args, check=True):
+    r = subprocess.run(['git', '-C', HERE] + list(args),
+                       capture_output=True, text=True)
+    if check and r.returncode != 0:
+        sys.exit(f'git {" ".join(args)} failed:\n{(r.stderr or r.stdout).strip()}')
+    return r.stdout
+
+
+def branch():
+    return git('rev-parse', '--abbrev-ref', 'HEAD').strip() or 'main'
+
+
+def refresh_saves():
+    """Bring saves/ up to date from the remote, and nothing else.
+
+    A checkout of that one path rather than a reset: this is the working repo,
+    so a hard reset would take any uncommitted work along with it.
+    """
+    os.makedirs(SAVES, exist_ok=True)
+    if git('remote', check=False).strip():
+        git('fetch', '--quiet', 'origin', check=False)
+        git('checkout', f'origin/{branch()}', '--', 'saves', check=False)
+
+
+def commit_saves(msg):
+    """Commit saves/ and push, rebasing over whatever the tracker committed.
+
+    A failed push is reported and survived rather than fatal. This runs from
+    the watch loop between mods, and letting a dropped network end the session's
+    syncing would cost every mod played after it; the commit is already local,
+    so the next push carries it.
+    """
+    git('add', '--', 'saves')
+    if not git('diff', '--cached', '--name-only', '--', 'saves').strip():
+        return False
+    git('commit', '--quiet', '-m', msg, '--', 'saves')
+    if git('remote', check=False).strip():
+        git('pull', '--rebase', '--autostash', '--quiet', 'origin', branch(),
+            check=False)
+        r = subprocess.run(['git', '-C', HERE, 'push', '--quiet', 'origin', 'HEAD'],
+                           capture_output=True, text=True)
+        if r.returncode != 0:
+            print(f'  [!] committed here but could not push: '
+                  f'{(r.stderr or r.stdout).strip().splitlines()[-1][:90]}')
+            print('      it will go up with the next one')
+    return True
+
+
+# ---------------------------------------------------------------- actions
+
+def to_device(adb, dev, paths):
+    """saves/ -> device. Returns True only if every mod landed."""
+    refresh_saves()
+    ok = True
+    for pkg, dpath in sorted(paths.items()):
+        sfx = pkg.rsplit('_', 1)[-1]
+        src = os.path.join(SAVES, f'pp_{sfx}.dat')
+        if not os.path.exists(src):
+            print(f'  {sfx:<5} not in saves/ yet, leaving the device copy alone')
+            continue
+        r = subprocess.run([adb, '-s', dev, 'push', src, dpath],
+                           capture_output=True, text=True)
+        if r.returncode != 0:
+            print(f'  {sfx:<5} PUSH FAILED: {(r.stderr or r.stdout).strip()[:120]}')
+            ok = False
+        else:
+            print(f'  {sfx:<5} {cleared(src):>4} cleared -> device')
+    return ok
+
+
+def from_device(adb, dev, paths, force=False):
+    """Device -> saves/, refusing any mod that would lose progress."""
+    refresh_saves()
+    os.makedirs(TMP, exist_ok=True)
+    changed = []
+    for pkg, dpath in sorted(paths.items()):
+        sfx = pkg.rsplit('_', 1)[-1]
+        dest = os.path.join(TMP, f'pp_{sfx}.dat')
+        if os.path.exists(dest):
+            os.remove(dest)
+        subprocess.run([adb, '-s', dev, 'pull', dpath, dest],
+                       capture_output=True, text=True)
+        if not os.path.exists(dest) or open(dest, 'rb').read(4) != b'RTON':
+            print(f'  {sfx:<5} could not read the save off the device')
+            continue
+
+        now = cleared(dest)
+        stored = os.path.join(SAVES, f'pp_{sfx}.dat')
+        if os.path.exists(stored):
+            was = cleared(stored)
+            # Fewer cleared levels than the committed copy means this machine
+            # played on a stale save. Pushing would erase whatever the other
+            # machine did, which is the failure this script exists to prevent.
+            if now < was and not force:
+                print(f'  {sfx:<5} REFUSED: device has {now} cleared, saves/ has '
+                      f'{was}. This machine played on an old save.')
+                print(f'        Keep the device copy anyway with --force.')
+                continue
+            if now == was and open(stored, 'rb').read() == open(dest, 'rb').read():
+                print(f'  {sfx:<5} {now:>4} cleared, unchanged')
+                continue
+        shutil.copy2(dest, stored)
+        changed.append(f'{sfx} {now}')
+        print(f'  {sfx:<5} {now:>4} cleared -> saves/')
+
+    if not changed or not commit_saves('saves: ' + ', '.join(changed)):
+        print('  nothing to commit')
+        return
+    print(f'  pushed: {", ".join(changed)}')
+    print('  the tracker workflow runs on this push and rebuilds the table')
+
+
+def find_emulator(exe=None):
+    for p in ([exe] if exe else EMULATORS.get(platform.system(), [])):
+        if p and os.path.exists(p):
+            return p
+    return None
+
+
+def launch_emulator(path):
+    if platform.system() == 'Darwin' and path.endswith('.app'):
+        subprocess.Popen(['open', '-a', path])
+    else:
+        subprocess.Popen([path])
+
+
+def foreground_app(adb, dev):
+    """The package in the foreground, or '' if it cannot be read."""
+    out = sh(adb, 'shell',
+             'dumpsys activity activities 2>/dev/null | grep -m1 topResumedActivity',
+             serial=dev, check=False)
+    m = re.search(r'u0 ([\w.]+)/', out)
+    return m.group(1) if m else ''
+
+
+def watch(adb, dev, paths, force=False, every=8):
+    """Push each mod's save as you leave it, then once more at the end.
+
+    Watching the foreground beats watching processes: Android keeps a game's
+    process alive long after you have left it, so a dead process never arrives.
+    Leaving a mod does, and the game writes its save on the way out.
+
+    A push that finds nothing changed costs nothing, so checking a little early
+    is harmless, and the sweep after the emulator closes catches anything the
+    game had not written yet.
+    """
+    print(f'  watching {dev}. Close the emulator when you are done.')
+    prev = ''
+    while True:
+        time.sleep(every)
+        if dev not in devices(adb):
+            print('  emulator closed')
+            break
+        cur = foreground_app(adb, dev)
+        if prev in paths and cur != prev:
+            print(f'\n  left {prev.rsplit("_", 1)[-1]}, saving it')
+            time.sleep(4)                  # let the game finish writing
+            try:
+                from_device(adb, dev, {prev: paths[prev]}, force)
+            except SystemExit as e:
+                print(f'  [!] {e}\n      carrying on; the final sweep retries')
+        prev = cur
+
+
+# ---------------------------------------------------------------- entry
+
+def installed_mods(adb, dev, a):
+    if a.pkg:
+        return [a.pkg]
+    pkgs = sorted(list_mods(adb).get(dev, ('', []))[1])
+    if not pkgs:
+        # A bare machine, most likely. Syncing saves needs somewhere to put
+        # them, so say which command comes first rather than stopping here.
+        sys.exit(f'No PvZ2 mods are installed on {dev}, so there is nothing '
+                 f'to sync yet.\n'
+                 f'  Put them on this machine first:  python3 install.py auto\n'
+                 f'  Or try a single one:             python3 install.py install adm')
+    return pkgs
+
+
+def main():
+    ap = argparse.ArgumentParser(description='Sync PvZ2 saves through this repo')
+    ap.add_argument('action', choices=['play', 'pull', 'push', 'find'])
+    ap.add_argument('--device', help='adb serial, default the first connected')
+    ap.add_argument('--pkg', help='one package instead of every installed mod')
+    ap.add_argument('--exe', help='emulator to launch, when it is not where it usually is')
+    ap.add_argument('--force', action='store_true',
+                    help='push even when it would lose progress')
+    a = ap.parse_args()
+
+    adb = find_adb()
+    devs = connect(adb)
+    dev = a.device or (devs[0] if devs else None)
+
+    # `play` can start the emulator itself, so nothing being connected yet is
+    # only fatal for the actions that need one right now.
+    if not dev and a.action != 'play':
+        sys.exit('No device. Start the emulator and try again.')
+
+    if a.action == 'play':
+        exe = find_emulator(a.exe)
+        if not dev:
+            if not exe:
+                sys.exit('No device and no emulator found. Start it by hand, '
+                         'or pass --exe.')
+            print(f'== starting {exe} ==')
+            launch_emulator(exe)
+            for _ in range(30):
+                time.sleep(5)
+                devs = connect(adb)
+                if devs:
+                    break
+            dev = devs[0] if devs else None
+            if not dev:
+                sys.exit('The emulator never showed up in adb.')
+            # Pulling now, with the emulator already up, is safe: the mod
+            # itself is not open yet, so nothing is holding the save.
+            print('\n== pulling the newest saves ==')
+            paths = save_paths(adb, dev, installed_mods(adb, dev, a))
+            if not to_device(adb, dev, paths):
+                sys.exit('Pull failed. Close the emulator without playing: '
+                         'playing now would be playing on an old save.')
+        else:
+            paths = save_paths(adb, dev, installed_mods(adb, dev, a))
+            print('== pulling the newest saves ==')
+            if not to_device(adb, dev, paths):
+                sys.exit('Pull failed, not starting the emulator: playing now '
+                         'would be playing on an old save.')
+            if exe:
+                print(f'\n== {exe} is already running ==')
+        watch(adb, dev, paths, a.force)
+        print('\n== final sweep ==')
+        from_device(adb, dev, paths, a.force)
+        return
+
+    mods = installed_mods(adb, dev, a)
+    paths = save_paths(adb, dev, mods)
+
+    if a.action == 'find':
+        for pkg in sorted(mods):
+            print(f'  {pkg.rsplit("_", 1)[-1]:<5} {paths.get(pkg) or "NOT FOUND"}')
+        if len(paths) < len(mods):
+            print('\nTried:')
+            for c in SAVE_PATHS:
+                print(f'  {c}')
+            print('  then `find pp*.dat` under ' + ', '.join(SEARCH_ROOTS))
+            print('\nA mod with no save yet has simply never been opened.')
+        return
+
+    if not paths:
+        sys.exit('Found no save files on the device. '
+                 'Run `sync.py find` to see where it looked.')
+    (to_device(adb, dev, paths) if a.action == 'pull'
+     else from_device(adb, dev, paths, a.force))
+
+
+if __name__ == '__main__':
+    main()

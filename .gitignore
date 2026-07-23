@@ -1,11 +1,18 @@
-# Saves are re-fetched every run, no reason to keep them
-saves/
+# Working copies. The real saves live in saves/ and are committed.
 saves_drive/
+saves_out/
 *.dat
+!saves/*.dat
 
 # Spreadsheets from the old local-only version, unused now
 *.xlsx
 *.csv
+
+# Device save paths, found per machine
+save_paths.json
+
+# Downloaded APKs and OBBs, hundreds of MB each
+downloads/
 
 # Logs and junk
 auto.log
@@ -19,6 +26,8 @@ __pycache__/
 #   pvz_totals.json   rolled-up table the README is built from
 #   sources.json      OBB URLs extracted from the APKs
 #   links.json        mod download pages, hand-maintained
+#   saves/*.dat       the saves themselves, pushed by sync.py
+#   install.json      where each APK and OBB comes from
 #   assets/bar/*.svg  progress bars, redrawn every run
 #   assets/tag/*.svg  version badges, redrawn every run
 
