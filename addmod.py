@@ -29,33 +29,6 @@ from pvz import totals
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 WORLDS = os.path.join(HERE, 'worlds')
-FOLDER_PREFIX = 'plantsvszombies2'          # shared folder-name prefix, stripped before matching
-
-
-def norm(s):
-    return re.sub(r'[^a-z0-9]', '', str(s).lower())
-
-
-def is_subsequence(sub, s):
-    """Is 'cld' a subsequence of 'collided'."""
-    it = iter(s)
-    return all(c in it for c in sub)
-
-
-def guess_name(sfx, names):
-    """Guess the display name from the Drive folder list. None if ambiguous."""
-    hits = []
-    for f in names:
-        n = norm(f)
-        if n == 'logo':
-            continue
-        core = n[len(FOLDER_PREFIX):] if n.startswith(FOLDER_PREFIX) else n
-        if core and is_subsequence(sfx, core):
-            hits.append(f)
-    if len(hits) != 1:
-        return None, hits
-    name = re.sub(r'^plants\s*vs\.?\s*zombies\s*2\s*[:\-]\s*', '', hits[0], flags=re.I)
-    return name.strip(), hits
 
 
 def find_aapt():
@@ -113,29 +86,6 @@ def name_from_apk(adb, dev, pkg):
                   m.group(1), flags=re.I).strip() or m.group(1)
 
 
-def candidate_names(sfx):
-    """Names `sfx` might go by, with names another mod already owns removed.
-
-    A suffix matches loosely, as a subsequence, so leaving the known names in
-    lets a new mod take one of them: Resonance's `res` is a subsequence of
-    Reflourished, and would have been filed under that name without a word.
-    Anything NAME_MAP hands to a different suffix is therefore dropped, which
-    leaves only names that are genuinely unclaimed.
-    """
-    from pvz.totals import NAME_MAP
-    if sfx in NAME_MAP:
-        return [NAME_MAP[sfx]]
-    taken = {norm(v) for k, v in NAME_MAP.items() if k != sfx}
-    out = []
-    try:
-        import pvz.drive as drive
-        if drive.ROOT_ID:
-            out = list(drive.list_folder(drive.ROOT_ID))
-    except Exception:
-        pass
-    return [t for t in out if norm(t) not in taken]
-
-
 def extract_obb_url(pkg):
     """Extract the OBB URL from the APK into sources.json. Returns it or None.
 
@@ -173,11 +123,24 @@ def extract_obb_url(pkg):
         return None
 
 
-def add_one(pkg, names, forced=None):
+def _record_obb_url(pkg, url):
+    """Put a hand-supplied OBB URL into sources.json, where the rest reads it."""
+    sp = os.path.join(HERE, 'sources.json')
+    src = json.load(open(sp, encoding='utf-8')) if os.path.exists(sp) else {}
+    src.setdefault(pkg, {})['obb_url'] = url
+    with open(sp, 'w', encoding='utf-8') as f:
+        json.dump(src, f, indent=1, ensure_ascii=False)
+        f.write('\n')
+
+
+def add_one(pkg, forced=None, obb_url=None):
     sfx = pkg.rsplit('_', 1)[-1]
     wp = os.path.join(WORLDS, f'{pkg}.json')
 
-    name, hits = (forced, [forced]) if forced else guess_name(sfx, names)
+    # The app names itself, so nothing has to be typed. A mod that is already
+    # known keeps the name it was filed under.
+    from pvz.totals import NAME_MAP
+    name = forced or NAME_MAP.get(sfx)
     if not name:
         from pvz.device import find_adb, find_device
         adb = find_adb(required=False)
@@ -187,15 +150,20 @@ def add_one(pkg, names, forced=None):
             if name:
                 print(f'  {sfx}: name from the APK itself')
     if not name:
-        print(f'  {sfx}: could not work out the name '
-              f'({"several candidates: " + str(hits) if hits else "nothing to guess from"})')
+        print(f'  {sfx}: could not read a name off the APK. It needs aapt2, '
+              f'and the mod installed on a connected device.')
         print(f'      rerun with:  python3 addmod.py {pkg} --name "Display Name"')
         return False
     print(f'  {sfx}: name -> "{name}"')
 
     # Get the OBB URL first. With a URL the OBB can be read over the network,
     # no Android device needed, and update checks can run unattended later.
-    url = extract_obb_url(pkg)
+    # Passing one in covers the mod that is not on this machine at all: some
+    # authors publish the link in a text file beside the APK rather than
+    # building it into the app, and then nothing can extract it.
+    url = obb_url or extract_obb_url(pkg)
+    if obb_url:
+        _record_obb_url(pkg, obb_url)
     if url:
         print(f'      OBB URL: {url}')
     else:
@@ -208,7 +176,13 @@ def add_one(pkg, names, forced=None):
         cmd += ['--url', url]
     r = subprocess.run(cmd, capture_output=True, text=True, cwd=HERE)
     if r.returncode != 0 or not os.path.exists(wp):
-        print(f'      counting FAILED: {(r.stderr or r.stdout).strip()[:200]}')
+        # Show the child's last few lines rather than its first 200 characters.
+        # The reason a fetch failed is printed as it happens, so truncating
+        # from the front threw away exactly the part worth reading.
+        out = (r.stdout or '') + (r.stderr or '')
+        print('      counting FAILED:')
+        for line in out.strip().splitlines()[-6:]:
+            print(f'        {line}')
         return False
 
     d = json.load(open(wp, encoding='utf-8'))
@@ -219,10 +193,29 @@ def add_one(pkg, names, forced=None):
     return True
 
 
+def set_link(sfx, url):
+    """Record where a mod is published, keyed by package suffix.
+
+    The one thing here that cannot be worked out: nothing on the device says
+    where its mod came from, and the APK only carries an OBB URL when the mod
+    ships a downloader. Taking it as a flag at least saves editing JSON.
+    """
+    p = os.path.join(HERE, 'links.json')
+    d = json.load(open(p, encoding='utf-8'))
+    d[sfx] = url
+    with open(p, 'w', encoding='utf-8') as f:
+        json.dump(d, f, indent=1, ensure_ascii=False)
+        f.write('\n')          # the file is hand-edited too, keep it tidy
+
+
 def main():
     ap = argparse.ArgumentParser(description='Add a new PvZ2 mod to the tracker')
     ap.add_argument('pkg', nargs='?')
     ap.add_argument('--name', help='force the display name when the guess is wrong')
+    ap.add_argument('--link', help='the mod\'s download page, written into links.json')
+    ap.add_argument('--obb-url', dest='obb_url',
+                    help='read the OBB from here, for a mod not installed on '
+                         'this machine or one that publishes the link separately')
     a = ap.parse_args()
 
     os.makedirs(WORLDS, exist_ok=True)
@@ -244,16 +237,29 @@ def main():
         print(f'Found {len(todo)} mod(s) with no level counts: '
               f'{", ".join(p.rsplit("_", 1)[-1] for p in todo)}\n')
 
-    ok = sum(add_one(p, candidate_names(p.rsplit('_', 1)[-1]), a.name)
-             for p in todo)
+    ok = sum(add_one(p, a.name, a.obb_url) for p in todo)
 
-    if ok:
-        totals.main()
-        print('\nLeft to do:')
-        print('  1. add the mod\'s download page to links.json, keyed by suffix')
-        print('  2. python3 install.py scan     finds its APK and OBB')
-        print('  3. python3 sync.py push       sends your save up')
-        print('  4. commit worlds/, sources.json, links.json, install.json')
+    if not ok:
+        return
+
+    # Only with one mod in hand: a link belongs to a single mod, and applying
+    # it to a batch would file every one of them under the same page.
+    linked = bool(a.link) and len(todo) == 1
+    if linked:
+        set_link(todo[0].rsplit('_', 1)[-1], a.link)
+        print(f'      links.json -> {a.link}')
+    elif a.link:
+        print('      [!] --link needs one mod; name the package to use it')
+
+    totals.main()
+    steps = ([] if linked else
+             ["add the mod's download page to links.json, keyed by suffix"])
+    steps += ['python3 install.py scan     finds its APK and OBB',
+              'python3 sync.py push       sends your save up',
+              'commit worlds/, sources.json, links.json, install.json']
+    print('\nLeft to do:')
+    for i, s in enumerate(steps, 1):
+        print(f'  {i}. {s}')
 
 
 if __name__ == '__main__':

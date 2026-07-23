@@ -1,5 +1,4 @@
-# Working copies. The real saves live in saves/ and are committed.
-saves_drive/
+# Working copy pulled off the device. The real saves live in saves/.
 saves_out/
 *.dat
 !saves/*.dat

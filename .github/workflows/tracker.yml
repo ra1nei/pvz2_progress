@@ -39,9 +39,6 @@ jobs:
       - name: Run tracker
         env:
           GITHUB_TOKEN: ${{ github.token }}   # raises the API limit to 5000/hour
-          # Set as secrets so the Drive folder ids stay out of a public repo.
-          DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
-          LOGO_FOLDER_ID: ${{ secrets.LOGO_FOLDER_ID }}
         run: python3 track.py
 
       - name: Commit results

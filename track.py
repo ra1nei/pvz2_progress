@@ -4,15 +4,12 @@
     python3 track.py
 
 Where the data comes from:
-    save files  <- saves/ in this repo, or a PUBLIC Drive folder
+    save files  <- saves/ in this repo
     level count <- the OBB on GitHub Releases, a few MB over HTTP Range
     result      -> README.md and pvz_totals.json, committed by the workflow
 
 Environment (all optional):
-    SAVES_DIR        somewhere other than saves/ to read them from; Drive is
-                     only used when neither holds any
-    DRIVE_FOLDER_ID  Drive folder holding the per-mod folders; falls back to pvz/drive.py
-    LOGO_FOLDER_ID   Drive folder holding the mod logos
+    SAVES_DIR        somewhere other than saves/ to read them from
     GITHUB_TOKEN     raises the GitHub API limit from 60 to 5000 requests/hour
 """
 import datetime
@@ -22,8 +19,7 @@ import os
 import sys
 
 import pvz.net as compat
-import pvz.drive as drive
-from pvz import totals
+from pvz import norm, totals
 from pvz.worlds import build
 from pvz.github import GH, RateLimited, latest_release
 from pvz.save import extract, worlds_path
@@ -33,9 +29,6 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 STATE = os.path.join(HERE, 'state.json')
 # Mods pinned to the top of the table regardless of progress
 PINNED = ['Reflourished']
-# From a repo secret. Logos are already committed under assets/logo, so a
-# missing value is harmless; it only matters for mods added later.
-LOGO_FOLDER_ID = os.environ.get('LOGO_FOLDER_ID', '')
 SOURCES = os.path.join(HERE, 'sources.json')
 # Hours ahead of UTC to show alongside it in the header. The Actions UI prints
 # run times in the reader's own zone while this file is written in UTC, and one
@@ -90,71 +83,34 @@ def name_to_suffix():
     to resolve by the more specific one.
     """
     from pvz.totals import NAME_MAP
-    out = {drive.norm(v): k for k, v in NAME_MAP.items() if drive.norm(v)}
+    out = {norm(v): k for k, v in NAME_MAP.items() if norm(v)}
     for p in glob.glob(os.path.join(HERE, 'worlds', '*.json')):
         sfx = os.path.basename(p)[:-5].rsplit('_', 1)[-1]
         try:
             nm = json.load(open(p, encoding='utf-8')).get('_display_name')
         except (OSError, ValueError):
             continue
-        if nm and drive.norm(nm):
-            out[drive.norm(nm)] = sfx
+        if nm and norm(nm):
+            out[norm(nm)] = sfx
     return sorted(out.items(), key=lambda kv: -len(kv[0]))
 
 
-def read_save_dir(d):
-    """Saves already on disk as pp_<suffix>.dat.
+def fetch_saves():
+    """Every mod's save file, as {package: path}.
 
-    Used when the workflow has checked out the private saves repo, which skips
-    Drive entirely. Files that are not RTON are reported rather than passed on
+    They are committed here by sync.py, so this is a directory listing and
+    nothing more. Files that are not RTON are reported rather than passed on
     to be misread as a save.
     """
+    d = os.environ.get('SAVES_DIR') or os.path.join(HERE, 'saves')
     out = {}
     for f in sorted(glob.glob(os.path.join(d, 'pp_*.dat'))):
         sfx = os.path.basename(f)[3:-4]
         if open(f, 'rb').read(4) != b'RTON':
             print(f'  [!] {os.path.basename(f)} is not an RTON save')
             continue
-        out[f'com.ea.game.pvz2_{sfx}'] = (f, '')
+        out[f'com.ea.game.pvz2_{sfx}'] = f
         print(f'  {os.path.basename(f):<20} <- {d}')
-    return out
-
-
-def fetch_saves(odd=None):
-    """Fetch every mod's save file.
-
-    From the private saves repo when SAVES_DIR points at a checkout of it,
-    otherwise from the public Drive folder.
-
-    Returns {package: (path, folder id)}. Drive folders whose package cannot be
-    resolved are collected into `la` and reported in the run summary; that is
-    the signal that a new mod was added without running addmod.py.
-    """
-    d = os.environ.get('SAVES_DIR') or os.path.join(HERE, 'saves')
-    if os.path.isdir(d) and glob.glob(os.path.join(d, 'pp_*.dat')):
-        return read_save_dir(d)
-
-    ten2sfx = name_to_suffix()
-    root = os.environ.get('DRIVE_FOLDER_ID') or drive.ROOT_ID
-    d = os.path.join(HERE, 'saves_drive')
-    os.makedirs(d, exist_ok=True)
-    out = {}
-    for folder, (fid, ppid) in drive.find_saves(root).items():
-        if not ppid:
-            print(f'  [!] "{folder}" has no save file')
-            continue
-        sfx = next((s for n, s in ten2sfx if n in drive.norm(folder)), None)
-        if not sfx:
-            print(f'  [!] cannot resolve a package from "{folder}"')
-            if odd is not None:
-                odd.append(folder)
-            continue
-        dest = os.path.join(d, f'pp_{sfx}.dat')
-        if drive.download(ppid, dest):
-            out[f'com.ea.game.pvz2_{sfx}'] = (dest, fid)
-            print(f'  {folder:<45} -> pp_{sfx}.dat')
-        else:
-            print(f'  [!] download failed: {folder}')
     return out
 
 
@@ -199,31 +155,14 @@ def svg_badge(text, auto):
             f'lengthAdjust="spacingAndGlyphs">{text}</text></svg>')
 
 
-def fetch_logo(display_name, sfx):
-    """Skipped when the logo is already committed, so this costs nothing on a
-    normal run."""
-    d = os.path.join(HERE, 'assets', 'logo')
-    os.makedirs(d, exist_ok=True)
+def logo(sfx):
+    """The mod's logo under assets/logo, or None when it has none.
+
+    Committed files only. A new mod shows a blank first column until one is
+    dropped in by hand, named after the package suffix.
+    """
     for ext in ('png', 'webp', 'jpg'):
-        if os.path.exists(os.path.join(d, f'{sfx}.{ext}')):
-            return f'assets/logo/{sfx}.{ext}'
-    try:
-        items = drive.list_folder(LOGO_FOLDER_ID)
-    except Exception:
-        return None
-    base = drive.norm(display_name)
-    for name, (fid, is_dir) in items.items():
-        if is_dir:
-            continue
-        core = drive.norm(os.path.splitext(name)[0].replace('_logo', ''))
-        if not core or (core not in base and base not in core):
-            continue
-        ext = os.path.splitext(name)[1].lstrip('.').lower() or 'png'
-        dest = os.path.join(d, f'{sfx}.{ext}')
-        raw = compat.http_get(
-            f'https://drive.google.com/uc?export=download&id={fid}')
-        if raw[:1] in (b'\x89', b'R', b'\xff'):     # png / webp / jpg
-            open(dest, 'wb').write(raw)
+        if os.path.exists(os.path.join(HERE, 'assets', 'logo', f'{sfx}.{ext}')):
             return f'assets/logo/{sfx}.{ext}'
     return None
 
@@ -270,7 +209,7 @@ def write_readme(rows, gio):
     os.makedirs(tag_dir, exist_ok=True)
     links = read_links()
 
-    pinned = {drive.norm(x) for x in PINNED}
+    pinned = {norm(x) for x in PINNED}
     done = [r for r in rows if r[1] is not None]
     pending = [r for r in rows if r[1] is None]
     # Pinned first, then the mods that are actually watched, and within each
@@ -278,7 +217,7 @@ def write_readme(rows, gio):
     # are the ones that can quietly go stale.
     # Sorted on the same figure the bar draws, both columns together, so the
     # order and the bars agree.
-    done.sort(key=lambda r: (0 if drive.norm(r[6]) in pinned else 1,
+    done.sort(key=lambda r: (0 if norm(r[6]) in pinned else 1,
                              0 if r[4] else 1,
                              -(r[1] + r[9]) / (r[2] + r[10])))
 
@@ -298,7 +237,7 @@ def write_readme(rows, gio):
         # folder link: this repo is public, and pasting one in would expose
         # where the saves live, undoing the point of hiding the folder id in a
         # secret.
-        star = '⭐ ' if drive.norm(name) in pinned else ''
+        star = '⭐ ' if norm(name) in pinned else ''
         # Non-breaking spaces: the column is narrow enough that a name like
         # "Spice Re:Seasoned" would otherwise wrap.
         name = name.replace(' ', '&nbsp;')
@@ -378,12 +317,11 @@ def main():
     state = (json.load(open(STATE, encoding='utf-8'))
              if os.path.exists(STATE) else {'mods': {}, 'releases': {}})
 
-    print('== pulling saves ==')
-    odd_folders = []
-    saves = fetch_saves(odd_folders)
+    print('== reading saves ==')
+    saves = fetch_saves()
     if not saves:
-        sys.exit('No saves fetched. Either SAVES_DIR holds no pp_*.dat, or the '
-                 'Drive folder is no longer public.')
+        sys.exit('No saves found. saves/ holds no pp_*.dat, so either nothing '
+                 'has been pushed yet or SAVES_DIR points somewhere empty.')
 
     src = json.load(open(SOURCES, encoding='utf-8')) if os.path.exists(SOURCES) else {}
 
@@ -421,7 +359,7 @@ def main():
     print('\n== computing progress ==')
     from pvz.totals import NAME_MAP
     rows, changed, uncounted = [], [], []
-    for pkg, (path, _fid) in sorted(saves.items()):
+    for pkg, path in sorted(saves.items()):
         short = pkg.rsplit('_', 1)[-1]
         if not os.path.exists(worlds_path(pkg)):
             # A save with no level count: someone played a mod on a machine
@@ -430,7 +368,7 @@ def main():
             uncounted.append(short)
             name = NAME_MAP.get(short) or short
             rows.append((short, None, None, 'no level count yet', False, '',
-                         name, fetch_logo(name, short), '', 0, 0))
+                         name, logo(short), '', 0, 0))
             continue
         try:
             d = extract(path, pkg)
@@ -456,7 +394,7 @@ def main():
             json.dump(sp, open(worlds_path(pkg), 'w'), indent=1, ensure_ascii=False)
         rows.append((short, cur['done'], cur['total'], note,
                      bool(GH.search(rec.get('obb_url') or '')), _tag(rec), name,
-                     fetch_logo(name, short), link_release(rec, _tag(rec)),
+                     logo(short), link_release(rec, _tag(rec)),
                      d.get('quest_done') or 0, d.get('quest_total') or 0))
 
     open(os.path.join(HERE, 'README.md'), 'w', encoding='utf-8').write(
@@ -475,13 +413,6 @@ def main():
     if T:
         out.append(f'| **TOTAL** | **{D}/{T}** | **{QD}/{QT}** | '
                    f'**{D * 100 / T:.1f}%** | |')
-
-    if odd_folders:
-        out += ['', '> **Unrecognised Drive folders:** '
-                    + ', '.join(f'`{x}`' for x in odd_folders)
-                    + '. These are new mods not in the system yet. Run'
-                    + ' `python3 addmod.py` once on a machine with the mod'
-                    + ' installed, then commit the result.']
 
     # A hub's gates open sub-worlds that ship no world map of their own, so
     # their levels are in no total. Reflourished's Travel Log hides several
