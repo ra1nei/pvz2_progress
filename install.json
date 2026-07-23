@@ -1,0 +1,60 @@
+{
+ "_note": [
+  "Where each mod's APK and OBB come from. Written by `install_mod.py scan`,",
+  "which keeps any choice you already made.",
+  "",
+  "apk_id / apk_name  a file in the mod's public Drive folder",
+  "apk_url            a direct link, used when the mod publishes somewhere",
+  "                   scan cannot read: Requiem hands out MediaFire links",
+  "                   inside a text file, Spice ships from itch.io. Paste a",
+  "                   direct .apk link here and it installs like the others.",
+  "apk_sha256         recorded on first install. A change is reported before",
+  "                   installing, since that is both what a new build and a",
+  "                   swapped file look like.",
+  "obb_url            GitHub Releases, preferred: it carries a version.",
+  "obb_id / obb_name  a file in the Drive folder, used when GitHub has none."
+ ],
+ "adm": {
+  "obb_url": "https://github.com/TheShero/TheShero/releases/download/v1.0.2/main.675.com.ea.game.pvz2_adm.obb",
+  "apk_name": "Addendum1.0.2.apk",
+  "apk_id": "1FYw8MtX6s9i4-UBeH-FciexyhTW7KtRr"
+ },
+ "auz": {
+  "obb_url": "https://github.com/PvZ2OBBHost/PvZ2AltverZOBB/releases/download/v1.8.2d/main.675.com.ea.game.pvz2_auz.obb",
+  "apk_name": "AltverZ 1.8.2d.apk",
+  "apk_id": "1Q47bEUaL0gaIzLFuA0HNJCWIcuh8Tsfx"
+ },
+ "cld": {
+  "obb_url": "https://github.com/Milkypug2/pvz2collided/releases/download/v1.1.0/main.675.com.ea.game.pvz2_cld.obb",
+  "apk_choices": {
+   "Collided_30_FPS_Downloader.apk": "1dNcBXlBpe_tLKd0G_LnVoEJIH-TgKldA",
+   "Collided_60_FPS_Downloader.apk": "1bjdEiLhhpsgvMS2T64F1Vj14bZapqAVa"
+  },
+  "apk_name": "Collided_60_FPS_Downloader.apk",
+  "apk_id": "1bjdEiLhhpsgvMS2T64F1Vj14bZapqAVa"
+ },
+ "fln": {
+  "obb_url": "",
+  "apk_choices": {
+   "fallenAPK32.apk": "1yrE9F7hiWPa06_OldpG3oqc6_muCh6k0",
+   "fallenAPK64.apk": "1uQNQ6s3laqlk3PW2SXTzqvu_OTqcZ5fm"
+  },
+  "apk_name": "fallenAPK64.apk",
+  "apk_id": "1uQNQ6s3laqlk3PW2SXTzqvu_OTqcZ5fm",
+  "obb_name": "main.675.com.ea.game.pvz2_fln.obb",
+  "obb_id": "1GPxictYa4XnO0nvSbtbMTSK2yjLTbKBi"
+ },
+ "rfl": {
+  "obb_url": "https://github.com/lantern-fans/obbybackup/releases/download/1.4.2-R1/main.675.com.ea.game.pvz2_rfl.obb",
+  "apk_name": "PvZ2 Reflourished 1.4.2.apk",
+  "apk_id": "1rhnJA3zz_scB78fib5HPoNcEan-LNbMf"
+ },
+ "rqm": {
+  "obb_url": "https://github.com/PvZ2OBBHost/PvZ2RequiemOBB/releases/download/v1.2.2b/main.702.com.ea.game.pvz2_rqm.obb",
+  "apk_url": ""
+ },
+ "spi": {
+  "apk_url": "",
+  "obb_url": ""
+ }
+}
