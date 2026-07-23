@@ -53,6 +53,31 @@ def pick_device(adb, pkg):
     sys.exit(f'{pkg} is not installed on any connected device ({", ".join(devs)}).')
 
 
+def pick_device(adb, serials):
+    """Which device to work on when several answer.
+
+    BlueStacks shows up both as an emulator- serial and as a 127.0.0.1 port,
+    and on a machine running two instances those are not the same Android.
+    Taking whichever adb happened to list first meant an empty instance could
+    win and the whole run would report no mods installed, then work on the next
+    attempt. Preferring the one that actually has mods removes the coin toss.
+
+    Only asks when there is a choice, so the usual single-device case costs
+    nothing.
+    """
+    if len(serials) < 2:
+        return serials[0] if serials else None
+    mods = list_mods(adb)
+    best = max(serials, key=lambda d: len(mods.get(d, ('', []))[1]))
+    # Say so out loud. With two Androids answering, which one a command landed
+    # on is the first thing worth knowing when the answer looks wrong.
+    print('  more than one device answered, using the one with the mods:')
+    for d in serials:
+        n = len(mods.get(d, ('', []))[1])
+        print(f'    {"->" if d == best else "  "} {d:<18} {n} mod{"s" if n != 1 else ""}')
+    return best
+
+
 def list_mods(adb):
     """{serial: (model, [package pvz2...])}"""
     out = {}

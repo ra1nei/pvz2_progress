@@ -37,7 +37,7 @@ import subprocess
 import sys
 import time
 
-from pvz.device import devices, find_adb, list_mods, sh
+from pvz.device import pick_device, devices, find_adb, list_mods, sh
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SAVES = os.path.join(HERE, 'saves')
@@ -155,6 +155,75 @@ def cleared(path):
                for w in info.get('wmed', []))
 
 
+# ------------------------------------------------------- half-finished quests
+
+def quests_path(save_path):
+    """activequests/ beside the save, on the device."""
+    return os.path.dirname(save_path).replace(os.sep, '/') + '/activequests'
+
+
+def quests_local(sfx):
+    return os.path.join(SAVES, f'quests_{sfx}')
+
+
+def _tree(d):
+    """{relative path: contents} for a small directory, or None if absent."""
+    if not os.path.isdir(d):
+        return None
+    out = {}
+    for root, _dirs, files in os.walk(d):
+        for n in files:
+            p = os.path.join(root, n)
+            with open(p, 'rb') as f:
+                out[os.path.relpath(p, d).replace(os.sep, '/')] = f.read()
+    return out
+
+
+def quests_off(adb, dev, dpath, sfx):
+    """Device -> saves/quests_<sfx>. True when anything changed.
+
+    How far into a quest chain you are is not in pp.dat: the save records only
+    that a whole chain finished, so a run stopped at step 4 of 6 leaves nothing
+    behind there. The game keeps that here instead, under a thousand bytes of
+    it, and without carrying it the other machine starts the chain again.
+    """
+    stage = os.path.join(TMP, f'q_{sfx}')
+    shutil.rmtree(stage, ignore_errors=True)
+    os.makedirs(stage, exist_ok=True)
+    subprocess.run([adb, '-s', dev, 'pull', quests_path(dpath), stage],
+                   capture_output=True, text=True)
+    got = os.path.join(stage, 'activequests')
+    if not os.path.isdir(got):
+        return False                       # this mod keeps no active quests
+    stored = quests_local(sfx)
+    if _tree(got) == _tree(stored):
+        return False
+    shutil.rmtree(stored, ignore_errors=True)
+    shutil.copytree(got, stored)
+    return True
+
+
+def quests_on(adb, dev, dpath, sfx):
+    """saves/quests_<sfx> -> device, one file at a time.
+
+    Pushed per file rather than as a directory because adb disagrees with
+    itself across versions about where a pushed folder lands.
+    """
+    local = quests_local(sfx)
+    if not os.path.isdir(local):
+        return
+    remote = quests_path(dpath)
+    for root, _dirs, files in os.walk(local):
+        for name in files:
+            src = os.path.join(root, name)
+            rel = os.path.relpath(src, local).replace(os.sep, '/')
+            dst = f'{remote}/{rel}'
+            sh(adb, 'shell', f'mkdir -p "{os.path.dirname(dst)}"',
+               serial=dev, check=False)
+            subprocess.run([adb, '-s', dev, 'push', src, dst],
+                           capture_output=True)
+
+
 # ---------------------------------------------------------------- git
 
 def git(*args, check=True):
@@ -207,8 +276,31 @@ def commit_saves(msg):
 
 # ---------------------------------------------------------------- actions
 
-def to_device(adb, dev, paths):
-    """saves/ -> device. Returns True only if every mod landed."""
+def cleared_on_device(adb, dev, dpath):
+    """Cleared events in the save sitting on the device, or None if unreadable.
+
+    Unreadable covers the ordinary case of a mod installed but never opened,
+    which has no save yet.
+    """
+    os.makedirs(TMP, exist_ok=True)
+    tmp = os.path.join(TMP, 'check.dat')
+    if os.path.exists(tmp):
+        os.remove(tmp)
+    subprocess.run([adb, '-s', dev, 'pull', dpath, tmp],
+                   capture_output=True, text=True)
+    if not os.path.exists(tmp) or open(tmp, 'rb').read(4) != b'RTON':
+        return None
+    return cleared(tmp)
+
+
+def to_device(adb, dev, paths, force=False):
+    """saves/ -> device, refusing any mod that would lose progress.
+
+    The mirror of the guard in from_device, and it exists for the machine that
+    played without pushing afterwards. saves/ is normally the newest copy, so
+    overwriting the device is the whole point; the exception is a device
+    holding progress that never went up, which nothing could recover.
+    """
     refresh_saves()
     ok = True
     for pkg, dpath in sorted(paths.items()):
@@ -217,13 +309,30 @@ def to_device(adb, dev, paths):
         if not os.path.exists(src):
             print(f'  {sfx:<5} not in saves/ yet, leaving the device copy alone')
             continue
+
+        # Kept rather than refused: the device copy is the newer one, so the
+        # session can go ahead and the watch loop sends it up at the end. Only
+        # the overwrite is skipped. Counts alone cannot tell two machines that
+        # each played different levels apart, so say the number either way.
+        was = cleared(src)
+        now = cleared_on_device(adb, dev, dpath)
+        if now is not None and now > was and not force:
+            print(f'  {sfx:<5} KEPT: device has {now} cleared, saves/ has {was}. '
+                  f'This machine played without pushing.')
+            print(f'        Send it up with `sync.py push` before playing '
+                  f'elsewhere, or overwrite it anyway with --force.')
+            continue
+
         r = subprocess.run([adb, '-s', dev, 'push', src, dpath],
                            capture_output=True, text=True)
         if r.returncode != 0:
             print(f'  {sfx:<5} PUSH FAILED: {(r.stderr or r.stdout).strip()[:120]}')
             ok = False
         else:
-            print(f'  {sfx:<5} {cleared(src):>4} cleared -> device')
+            # The save and the quest state have to move together, or the game
+            # reads one machine's chain progress against another's profile.
+            quests_on(adb, dev, dpath, sfx)
+            print(f'  {sfx:<5} {was:>4} cleared -> device')
     return ok
 
 
@@ -245,6 +354,7 @@ def from_device(adb, dev, paths, force=False):
 
         now = cleared(dest)
         stored = os.path.join(SAVES, f'pp_{sfx}.dat')
+        moved = True
         if os.path.exists(stored):
             was = cleared(stored)
             # Fewer cleared levels than the committed copy means this machine
@@ -256,11 +366,19 @@ def from_device(adb, dev, paths, force=False):
                 print(f'        Keep the device copy anyway with --force.')
                 continue
             if now == was and open(stored, 'rb').read() == open(dest, 'rb').read():
-                print(f'  {sfx:<5} {now:>4} cleared, unchanged')
-                continue
-        shutil.copy2(dest, stored)
+                moved = False
+        if moved:
+            shutil.copy2(dest, stored)
+        # Taken in the same breath as the save, and refused in the same breath
+        # too: a quest chain half done can move on its own while the save does
+        # not, so it decides whether there is anything to commit as well.
+        quests = quests_off(adb, dev, dpath, sfx)
+        if not moved and not quests:
+            print(f'  {sfx:<5} {now:>4} cleared, unchanged')
+            continue
         changed.append(f'{sfx} {now}')
-        print(f'  {sfx:<5} {now:>4} cleared -> saves/')
+        print(f'  {sfx:<5} {now:>4} cleared -> saves/'
+              + ('' if moved else ', quest progress only'))
 
     if not changed or not commit_saves('saves: ' + ', '.join(changed)):
         print('  nothing to commit')
@@ -344,12 +462,12 @@ def main():
     ap.add_argument('--pkg', help='one package instead of every installed mod')
     ap.add_argument('--exe', help='emulator to launch, when it is not where it usually is')
     ap.add_argument('--force', action='store_true',
-                    help='push even when it would lose progress')
+                    help='ignore the progress guard, in whichever direction it fires')
     a = ap.parse_args()
 
     adb = find_adb()
     devs = connect(adb)
-    dev = a.device or (devs[0] if devs else None)
+    dev = a.device or pick_device(adb, devs)
 
     # `play` can start the emulator itself, so nothing being connected yet is
     # only fatal for the actions that need one right now.
@@ -376,13 +494,13 @@ def main():
             # itself is not open yet, so nothing is holding the save.
             print('\n== pulling the newest saves ==')
             paths = save_paths(adb, dev, installed_mods(adb, dev, a))
-            if not to_device(adb, dev, paths):
+            if not to_device(adb, dev, paths, a.force):
                 sys.exit('Pull failed. Close the emulator without playing: '
                          'playing now would be playing on an old save.')
         else:
             paths = save_paths(adb, dev, installed_mods(adb, dev, a))
             print('== pulling the newest saves ==')
-            if not to_device(adb, dev, paths):
+            if not to_device(adb, dev, paths, a.force):
                 sys.exit('Pull failed, not starting the emulator: playing now '
                          'would be playing on an old save.')
             if exe:
@@ -409,7 +527,7 @@ def main():
     if not paths:
         sys.exit('Found no save files on the device. '
                  'Run `sync.py find` to see where it looked.')
-    (to_device(adb, dev, paths) if a.action == 'pull'
+    (to_device(adb, dev, paths, a.force) if a.action == 'pull'
      else from_device(adb, dev, paths, a.force))
 
 
