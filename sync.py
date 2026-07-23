@@ -179,7 +179,7 @@ def _tree(d):
     return out
 
 
-def quests_off(adb, dev, dpath, sfx):
+def quests_off(adb, dev, dpath, sfx, cached=False):
     """Device -> saves/quests_<sfx>. True when anything changed.
 
     How far into a quest chain you are is not in pp.dat: the save records only
@@ -188,10 +188,11 @@ def quests_off(adb, dev, dpath, sfx):
     it, and without carrying it the other machine starts the chain again.
     """
     stage = os.path.join(TMP, f'q_{sfx}')
-    shutil.rmtree(stage, ignore_errors=True)
-    os.makedirs(stage, exist_ok=True)
-    subprocess.run([adb, '-s', dev, 'pull', quests_path(dpath), stage],
-                   capture_output=True, text=True)
+    if not cached:
+        shutil.rmtree(stage, ignore_errors=True)
+        os.makedirs(stage, exist_ok=True)
+        subprocess.run([adb, '-s', dev, 'pull', quests_path(dpath), stage],
+                       capture_output=True, text=True)
     got = os.path.join(stage, 'activequests')
     if not os.path.isdir(got):
         return False                       # this mod keeps no active quests
@@ -336,7 +337,7 @@ def to_device(adb, dev, paths, force=False):
     return ok
 
 
-def from_device(adb, dev, paths, force=False):
+def from_device(adb, dev, paths, force=False, cached=False):
     """Device -> saves/, refusing any mod that would lose progress."""
     refresh_saves()
     os.makedirs(TMP, exist_ok=True)
@@ -344,12 +345,15 @@ def from_device(adb, dev, paths, force=False):
     for pkg, dpath in sorted(paths.items()):
         sfx = pkg.rsplit('_', 1)[-1]
         dest = os.path.join(TMP, f'pp_{sfx}.dat')
-        if os.path.exists(dest):
-            os.remove(dest)
-        subprocess.run([adb, '-s', dev, 'pull', dpath, dest],
-                       capture_output=True, text=True)
+        if not cached:
+            if os.path.exists(dest):
+                os.remove(dest)
+            subprocess.run([adb, '-s', dev, 'pull', dpath, dest],
+                           capture_output=True, text=True)
         if not os.path.exists(dest) or open(dest, 'rb').read(4) != b'RTON':
-            print(f'  {sfx:<5} could not read the save off the device')
+            print(f'  {sfx:<5} ' + ('no copy was read before it closed'
+                                    if cached else
+                                    'could not read the save off the device'))
             continue
 
         now = cleared(dest)
@@ -372,7 +376,7 @@ def from_device(adb, dev, paths, force=False):
         # Taken in the same breath as the save, and refused in the same breath
         # too: a quest chain half done can move on its own while the save does
         # not, so it decides whether there is anything to commit as well.
-        quests = quests_off(adb, dev, dpath, sfx)
+        quests = quests_off(adb, dev, dpath, sfx, cached)
         if not moved and not quests:
             print(f'  {sfx:<5} {now:>4} cleared, unchanged')
             continue
@@ -410,16 +414,45 @@ def foreground_app(adb, dev):
     return m.group(1) if m else ''
 
 
+def stash(adb, dev, pkg, dpath):
+    """Keep a copy of a mod's save while it is still readable.
+
+    The emulator closing is the one moment nothing can be read off it any more,
+    and it is exactly when a session that never left the mod would otherwise be
+    lost: play one mod, close the emulator, and there was no moment at which
+    anything had been copied. So a copy is taken on every pass instead.
+
+    Reading a save from under a running game is harmless. It is writing one
+    underneath it that is not.
+    """
+    sfx = pkg.rsplit('_', 1)[-1]
+    os.makedirs(TMP, exist_ok=True)
+    dest = os.path.join(TMP, f'pp_{sfx}.dat')
+    tmp = dest + '.new'
+    subprocess.run([adb, '-s', dev, 'pull', dpath, tmp], capture_output=True)
+    if os.path.exists(tmp) and open(tmp, 'rb').read(4) == b'RTON':
+        os.replace(tmp, dest)              # only ever replace with a real save
+    elif os.path.exists(tmp):
+        os.remove(tmp)
+    stage = os.path.join(TMP, f'q_{sfx}')
+    shutil.rmtree(stage, ignore_errors=True)
+    os.makedirs(stage, exist_ok=True)
+    subprocess.run([adb, '-s', dev, 'pull', quests_path(dpath), stage],
+                   capture_output=True)
+
+
 def watch(adb, dev, paths, force=False, every=8):
-    """Push each mod's save as you leave it, then once more at the end.
+    """Push each mod's save as you leave it, and keep a copy while you play.
 
     Watching the foreground beats watching processes: Android keeps a game's
     process alive long after you have left it, so a dead process never arrives.
     Leaving a mod does, and the game writes its save on the way out.
 
-    A push that finds nothing changed costs nothing, so checking a little early
-    is harmless, and the sweep after the emulator closes catches anything the
-    game had not written yet.
+    Leaving is not the only way a session ends, though. Close the emulator with
+    the mod still open and there is no transition to notice, and by the time
+    the device is gone there is nothing left to read. So the mod in front is
+    copied on every pass, and that copy is what gets committed if the emulator
+    disappears.
     """
     print(f'  watching {dev}. Close the emulator when you are done.')
     prev = ''
@@ -427,8 +460,14 @@ def watch(adb, dev, paths, force=False, every=8):
         time.sleep(every)
         if dev not in devices(adb):
             print('  emulator closed')
+            if prev in paths:
+                sfx = prev.rsplit('_', 1)[-1]
+                print(f'  {sfx} was still open, committing the last copy read')
+                from_device(adb, dev, {prev: paths[prev]}, force, cached=True)
             break
         cur = foreground_app(adb, dev)
+        if cur in paths:
+            stash(adb, dev, cur, paths[cur])
         if prev in paths and cur != prev:
             print(f'\n  left {prev.rsplit("_", 1)[-1]}, saving it')
             time.sleep(4)                  # let the game finish writing
@@ -506,8 +545,12 @@ def main():
             if exe:
                 print(f'\n== {exe} is already running ==')
         watch(adb, dev, paths, a.force)
-        print('\n== final sweep ==')
-        from_device(adb, dev, paths, a.force)
+        # Only worth sweeping while the device is still there. Once it is gone
+        # every mod answers the same way, and the one that mattered has already
+        # been committed from the copy held during play.
+        if dev in devices(adb):
+            print('\n== final sweep ==')
+            from_device(adb, dev, paths, a.force)
         return
 
     mods = installed_mods(adb, dev, a)

@@ -2,7 +2,7 @@
 
 How far through each Plants vs. Zombies 2 mod I have got. The numbers are read out of my save files and out of each mod's own data, by a GitHub Action that keeps this page current on its own.
 
-Updated 2026-07-23 23:47 UTC+7 (16:47 UTC), refreshed every 6 hours. [Run log](https://github.com/ra1nei/pvz2_progress/actions/runs/30026638893).
+Updated 2026-07-23 23:51 UTC+7 (16:51 UTC), refreshed every 6 hours.
 
 <table>
 <tr><th></th><th>Mod</th><th>World</th><th>Quest</th><th>Progress</th><th>Left</th><th>Done</th><th>Updates</th></tr>
@@ -105,6 +105,12 @@ the next one.
 
 Any byte counts as a change, not just a finished level. Coins and the level you
 were last on move too, so a session where you cleared nothing still gets saved.
+
+Closing the emulator with the mod still open is not a transition, and by the
+time the device has gone there is nothing left to read off it. So a copy of
+whatever is in front is taken on every pass, and that copy is what gets
+committed if the emulator disappears. Reading a save from under a running game
+is harmless; it is writing one underneath it that is not.
 
 ### What travels, and what does not
 
@@ -407,6 +413,7 @@ the table which mods have content it cannot see.
 |---|---|
 | `No PvZ2 mods are installed on ...` | Nothing to sync yet, because the machine has none of the mods. Run `install.py auto` first; it reads `saves/` and fetches what you play. |
 | `No device` | The emulator is not running, or adb has not connected. The scripts try the usual ports themselves; if that fails, start the emulator first. |
+| `could not read the save off the device` | The emulator went away before that mod could be read. The one that was open is committed from the copy held during play; the rest simply had nothing new. |
 | `NOT FOUND` from `find` | That mod has never been opened here, so it has no save yet. Open it once. |
 | `REFUSED: device has N cleared, saves/ has M` | This machine has less progress than the stored copy, so it played on an old save. Nothing was overwritten. Sync and replay, or use `--force` if you are sure this copy is the one to keep. |
 | `KEPT: device has N cleared, saves/ has M` | The other way round: this machine played and never pushed, so fetching would have thrown those levels away. The device copy was left alone and playing can go ahead. Send it up with `sync.py push`. |
