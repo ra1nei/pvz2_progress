@@ -3,7 +3,7 @@
 import subprocess
 import sys
 
-import compat
+import pvz.net as compat
 
 def find_adb(required=True):
     p = compat.find_exe('adb')

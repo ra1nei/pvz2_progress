@@ -8,9 +8,10 @@ import json
 import os
 import sys
 
-from rton import decode
+import pvz.quests as quests
+from pvz.rton import decode
 
-HERE = os.path.dirname(os.path.abspath(__file__))
+from pvz import ROOT as HERE
 WORLDS_DIR = os.path.join(HERE, 'worlds')
 DEFAULT_PKG = 'com.ea.game.pvz2_cld'
 
@@ -25,7 +26,7 @@ def load_worlds(pkg=DEFAULT_PKG):
             return json.load(f).get('worlds', {})
     except FileNotFoundError:
         sys.exit(f'No level counts for {pkg} yet.\n'
-                 f'Run: python3 build_worlds.py {pkg}')
+                 f'Run: python3 -m pvz.worlds {pkg}')
 
 
 def player_info(save):
@@ -33,6 +34,15 @@ def player_info(save):
         if obj.get('objclass') == 'PlayerInfo':
             return obj.get('objdata', {})
     raise SystemExit('No PlayerInfo object in this save.')
+
+
+def load_quests(pkg=DEFAULT_PKG):
+    """The quest half of a mod's levels, or empty when it has no registry."""
+    try:
+        with open(worlds_path(pkg), encoding='utf-8') as f:
+            return json.load(f).get('_quest') or {}
+    except (OSError, ValueError):
+        return {}
 
 
 def extract(path, pkg=DEFAULT_PKG):
@@ -43,6 +53,13 @@ def extract(path, pkg=DEFAULT_PKG):
     done_by_world = {}
     for w in info.get('wmed', []):
         done_by_world[w.get('w')] = sorted(e['i'] for e in w.get('e', []) if 'i' in e)
+
+    q = load_quests(pkg)
+    quest_levels = dict(q.get('quest') or {})
+    # Quest levels that belong to a world rather than to an Epic chain: the
+    # end-of-world bonus levels Requiem hands out, and similar. They are not on
+    # the map, but they are world content, so they join the world total.
+    world_levels = dict(q.get('world') or {})
 
     # The denominator must include worlds not opened yet. Counting only the
     # worlds already touched inflates progress: finishing one world would read
@@ -69,6 +86,7 @@ def extract(path, pkg=DEFAULT_PKG):
             'world_id': wid,
             'name': meta.get('name') or f'World {wid} (missing from worlds.json)',
             'counted': meta.get('counted', True),
+            'hub': meta.get('reason') == 'reached through a hub',
             'done': len(hit),
             'total': meta.get('total'),
             'level_ids': ids,
@@ -83,7 +101,13 @@ def extract(path, pkg=DEFAULT_PKG):
     rows = [r for r in rows if r['counted'] or r['done']]
 
     counted = [r for r in rows if r['counted']]
-    missing = [r['world_id'] for r in counted if not r['total']]
+    # A world reached through a hub is not on the world map, so it belongs with
+    # the quest column rather than the world one. Reflourished's Travel Log is
+    # 251 levels behind a hub; leaving them in World took its verified 578 to
+    # 829 and hid the split the columns exist to show.
+    on_map = [r for r in counted if not r.get('hub')]
+    via_hub = [r for r in counted if r.get('hub')]
+    missing = [r['world_id'] for r in on_map if not r['total']]
 
     return {
         'missing_totals': missing,
@@ -99,6 +123,13 @@ def extract(path, pkg=DEFAULT_PKG):
         'costumes': len(info.get('cos', [])),
         'last_level': info.get('l', ''),
         'worlds': rows,
-        'done_total': sum(r['done'] for r in counted),
-        'grand_total': sum(r['total'] for r in counted if r['total']) or None,
+        'done_total': sum(r['done'] for r in on_map) + quests.completed(info, world_levels),
+        'grand_total': (sum(r['total'] for r in on_map if r['total'])
+                        + len(world_levels)) or None,
+        'world_extra': len(world_levels),
+        # The quest column. Kept separate from the world totals because its
+        # progress moves a whole chain at a time: the save records that a chain
+        # is finished and never which of its levels are.
+        'quest_done': quests.completed(info, quest_levels) + sum(r['done'] for r in via_hub),
+        'quest_total': len(quest_levels) + sum(r['total'] for r in via_hub if r['total']),
     }

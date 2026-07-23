@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Extract each mod's OBB download URL from its APK into sources.json.
 
-    python3 find_sources.py
+    python3 -m pvz.apk
 
-RUN THIS WHILE THE GAME IS STILL INSTALLED. Once it is gone, check_updates.py
+RUN THIS WHILE THE GAME IS STILL INSTALLED. Once it is gone, pvz/github.py
 can still use the saved URL to ask whether a newer release added levels, with
 nothing installed at all.
 
@@ -16,9 +16,9 @@ import re
 import subprocess
 import zipfile
 
-from adb_util import find_adb, list_mods, sh
+from pvz.device import find_adb, list_mods, sh
 
-HERE = os.path.dirname(os.path.abspath(__file__))
+from pvz import ROOT as HERE
 OUT = os.path.join(HERE, 'sources.json')
 
 URL_RE = re.compile(rb'https?://[A-Za-z0-9./_~:%-]{12,160}')

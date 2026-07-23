@@ -29,7 +29,7 @@ def decompress(blob):
             return zstandard.ZstdDecompressor().decompressobj().decompress(blob)
         except ImportError:
             pass
-        from compat import find_exe
+        from pvz.net import find_exe
         exe = find_exe('zstd')
         if not exe:
             sys.exit('This RSG uses zstd and no decompressor is available.\n'
@@ -79,7 +79,7 @@ class HttpReader:
         self.url = url
 
     def read(self, off, size):
-        from compat import http_range
+        from pvz.net import http_range
         return http_range(self.url, off, size)
 
 
@@ -145,7 +145,7 @@ class RSB:
         return out
 
     def rton(self, rsg_name, endswith):
-        from rton import RTON
+        from pvz.rton import RTON
         files = self.rsg_files(rsg_name)
         blob = next((v for k, v in files.items()
                      if k.upper().endswith(endswith.upper())), None)

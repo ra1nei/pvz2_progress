@@ -1,12 +1,12 @@
 {
  "mods": {
   "com.ea.game.pvz2_adm": {
-   "done": 81,
+   "done": 100,
    "total": 112
   },
   "com.ea.game.pvz2_auz": {
    "done": 42,
-   "total": 467
+   "total": 470
   },
   "com.ea.game.pvz2_cld": {
    "done": 65,
@@ -21,8 +21,8 @@
    "total": 578
   },
   "com.ea.game.pvz2_rqm": {
-   "done": 22,
-   "total": 184
+   "done": 23,
+   "total": 196
   },
   "com.ea.game.pvz2_spi": {
    "done": 3,

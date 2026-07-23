@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Read a publicly shared Drive folder, no authentication required.
 
-    python3 drive.py                    list mod folders and their pp.dat
-    python3 drive.py --pull             download every pp.dat into saves_drive/
+    python3 pvz/drive.py                    list mod folders and their pp.dat
+    python3 pvz/drive.py --pull             download every pp.dat into saves_drive/
 
 REQUIREMENT: the folder must be shared as "Anyone with the link". Switching it
 back to private breaks this path; saves then have to come from adb instead.
@@ -14,13 +14,15 @@ returning something wrong.
 import argparse
 import os
 import re
+import urllib.parse
 
-from compat import http_download, http_get
+import pvz.net as compat
+from pvz.net import http_download, http_get
 
 # Left blank on purpose: in a public repo a hard-coded id would make the save
 # folder findable by anyone. Supply it through the DRIVE_FOLDER_ID secret.
 ROOT_ID = os.environ.get('DRIVE_FOLDER_ID', "")
-HERE = os.path.dirname(os.path.abspath(__file__))
+from pvz import ROOT as HERE
 UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
 
 
@@ -54,6 +56,30 @@ def download(file_id, dest):
     if not ok and os.path.exists(dest):
         os.remove(dest)          # usually an HTML error page, not a save
     return ok
+
+
+def download_big(file_id, dest, progress=None):
+    """Download a large Drive file, streaming it to disk.
+
+    Anything past a few megabytes gets an HTML "Download warning" interstitial
+    instead of the file, because Drive will not virus-scan it. The real
+    download lives behind that page's form, so parse it and post the form back.
+    """
+    url = f'https://drive.google.com/uc?export=download&id={file_id}'
+    head = http_get(url, timeout=90)
+    if head[:1] != b'<':
+        n = compat.http_stream(url, dest, progress=progress)
+        return n if n else 0
+
+    page = head.decode('utf-8', 'replace')
+    m = re.search(r'<form[^>]*action="([^"]+)"', page)
+    if not m:
+        return 0
+    action = m.group(1).replace('&amp;', '&')
+    args = dict(re.findall(r'<input[^>]*name="([^"]+)"[^>]*value="([^"]*)"', page))
+    if not args:
+        return 0
+    return compat.http_stream(f'{action}?{urllib.parse.urlencode(args)}', dest, progress=progress)
 
 
 def norm(s):
@@ -91,7 +117,7 @@ def main():
             print(f'  {name:<45} pp.dat ok')
             continue
         # Name files by package suffix to match the rest of the pipeline.
-        from emit_totals import NAME_MAP
+        from pvz.totals import NAME_MAP
         sfx = next((k for k, v in NAME_MAP.items()
                     if norm(v) and norm(v) in norm(name)), norm(name))
         dest = os.path.join(d, f'pp_{sfx}.dat')

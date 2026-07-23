@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Ask whether a mod has shipped a new build, without the game installed.
 
-    python3 check_updates.py              # compare versions only, very fast
-    python3 check_updates.py --deep       # on a new build, recount the levels
+    python3 -m pvz.github              # compare versions only, very fast
+    python3 -m pvz.github --deep       # on a new build, recount the levels
 
 Uses the OBB URLs already extracted from each APK (sources.json, written by
-find_sources.py while the game was still installed), so this keeps working
+pvz/apk.py while the game was still installed), so this keeps working
 after the game is uninstalled.
 
 --deep reads the new OBB over HTTP Range: a few megabytes out of a gigabyte,
@@ -19,13 +19,13 @@ import re
 import sys
 import time
 
-from compat import http_get
+from pvz.net import http_get
 
-from build_worlds import build
-from pvz2_progress import worlds_path
-from rsb import HttpReader
+from pvz.worlds import build
+from pvz.save import worlds_path
+from pvz.rsb import HttpReader
 
-HERE = os.path.dirname(os.path.abspath(__file__))
+from pvz import ROOT as HERE
 SOURCES = os.path.join(HERE, 'sources.json')
 GH = re.compile(r'github\.com/([^/]+)/([^/]+)/releases/download/([^/]+)/(.+)$')
 
@@ -51,7 +51,7 @@ class RateLimited(Exception):
     pass
 
 
-def reset_sau():
+def reset_in():
     """Minutes until GitHub resets the rate limit."""
     try:
         d = json.loads(http_get('https://api.github.com/rate_limit').decode())
@@ -86,13 +86,13 @@ def diff_worlds(old, new):
     return out
 
 
-def cached_total(pkg):
+def cached_count(pkg):
     p = worlds_path(pkg)
     if not os.path.exists(p):
         return None, None
     d = json.load(open(p, encoding='utf-8'))
-    tot = sum(w['total'] for w in d['worlds'].values() if w['counted'])
-    return d, tot
+    total = sum(w['total'] for w in d['worlds'].values() if w['counted'])
+    return d, total
 
 
 def main():
@@ -104,21 +104,21 @@ def main():
     a = ap.parse_args()
 
     if not os.path.exists(SOURCES):
-        sys.exit('No sources.json yet. Run find_sources.py while the game '
+        sys.exit('No sources.json yet. Run pvz/apk.py while the game '
                  'is still installed.')
     src = json.load(open(SOURCES, encoding='utf-8'))
 
     try:
-        _kiem_tra(src, a)
+        _check(src, a)
     except RateLimited:
-        m = reset_sau()
+        m = reset_in()
         print(f'\n[!] GitHub rate limit hit (60/hour for anonymous callers).'
               f'{f" Try again in ~{m} min." if m is not None else ""}\n'
               f'    To lift it: create a token at github.com/settings/tokens\n'
               f'    (no scopes needed) then export GITHUB_TOKEN=...')
 
 
-def _kiem_tra(src, a):
+def _check(src, a):
     for pkg, rec in sorted(src.items()):
         if a.pkg and pkg != a.pkg:
             continue
@@ -138,11 +138,11 @@ def _kiem_tra(src, a):
             print(f'{short:<5} could not reach GitHub ({owner}/{repo})')
             continue
         tag = rel['tag_name']
-        cache, tot = cached_total(pkg)
+        cache, total = cached_count(pkg)
 
         if tag == have_tag:
             print(f'{short:<5} {have_tag:<12} up to date'
-                  f'{f"  ({tot} levels)" if tot else ""}')
+                  f'{f"  ({total} levels)" if total else ""}')
             continue
 
         asset = next((x for x in rel.get('assets', [])
@@ -162,7 +162,7 @@ def _kiem_tra(src, a):
             print(f'      could not read it: {type(e).__name__}: {e}')
             continue
         ntot = sum(w['total'] for w in new['worlds'].values() if w['counted'])
-        print(f'      {tot} -> {ntot} levels ({ntot - tot:+d})')
+        print(f'      {total} -> {ntot} levels ({ntot - total:+d})')
         for line in diff_worlds(cache, new):
             print(f'        {line}')
 

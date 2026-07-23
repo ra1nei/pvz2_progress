@@ -131,20 +131,26 @@ class RTON:
             return zigzag(r.varint())
         if t in (0x81, 0x82, 0x90, 0x91, 0x92, 0x93):
             return self.string(t)
-        if t == 0x83:                       # RTID
+        if t == 0x83:                       # RTID, a reference to another object
             sub = r.u8()
             if sub == 0x00:
                 return 'RTID(0)'
             if sub == 0x02:
-                i1 = r.varint()
-                i2 = r.varint()
-                name = self.string(r.u8())
-                return f'RTID({i2}.{i1}.{name}@?)'
+                # name@class, each a normal string, so either may be a
+                # reference into the string pool rather than spelled out.
+                a = self.string(r.u8())
+                b = self.string(r.u8())
+                return f'RTID({a}@{b})'
             if sub == 0x03:
-                i1 = r.varint()
-                i2 = r.varint()
-                h = r.take(4)[::-1].hex()
-                return f'RTID({i2}.{i1}.{h})'
+                # Same pair, but written inline as raw utf8 bodies with no type
+                # byte: a varint character count, a varint byte count, then the
+                # bytes. Reading this as two varints and four bytes, which is
+                # what it looked like, derailed the parse a few bytes later and
+                # made QUESTS.RTON unreadable in every mod.
+                def s():
+                    r.varint()
+                    return r.take(r.varint()).decode('utf-8', 'replace')
+                return f'RTID({s()}@{s()})'
             raise ValueError(f'RTID sub 0x{sub:02x} @ {r.i}')
         if t == 0x84:
             return None

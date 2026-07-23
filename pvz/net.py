@@ -53,6 +53,35 @@ def http_download(url, dest, timeout=180):
     return True
 
 
+def http_stream(url, dest, headers=None, timeout=300, progress=None):
+    """Download to a file in chunks. Returns bytes written, 0 on failure.
+
+    Separate from http_download because an OBB runs past a gigabyte and
+    http_get holds the whole body in memory first. Writes to <dest>.part and
+    renames at the end, so an interrupted download never looks complete.
+    """
+    req = urllib.request.Request(url, headers={'User-Agent': UA, **(headers or {})})
+    tmp = dest + '.part'
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r, open(tmp, 'wb') as f:
+            tong = int(r.headers.get('Content-Length') or 0)
+            done = 0
+            while True:
+                buf = r.read(1 << 20)
+                if not buf:
+                    break
+                f.write(buf)
+                done += len(buf)
+                if progress:
+                    progress(done, tong)
+        os.replace(tmp, dest)
+        return done
+    except Exception:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+        return 0
+
+
 # ---------------------------------------------------------------- locating binaries
 
 _HINTS = {
