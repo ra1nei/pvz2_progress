@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="620" viewBox="0 0 880 620" role="img" aria-labelledby="t d">
+<title id="t">How the progress number is produced</title>
+<desc id="d">The save file on the emulator becomes the top half of the fraction and the mod's OBB becomes the bottom half. Both are read by ci.py on GitHub Actions, which rewrites the table in README.md.</desc>
+<style>
+  .bg   { fill: #ffffff; }
+  .box  { fill: #f6f8fa; stroke: #d0d7de; stroke-width: 1; }
+  .boxa { fill: #ddf4ff; stroke: #54aeff; stroke-width: 1; }
+  .boxb { fill: #fff8c5; stroke: #d4a72c; stroke-width: 1; }
+  .boxc { fill: #dafbe1; stroke: #4ac26b; stroke-width: 1; }
+  .h    { fill: #1f2328; font: 600 15px -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .s    { fill: #59636e; font: 400 12.5px -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .m    { fill: #59636e; font: 400 12px ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .lbl  { fill: #1f2328; font: 500 12.5px ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .arr  { stroke: #8c959f; stroke-width: 1.6; fill: none; }
+  .ah   { stroke: #8c959f; fill: none; }
+  .cap  { fill: #59636e; font: italic 400 12px -apple-system, "Segoe UI", sans-serif; }
+  @media (prefers-color-scheme: dark) {
+    .bg   { fill: #0d1117; }
+    .box  { fill: #161b22; stroke: #30363d; }
+    .boxa { fill: #121d2f; stroke: #1f6feb; }
+    .boxb { fill: #272115; stroke: #9e6a03; }
+    .boxc { fill: #12261e; stroke: #238636; }
+    .h    { fill: #e6edf3; }
+    .s    { fill: #8b949e; }
+    .m    { fill: #8b949e; }
+    .lbl  { fill: #e6edf3; }
+    .arr  { stroke: #6e7681; }
+    .ah   { stroke: #6e7681; }
+  }
+</style>
+<defs>
+  <marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path class="ah" d="M2 1L8 5L2 9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+<rect class="bg" width="880" height="620"/>
+
+<text class="cap" x="230" y="34" text-anchor="middle">top half of the fraction: what you finished</text>
+<text class="cap" x="650" y="34" text-anchor="middle">bottom half: how many there are</text>
+
+<rect class="boxa" x="70" y="48" width="320" height="82" rx="6"/>
+<text class="h" x="230" y="76" text-anchor="middle">Your emulator</text>
+<text class="m" x="230" y="97" text-anchor="middle">pp.dat</text>
+<text class="s" x="230" y="116" text-anchor="middle">about 3KB, changes every time you play</text>
+
+<rect class="boxb" x="490" y="48" width="320" height="82" rx="6"/>
+<text class="h" x="650" y="76" text-anchor="middle">The mod's OBB</text>
+<text class="s" x="650" y="97" text-anchor="middle">on GitHub Releases, 700MB to 1.3GB</text>
+<text class="s" x="650" y="116" text-anchor="middle">changes only when the author rebuilds</text>
+
+<line class="arr" x1="230" y1="130" x2="230" y2="196" marker-end="url(#a)"/>
+<text class="lbl" x="242" y="156">sync_save.py play</text>
+<text class="s" x="242" y="174">pulls first, then pushes after</text>
+
+<line class="arr" x1="650" y1="130" x2="650" y2="196" marker-end="url(#a)"/>
+<text class="lbl" x="662" y="156">HTTP Range</text>
+<text class="s" x="662" y="174">reads a few MB, never the whole file</text>
+
+<rect class="box" x="70" y="198" width="320" height="76" rx="6"/>
+<text class="h" x="230" y="224" text-anchor="middle">saves/ in this repo</text>
+<text class="s" x="230" y="245" text-anchor="middle">one pp_&lt;mod&gt;.dat per mod, committed</text>
+<text class="s" x="230" y="262" text-anchor="middle">so every past version stays recoverable</text>
+
+<rect class="box" x="490" y="198" width="320" height="76" rx="6"/>
+<text class="h" x="650" y="224" text-anchor="middle">worlds/&lt;mod&gt;.json</text>
+<text class="s" x="650" y="245" text-anchor="middle">the level count, plus a fingerprint of</text>
+<text class="s" x="650" y="262" text-anchor="middle">the OBB so later runs re-read only on change</text>
+
+<path class="arr" d="M230 274 L230 320 L400 320 L400 356" marker-end="url(#a)"/>
+<path class="arr" d="M650 274 L650 320 L480 320 L480 356" marker-end="url(#a)"/>
+
+<rect class="boxc" x="280" y="358" width="320" height="76" rx="6"/>
+<text class="h" x="440" y="384" text-anchor="middle">GitHub Actions runs ci.py</text>
+<text class="s" x="440" y="405" text-anchor="middle">nothing runs on your own computer</text>
+<text class="s" x="440" y="422" text-anchor="middle">it commits the result straight back here</text>
+
+<rect class="box" x="640" y="358" width="200" height="76" rx="6" stroke-dasharray="4 3"/>
+<text class="h" x="740" y="382" text-anchor="middle">It runs when</text>
+<text class="s" x="740" y="401" text-anchor="middle">a save is pushed</text>
+<text class="s" x="740" y="418" text-anchor="middle">every 6 hours, or by hand</text>
+<line class="arr" x1="638" y1="396" x2="604" y2="396" marker-end="url(#a)"/>
+
+<line class="arr" x1="440" y1="434" x2="440" y2="486" marker-end="url(#a)"/>
+
+<rect class="box" x="280" y="488" width="320" height="66" rx="6"/>
+<text class="h" x="440" y="514" text-anchor="middle">The table in README.md</text>
+<text class="s" x="440" y="535" text-anchor="middle">rewritten from scratch on every run</text>
+
+<text class="cap" x="440" y="586" text-anchor="middle">The two halves change on completely different schedules, which is why they are fetched separately.</text>
+<text class="cap" x="440" y="604" text-anchor="middle">Playing moves the top half. Only a new release moves the bottom half.</text>
+</svg>

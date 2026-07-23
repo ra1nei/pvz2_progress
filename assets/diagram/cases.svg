@@ -1,0 +1,153 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="600" viewBox="0 0 880 600" role="img" aria-labelledby="t d">
+<title id="t">Which command to run in each situation</title>
+<desc id="d">Four situations side by side: playing a session, setting up a machine with no mods installed, applying an update, and adding a mod never played before. Each column lists the commands in order.</desc>
+<style>
+  .bg   { fill: #ffffff; }
+  .box  { fill: #f6f8fa; stroke: #d0d7de; stroke-width: 1; }
+  .hd1  { fill: #ddf4ff; stroke: #54aeff; stroke-width: 1; }
+  .hd2  { fill: #dafbe1; stroke: #4ac26b; stroke-width: 1; }
+  .hd3  { fill: #fff8c5; stroke: #d4a72c; stroke-width: 1; }
+  .hd4  { fill: #fbefff; stroke: #c297ff; stroke-width: 1; }
+  .warn { fill: #ffebe9; stroke: #ff8182; stroke-width: 1; }
+  .h    { fill: #1f2328; font: 600 14px -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .s    { fill: #59636e; font: 400 11.5px -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .cmd  { fill: #1f2328; font: 500 11.5px ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .arr  { stroke: #8c959f; stroke-width: 1.5; fill: none; }
+  .ah   { stroke: #8c959f; fill: none; }
+  .cap  { fill: #59636e; font: italic 400 11.5px -apple-system, "Segoe UI", sans-serif; }
+  @media (prefers-color-scheme: dark) {
+    .bg   { fill: #0d1117; }
+    .box  { fill: #161b22; stroke: #30363d; }
+    .hd1  { fill: #121d2f; stroke: #1f6feb; }
+    .hd2  { fill: #12261e; stroke: #238636; }
+    .hd3  { fill: #272115; stroke: #9e6a03; }
+    .hd4  { fill: #21162d; stroke: #8957e5; }
+    .warn { fill: #25171c; stroke: #f85149; }
+    .h    { fill: #e6edf3; }
+    .s    { fill: #8b949e; }
+    .cmd  { fill: #e6edf3; }
+    .arr  { stroke: #6e7681; }
+    .ah   { stroke: #6e7681; }
+    .cap  { fill: #8b949e; }
+  }
+</style>
+<defs>
+  <marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path class="ah" d="M2 1L8 5L2 9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+<rect class="bg" width="880" height="600"/>
+
+<!-- ============ lane 1: playing ============ -->
+<rect class="hd1" x="10" y="16" width="200" height="52" rx="6"/>
+<text class="h" x="110" y="38" text-anchor="middle">You just want to play</text>
+<text class="s" x="110" y="56" text-anchor="middle">the everyday case</text>
+
+<line class="arr" x1="110" y1="68" x2="110" y2="94" marker-end="url(#a)"/>
+<rect class="box" x="10" y="96" width="200" height="70" rx="6"/>
+<text class="cmd" x="110" y="120" text-anchor="middle">sync_save.py play</text>
+<text class="s" x="110" y="139" text-anchor="middle">pulls, opens the emulator,</text>
+<text class="s" x="110" y="155" text-anchor="middle">waits, pushes when you quit</text>
+
+<line class="arr" x1="110" y1="166" x2="110" y2="192" marker-end="url(#a)"/>
+<rect class="box" x="10" y="194" width="200" height="56" rx="6"/>
+<text class="s" x="110" y="216" text-anchor="middle">the push rebuilds</text>
+<text class="s" x="110" y="233" text-anchor="middle">the table by itself</text>
+
+<rect class="warn" x="10" y="272" width="200" height="88" rx="6"/>
+<text class="h" x="110" y="294" text-anchor="middle">Never</text>
+<text class="s" x="110" y="313" text-anchor="middle">run pull with a mod open.</text>
+<text class="s" x="110" y="329" text-anchor="middle">The game writes its save</text>
+<text class="s" x="110" y="345" text-anchor="middle">on exit and wipes yours.</text>
+
+<!-- ============ lane 2: fresh machine ============ -->
+<rect class="hd2" x="230" y="16" width="200" height="52" rx="6"/>
+<text class="h" x="330" y="38" text-anchor="middle">A machine with</text>
+<text class="h" x="330" y="56" text-anchor="middle">no mods on it</text>
+
+<line class="arr" x1="330" y1="68" x2="330" y2="94" marker-end="url(#a)"/>
+<rect class="box" x="230" y="96" width="200" height="70" rx="6"/>
+<text class="cmd" x="330" y="120" text-anchor="middle">install_mod.py auto</text>
+<text class="s" x="330" y="139" text-anchor="middle">reads saves/ to see what</text>
+<text class="s" x="330" y="155" text-anchor="middle">you play, then fetches it</text>
+
+<line class="arr" x1="330" y1="166" x2="330" y2="192" marker-end="url(#a)"/>
+<rect class="box" x="230" y="194" width="200" height="56" rx="6"/>
+<text class="s" x="330" y="216" text-anchor="middle">APK and OBB installed,</text>
+<text class="s" x="330" y="233" text-anchor="middle">your save put back</text>
+
+<line class="arr" x1="330" y1="250" x2="330" y2="276" marker-end="url(#a)"/>
+<rect class="box" x="230" y="278" width="200" height="82" rx="6" stroke-dasharray="4 3"/>
+<text class="h" x="330" y="300" text-anchor="middle">First time only</text>
+<text class="s" x="330" y="318" text-anchor="middle">no save folder exists yet:</text>
+<text class="s" x="330" y="334" text-anchor="middle">open the mod once, then</text>
+<text class="cmd" x="330" y="352" text-anchor="middle">sync_save.py pull</text>
+
+<!-- ============ lane 3: update ============ -->
+<rect class="hd3" x="450" y="16" width="200" height="52" rx="6"/>
+<text class="h" x="550" y="38" text-anchor="middle">A mod has</text>
+<text class="h" x="550" y="56" text-anchor="middle">a new build</text>
+
+<line class="arr" x1="550" y1="68" x2="550" y2="94" marker-end="url(#a)"/>
+<rect class="box" x="450" y="96" width="200" height="70" rx="6"/>
+<text class="cmd" x="550" y="120" text-anchor="middle">install_mod.py status</text>
+<text class="s" x="550" y="139" text-anchor="middle">shows installed version</text>
+<text class="s" x="550" y="155" text-anchor="middle">next to published one</text>
+
+<line class="arr" x1="550" y1="166" x2="550" y2="192" marker-end="url(#a)"/>
+<rect class="box" x="450" y="194" width="200" height="56" rx="6"/>
+<text class="cmd" x="550" y="215" text-anchor="middle">install_mod.py install cld</text>
+<text class="s" x="550" y="234" text-anchor="middle">when the two differ</text>
+
+<line class="arr" x1="550" y1="250" x2="550" y2="276" marker-end="url(#a)"/>
+<rect class="box" x="450" y="278" width="200" height="82" rx="6" stroke-dasharray="4 3"/>
+<text class="h" x="550" y="300" text-anchor="middle">If it is refused</text>
+<text class="s" x="550" y="318" text-anchor="middle">signature changed, so add</text>
+<text class="cmd" x="550" y="336" text-anchor="middle">--force</text>
+<text class="s" x="550" y="353" text-anchor="middle">your save is kept regardless</text>
+
+<!-- ============ lane 4: new mod ============ -->
+<rect class="hd4" x="670" y="16" width="200" height="52" rx="6"/>
+<text class="h" x="770" y="38" text-anchor="middle">A mod you have</text>
+<text class="h" x="770" y="56" text-anchor="middle">never played</text>
+
+<line class="arr" x1="770" y1="68" x2="770" y2="94" marker-end="url(#a)"/>
+<rect class="box" x="670" y="96" width="200" height="52" rx="6"/>
+<text class="s" x="770" y="118" text-anchor="middle">install it yourself, however</text>
+<text class="s" x="770" y="134" text-anchor="middle">its author publishes it</text>
+
+<line class="arr" x1="770" y1="148" x2="770" y2="170" marker-end="url(#a)"/>
+<rect class="box" x="670" y="172" width="200" height="48" rx="6"/>
+<text class="cmd" x="770" y="194" text-anchor="middle">add_mod.py</text>
+<text class="s" x="770" y="211" text-anchor="middle">counts its levels</text>
+
+<line class="arr" x1="770" y1="220" x2="770" y2="242" marker-end="url(#a)"/>
+<rect class="box" x="670" y="244" width="200" height="48" rx="6"/>
+<text class="cmd" x="770" y="266" text-anchor="middle">edit links.json</text>
+<text class="s" x="770" y="283" text-anchor="middle">where it is published</text>
+
+<line class="arr" x1="770" y1="292" x2="770" y2="314" marker-end="url(#a)"/>
+<rect class="box" x="670" y="316" width="200" height="48" rx="6"/>
+<text class="cmd" x="770" y="338" text-anchor="middle">install_mod.py scan</text>
+<text class="s" x="770" y="355" text-anchor="middle">finds its APK and OBB</text>
+
+<!-- ============ footer ============ -->
+<line class="arr" x1="20" y1="392" x2="860" y2="392" stroke-dasharray="3 4"/>
+
+<text class="h" x="20" y="424">Two details that catch people out</text>
+
+<rect class="box" x="20" y="440" width="410" height="86" rx="6"/>
+<text class="h" x="40" y="464">The table and your machine differ, and that is fine</text>
+<text class="s" x="40" y="484">The level count re-reads itself whenever a mod publishes a new</text>
+<text class="s" x="40" y="500">build. The copy installed on your machine only changes when you</text>
+<text class="s" x="40" y="516">install it. So the table can read v1.4.2 while yours says v1.4.0.</text>
+
+<rect class="box" x="450" y="440" width="410" height="86" rx="6"/>
+<text class="h" x="470" y="464">Why pulling before playing is not optional</text>
+<text class="s" x="470" y="484">Reach level 80 on one machine, then play on another whose save</text>
+<text class="s" x="470" y="500">still reads 65, and the next push erases level 80 without warning.</text>
+<text class="s" x="470" y="516">So play refuses to start at all if it could not sync first.</text>
+
+<text class="cap" x="440" y="560" text-anchor="middle">Blue badge in the table: the level count is re-checked against GitHub every run.</text>
+<text class="cap" x="440" y="578" text-anchor="middle">Amber badge: the mod publishes elsewhere, so nothing can watch it and the total may go stale.</text>
+</svg>
