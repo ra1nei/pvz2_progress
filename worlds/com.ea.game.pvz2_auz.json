@@ -2673,5 +2673,9 @@
    ]
   }
  },
- "_display_name": "Alternate UniverZ"
+ "_display_name": "Alternate UniverZ",
+ "_collection": {
+  "plants": 148,
+  "costumes": 611
+ }
 }

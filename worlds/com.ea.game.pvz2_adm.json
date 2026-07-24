@@ -983,5 +983,9 @@
    "reason": "hidden"
   }
  },
- "_display_name": "Addendum"
+ "_display_name": "Addendum",
+ "_collection": {
+  "plants": 168,
+  "costumes": 470
+ }
 }

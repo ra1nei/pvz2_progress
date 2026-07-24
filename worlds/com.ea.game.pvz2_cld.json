@@ -1936,5 +1936,9 @@
    "reason": "hidden"
   }
  },
- "_display_name": "Collided"
+ "_display_name": "Collided",
+ "_collection": {
+  "plants": 61,
+  "costumes": 394
+ }
 }

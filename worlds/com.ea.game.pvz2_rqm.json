@@ -1212,5 +1212,9 @@
    "excluded": []
   }
  },
- "_display_name": "Requiem"
+ "_display_name": "Requiem",
+ "_collection": {
+  "plants": 123,
+  "costumes": 376
+ }
 }

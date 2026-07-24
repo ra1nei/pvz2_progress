@@ -4793,5 +4793,9 @@
    "reason": "reached through a hub"
   }
  },
- "_display_name": "Reflourished"
+ "_display_name": "Reflourished",
+ "_collection": {
+  "plants": 188,
+  "costumes": 596
+ }
 }

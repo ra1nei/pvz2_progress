@@ -155,6 +155,49 @@ def svg_badge(text, auto):
             f'lengthAdjust="spacingAndGlyphs">{text}</text></svg>')
 
 
+# The box every logo is fitted inside. They range from 1.3:1 to 4:1, so one
+# fixed height makes the column as wide as the widest banner and leaves the
+# squarer ones looking tiny in it, while one fixed width shrinks the banners
+# instead. Fitting each inside a box makes every logo as large as it can be
+# without any of them setting the column's size for the rest.
+LOGO_BOX = (150, 80)
+
+
+def _img_size(path):
+    """(width, height) of a PNG or WebP, or None. Header bytes only."""
+    import struct
+    with open(path, 'rb') as f:
+        b = f.read(64)
+    try:
+        if b[:8] == b'\x89PNG\r\n\x1a\n':
+            return struct.unpack('>II', b[16:24])
+        if b[:4] == b'RIFF' and b[8:12] == b'WEBP':
+            if b[12:16] == b'VP8X':
+                return (int.from_bytes(b[24:27], 'little') + 1,
+                        int.from_bytes(b[27:30], 'little') + 1)
+            if b[12:16] == b'VP8 ':
+                w, h = struct.unpack('<HH', b[26:30])
+                return (w & 0x3fff, h & 0x3fff)
+            if b[12:16] == b'VP8L':
+                n = int.from_bytes(b[21:25], 'little')
+                return ((n & 0x3fff) + 1, ((n >> 14) & 0x3fff) + 1)
+    except Exception:
+        pass
+    return None
+
+
+def logo_img(rel):
+    """<img> for a logo, scaled to fit LOGO_BOX. Falls back to a plain width."""
+    if not rel:
+        return ''
+    d = _img_size(os.path.join(HERE, rel))
+    if not d or not d[1]:
+        return f'<img src="{rel}" width="{LOGO_BOX[0]}">'
+    bw, bh = LOGO_BOX
+    k = min(bw / d[0], bh / d[1])
+    return f'<img src="{rel}" width="{round(d[0] * k)}" height="{round(d[1] * k)}">'
+
+
 def logo(sfx):
     """The mod's logo under assets/logo, or None when it has none.
 
@@ -230,7 +273,53 @@ def write_readme(rows, gio):
          gio, '',
          '<table>',
          '<tr><th></th><th>Mod</th><th>World</th><th>Quest</th>'
-         '<th>Progress</th><th>Left</th><th>Done</th><th>Updates</th></tr>']
+         '<th>Collected</th><th>Progress</th><th>Done</th>'
+         '<th>Updates</th></tr>']
+
+    def collected(short):
+        """The Collected cell: plants and costumes, folded into a <details>.
+
+        Closed, the summary is the two owned counts on their own lines, which
+        is narrow enough that the disclosure triangle stays beside the first
+        one. Open, each becomes a fraction with a bar. No completion tick: it
+        was what pushed the widest row's triangle onto a line of its own, and
+        the fraction reads as complete without it once opened.
+        """
+        wp = os.path.join(HERE, 'worlds', f'com.ea.game.pvz2_{short}.json')
+        sp = os.path.join(HERE, 'saves', f'pp_{short}.dat')
+        if not (os.path.exists(wp) and os.path.exists(sp)):
+            return '<td></td>'
+        try:
+            col = json.load(open(wp, encoding='utf-8')).get('_collection') or {}
+            info = extract(sp, f'com.ea.game.pvz2_{short}')
+        except Exception:
+            return '<td></td>'
+        if not col.get('plants') and not col.get('costumes'):
+            return '<td></td>'
+
+        bar_d = os.path.join(HERE, 'assets', 'bar')
+        os.makedirs(bar_d, exist_ok=True)
+
+        def line(label, n, tot, kind):
+            if not tot:
+                return (f'<tr><td>{label}</td><td align="right">{n}</td>'
+                        f'<td></td></tr>')
+            pt = n / tot
+            open(os.path.join(bar_d, f'{short}_{kind}.svg'), 'w').write(
+                svg_bar(pt, w=90))
+            return (f'<tr><td>{label}</td>'
+                    f'<td align="right">{n}&nbsp;/&nbsp;{tot}</td>'
+                    f'<td><img src="assets/bar/{short}_{kind}.svg" width="90">'
+                    f'<br><sub>{round(pt * 100)}%</sub></td></tr>')
+
+        pl, plt = info.get('plants_unlocked') or 0, col.get('plants') or 0
+        co, cot = info.get('costumes') or 0, col.get('costumes') or 0
+        return ('<td align="center"><details>'
+                f'<summary>{pl}&nbsp;🌱<br>{co}&nbsp;🎩</summary>'
+                '<table>'
+                + line('Plants', pl, plt, 'p')
+                + line('Costumes', co, cot, 'c')
+                + '</table></details></td>')
 
     def name_cell(name, short):
         # The link is the mod's own source page, from links.json. Never a Drive
@@ -259,23 +348,25 @@ def write_readme(rows, gio):
         # with its worlds finished and its quests barely started is not the
         # 100% the world column alone would draw.
         pt = (done + qd) / (total + qt)
-        open(os.path.join(bar_dir, f'{short}.svg'), 'w').write(svg_bar(pt))
+        open(os.path.join(bar_dir, f'{short}.svg'), 'w').write(svg_bar(pt, w=110))
         open(os.path.join(tag_dir, f'{short}.svg'), 'w').write(
             svg_badge(tag or 'auto', True) if auto else svg_badge('manual', False))
-        img = f'<img src="{logo}" height="56">' if logo else ''
         # The badge links to the GitHub release it was read from, so the
         # version is checkable rather than something to take on faith.
         badge = f'<img src="assets/tag/{short}.svg" height="20">'
         if rel:
             badge = f'<a href="{rel}">{badge}</a>'
+        # By width, not height. These range from 1.3:1 to 4:1, so sizing by
+        # height made the column as wide as the widest banner and left the
+        # squarer ones looking tiny inside it.
+        img = logo_img(logo)
         return ('<tr>'
                 f'<td align="center">{img}</td>'
                 f'<td align="center">{name_cell(name, short)}</td>'
                 f'<td align="center">{done}&nbsp;/&nbsp;{total}'
                 f'<br>{round(done * 100 / total)}%</td>'
-                + quest_cell(qd, qt) +
-                f'<td align="center"><img src="assets/bar/{short}.svg" width="140"></td>'
-                f'<td align="right">{total - done + qt - qd}</td>'
+                + quest_cell(qd, qt) + collected(short) +
+                f'<td align="center"><img src="assets/bar/{short}.svg" width="110"></td>'
                 f'<td align="center">{"✅" if done >= total and qd >= qt else ""}</td>'
                 f'<td align="center">{badge}</td>'
                 '</tr>')
@@ -283,7 +374,7 @@ def write_readme(rows, gio):
     for r in done:
         L.append(row(r))
     for short, _d, _t, note, _a, _tg, name, logo, _rel, _qd, _qt in pending:
-        img = f'<img src="{logo}" height="56">' if logo else ''
+        img = logo_img(logo)
         L.append(f'<tr><td align="center">{img}</td>'
                  f'<td align="center">{name_cell(name, short)}</td>'
                  f'<td colspan="6">no level count yet</td></tr>')
@@ -294,9 +385,10 @@ def write_readme(rows, gio):
           'is the only granularity the save records. A dash means there is '
           'nothing to count: Requiem ships no registry at all, and Alternate '
           "UniverZ's quests are either switched off, repeating events, or "
-          'levels already on its maps. The bar, Left and the tick all count both '
-          'columns, '
-          'so a mod is only finished once its quests are too. '
+          'levels already on its maps. Collected opens where it sits, for the '
+          'plants and costumes that save holds against what the mod offers. '
+          'The bar and the tick both count World and Quest together, so a '
+          'mod is only finished once its quests are too. '
           'Mod names link to where the build came from. A blue badge links '
           'to the GitHub release the level count was read from, and is '
           're-checked every run. Amber means the mod ships its OBB outside '

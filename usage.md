@@ -369,6 +369,36 @@ entirely, along with the fifteen Travel Log worlds that replay past events:
 they are old content on rotation, not something to finish. Counting them left
 Reflourished short of 100% when in fact it was finished.
 
+### Plants and costumes
+
+The Collected column shows what a save holds against what its mod offers.
+Closed, it is the two owned counts; open it for the fractions and their bars.
+
+Plants start from the almanac, the list the game itself presents, rather than
+from `PLANTTYPES`, which holds everything built like a plant and so also holds
+level furniture: Reflourished's list ends with `servant_girl_tea_trap` and
+`carnie_minigame_coconutcannon`.
+
+Then the ones the mod switched off come out. Every mod here is built on the
+international game and keeps its data, so its almanac still describes plants it
+has no intention of handing out. `HideInPlantViewers` keeps a plant out of the
+almanac and `Enabled: false` removes it from the game; Reflourished sets one or
+the other on eighteen, all but one of them Mints. Marigold hides a third way,
+left switched on because other things still plant it, with its almanac data
+emptied so there is no page to show. Counting all three, a save its owner
+confirms holds everything on offer reads 188 of 188, against 207 before any of
+this was worked out.
+
+Costumes have no registry at all, so they are counted as the distinct costume
+items in the shop, which is where they exist.
+
+How many, never which ones. The numbers in a save are ids from a space the game
+keeps to itself, not positions in these lists: they run past the end of them,
+and a mod that reorders its plants makes any positional reading produce
+confident nonsense. So no name is ever put to a number.
+
+A mod whose OBB nothing can reach has an empty cell.
+
 ### What counts as a level
 
 The numbers are meant to match what the game shows on each world map, which

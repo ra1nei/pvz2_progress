@@ -3918,5 +3918,9 @@
    "reason": "hidden"
   }
  },
- "_display_name": "Solstice"
+ "_display_name": "Solstice",
+ "_collection": {
+  "plants": 93,
+  "costumes": 354
+ }
 }

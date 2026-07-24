@@ -1322,5 +1322,9 @@
    "reason": "hidden"
   }
  },
- "_display_name": "Penumbra"
+ "_display_name": "Penumbra",
+ "_collection": {
+  "plants": 90,
+  "costumes": 189
+ }
 }
