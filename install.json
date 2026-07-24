@@ -23,7 +23,8 @@
  "auz": {
   "obb_url": "https://github.com/PvZ2OBBHost/PvZ2AltverZOBB/releases/download/v1.8.2d/main.675.com.ea.game.pvz2_auz.obb",
   "apk_name": "AltverZ 1.8.2d.apk",
-  "apk_id": "1Q47bEUaL0gaIzLFuA0HNJCWIcuh8Tsfx"
+  "apk_id": "1Q47bEUaL0gaIzLFuA0HNJCWIcuh8Tsfx",
+  "apk_sha256": "d1954c554fa5e150dc7712b148982efe74a45c7f1b69c01b4f564abe7ad19f2b"
  },
  "cld": {
   "obb_url": "https://github.com/Milkypug2/pvz2collided/releases/download/v1.1.0/main.675.com.ea.game.pvz2_cld.obb",
@@ -32,7 +33,8 @@
    "Collided_60_FPS_Downloader.apk": "1bjdEiLhhpsgvMS2T64F1Vj14bZapqAVa"
   },
   "apk_name": "Collided_60_FPS_Downloader.apk",
-  "apk_id": "1bjdEiLhhpsgvMS2T64F1Vj14bZapqAVa"
+  "apk_id": "1bjdEiLhhpsgvMS2T64F1Vj14bZapqAVa",
+  "apk_sha256": "c5b3143a08724dc7738a68f8f16670a7814b50ac047f3df5c006828b0cb3b1e6"
  },
  "fln": {
   "obb_url": "",
@@ -43,7 +45,8 @@
   "apk_name": "fallenAPK64.apk",
   "obb_name": "main.675.com.ea.game.pvz2_fln.obb",
   "obb_id": "1GPxictYa4XnO0nvSbtbMTSK2yjLTbKBi",
-  "apk_id": "1uQNQ6s3laqlk3PW2SXTzqvu_OTqcZ5fm"
+  "apk_id": "1uQNQ6s3laqlk3PW2SXTzqvu_OTqcZ5fm",
+  "apk_sha256": "b6e8054302200154615c81296833a30d1629b277e9610b1425fb4120da2feb83"
  },
  "rfl": {
   "obb_url": "https://github.com/lantern-fans/obbybackup/releases/download/1.4.2-R1/main.675.com.ea.game.pvz2_rfl.obb",
@@ -67,7 +70,8 @@
   "obb_name": "main.675.com.ea.game.pvz2_sol.obb",
   "obb_id": "1trA4aQl-g3EBxOhA7Y_aAR_mQEIUjRJx",
   "apk_name": "Solstice_64Bit.apk",
-  "apk_id": "1-Oc8y8jDA1MPxWn3WpCWGmHvV-pcJbix"
+  "apk_id": "1-Oc8y8jDA1MPxWn3WpCWGmHvV-pcJbix",
+  "apk_sha256": "3ec562fce1da505395a2bf9d688ad75959b9d2ba44bc8a7f2021adb55f712611"
  },
  "pen": {
   "obb_url": "https://github.com/PvZ2OBBHost/PvZ2PenumbraOBB/releases/download/v1.3.1b/main.675.com.ea.game.pvz2_pen.obb",
