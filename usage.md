@@ -81,8 +81,19 @@ everything you played that sitting. A push that fails, on a dropped network
 say, is reported and stepped over: the commit is already here and rides up with
 the next one.
 
-Any byte counts as a change, not just a finished level. Coins and the level you
-were last on move too, so a session where you cleared nothing still gets saved.
+Nearly any byte counts as a change, not just a finished level. Coins, costumes,
+a plant unlocked, the level you were last on: a session where you cleared
+nothing still gets saved.
+
+Two exceptions, both things the game rewrites merely for having been opened.
+`lsc` in the save is a counter that goes up one per launch, and the 220-byte
+`_activequests.rton` holds a slot name, a hash regenerated on every write, and
+the GUID of the machine that last opened the mod. Opening a mod and closing it
+again used to commit on those alone. They are ignored when deciding whether
+anything happened, and nothing else is: the list is what has been watched
+changing on its own, so being wrong about one costs a spare commit rather than
+a lost session. The header is still synced, so a machine installing a mod for
+the first time gets a complete folder.
 
 Closing the emulator with the mod still open is not a transition, and by the
 time the device has gone there is nothing left to read off it. So a copy of

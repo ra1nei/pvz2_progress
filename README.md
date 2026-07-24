@@ -2,7 +2,7 @@
 
 How far through each Plants vs. Zombies 2 mod I have got. The numbers are read out of my save files and out of each mod's own data, by a GitHub Action that keeps this page current on its own.
 
-Updated 2026-07-24 09:14 UTC+7 (02:14 UTC), refreshed every 6 hours. [Run log](https://github.com/ra1nei/pvz2_progress/actions/runs/30061103464).
+Updated 2026-07-24 09:27 UTC+7 (02:27 UTC), refreshed every 6 hours.
 
 <table>
 <tr><th></th><th>Mod</th><th>World</th><th>Quest</th><th>Progress</th><th>Left</th><th>Done</th><th>Updates</th></tr>
@@ -103,8 +103,19 @@ everything you played that sitting. A push that fails, on a dropped network
 say, is reported and stepped over: the commit is already here and rides up with
 the next one.
 
-Any byte counts as a change, not just a finished level. Coins and the level you
-were last on move too, so a session where you cleared nothing still gets saved.
+Nearly any byte counts as a change, not just a finished level. Coins, costumes,
+a plant unlocked, the level you were last on: a session where you cleared
+nothing still gets saved.
+
+Two exceptions, both things the game rewrites merely for having been opened.
+`lsc` in the save is a counter that goes up one per launch, and the 220-byte
+`_activequests.rton` holds a slot name, a hash regenerated on every write, and
+the GUID of the machine that last opened the mod. Opening a mod and closing it
+again used to commit on those alone. They are ignored when deciding whether
+anything happened, and nothing else is: the list is what has been watched
+changing on its own, so being wrong about one costs a spare commit rather than
+a lost session. The header is still synced, so a machine installing a mod for
+the first time gets a complete folder.
 
 Closing the emulator with the mod still open is not a transition, and by the
 time the device has gone there is nothing left to read off it. So a copy of

@@ -72,11 +72,13 @@
  "pen": {
   "obb_url": "https://github.com/PvZ2OBBHost/PvZ2PenumbraOBB/releases/download/v1.3.1b/main.675.com.ea.game.pvz2_pen.obb",
   "apk_name": "PEN.apk",
-  "apk_id": "1ohDOrahJ9-ZIWJwcxiaMpGOqAuWJ6H4G"
+  "apk_id": "1ohDOrahJ9-ZIWJwcxiaMpGOqAuWJ6H4G",
+  "apk_sha256": "ecba74019848c34b51f825b396d99f92893991fd47e6c59a4d56014b5629549d"
  },
  "rsn": {
   "obb_url": "https://github.com/PvZ2OBBHost/PvZ2ResonanceOBB/releases/download/v1.2.1b/main.675.com.ea.game.pvz2_rsn.obb",
   "apk_name": "RSN.apk",
-  "apk_id": "1UyzLSOxDzXUxtQPCYWmKpjjWAE2sAaCC"
+  "apk_id": "1UyzLSOxDzXUxtQPCYWmKpjjWAE2sAaCC",
+  "apk_sha256": "0a2f2ed75eff3e2e3d08cdf7396c9f414ef8a5ef78530a5d3eb8a302766d072c"
  }
 }

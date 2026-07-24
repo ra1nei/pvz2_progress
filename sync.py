@@ -155,6 +155,44 @@ def cleared(path):
                for w in info.get('wmed', []))
 
 
+# Fields the game rewrites merely for having been opened, with nothing played.
+# Deny by default: only what has been watched change on its own goes here, so
+# being wrong about one costs an extra commit rather than a lost session.
+#   lsc  a counter, one higher every launch: 202, 204, 205 across rfl's history
+IDLE_FIELDS = {'lsc'}
+
+# Same idea for the quest folder. _activequests.rton is a 220-byte header
+# holding a slot name, a hash regenerated on every write, and the GUID of the
+# machine that last opened the mod. None of it is progress, and the GUID is
+# properly a property of the machine rather than of the save. Still synced, so
+# a fresh install gets a complete folder; just not compared.
+IDLE_QUEST_FILES = {'_activequests.rton'}
+
+
+def progress_of(path):
+    """A save reduced to what counts as progress, or None if unreadable.
+
+    Buying a costume, a plant, a coin, anything at all moves a field that is
+    not in IDLE_FIELDS and so still registers.
+    """
+    from pvz.rton import decode
+    from pvz.save import player_info
+    try:
+        info = player_info(decode(path)['data'])
+    except Exception:
+        return None
+    return {k: v for k, v in info.items() if k not in IDLE_FIELDS}
+
+
+def same_progress(a, b):
+    """True when two saves differ only in the fields that idle on their own."""
+    if open(a, 'rb').read() == open(b, 'rb').read():
+        return True
+    pa, pb = progress_of(a), progress_of(b)
+    # An unreadable save falls back to bytes, which called them different.
+    return pa is not None and pa == pb
+
+
 # ------------------------------------------------------- half-finished quests
 
 def quests_path(save_path):
@@ -173,6 +211,8 @@ def _tree(d):
     out = {}
     for root, _dirs, files in os.walk(d):
         for n in files:
+            if n in IDLE_QUEST_FILES:
+                continue
             p = os.path.join(root, n)
             with open(p, 'rb') as f:
                 out[os.path.relpath(p, d).replace(os.sep, '/')] = f.read()
@@ -369,7 +409,7 @@ def from_device(adb, dev, paths, force=False, cached=False):
                       f'{was}. This machine played on an old save.')
                 print(f'        Keep the device copy anyway with --force.')
                 continue
-            if now == was and open(stored, 'rb').read() == open(dest, 'rb').read():
+            if now == was and same_progress(stored, dest):
                 moved = False
         if moved:
             shutil.copy2(dest, stored)
