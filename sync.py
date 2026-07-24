@@ -501,7 +501,10 @@ def from_device(adb, dev, paths, force=False, cached=False):
                                   else ', profile only')
         print(f'  {sfx:<5} {now:>4} cleared -> saves/{extra}')
 
-    if not changed or not commit_saves('saves: ' + ', '.join(changed)):
+    # The commit message stays generic on purpose: this is a public repo, and
+    # the per-mod detail is printed here for you rather than written into the
+    # history. The count says how much moved without naming what.
+    if not changed or not commit_saves(f'saves: sync progress ({len(changed)})'):
         print('  nothing to commit')
         return
     print(f'  pushed: {", ".join(changed)}')
