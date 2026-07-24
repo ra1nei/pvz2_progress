@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1040" height="1220" viewBox="0 0 1040 1220" role="img" aria-labelledby="t d">
 <title id="t">What sync.py play does, branch by branch</title>
-<desc id="d">A flowchart of sync.py play: it connects to the emulator, copies the newest saves onto it, then watches the foreground and uploads each mod&#x27;s save as you leave it. Every refusal and skip is shown, with notes on the left explaining why each guard exists.</desc>
+<desc id="d">A flowchart of sync.py play: it connects to the emulator, copies the newest saves onto it, then watches the foreground and uploads each mod&#x27;s save on a half-hour timer and once at the end. Every refusal notes on the left explaining why each guard exists.</desc>
 <style>
   .bg   { fill: #ffffff; }
   .box  { fill: #f6f8fa; stroke: #d0d7de; stroke-width: 1; }
@@ -76,36 +76,34 @@
 <text class="s" x="787.5" y="545.8" text-anchor="middle">playing now would use an old save</text>
 <rect class="okb" x="325" y="524" width="250" height="42" rx="6"/>
 <text class="s" x="450.0" y="549.0" text-anchor="middle">N cleared -&gt; device</text>
-<rect class="box" x="305" y="608" width="290" height="58" rx="6"/>
-<text class="h" x="450.0" y="625.5" text-anchor="middle">watch the foreground</text>
-<text class="s" x="450.0" y="641.0" text-anchor="middle">reads the top app every 8 seconds</text>
-<text class="s" x="450.0" y="656.5" text-anchor="middle">until the emulator closes</text>
-<rect class="deci" x="305" y="712" width="290" height="48" rx="14"/>
-<text class="h" x="450.0" y="740.0" text-anchor="middle">did you just leave a mod?</text>
-<rect class="box" x="655" y="711" width="265" height="50" rx="6"/>
-<text class="h" x="787.5" y="732.2" text-anchor="middle">the emulator closed</text>
-<text class="s" x="787.5" y="747.8" text-anchor="middle">one final sweep of every mod</text>
-<rect class="box" x="325" y="806" width="250" height="46" rx="6"/>
-<text class="s" x="450.0" y="825.2" text-anchor="middle">waits 4 seconds for the game</text>
-<text class="s" x="450.0" y="840.8" text-anchor="middle">to finish writing its save</text>
-<rect class="deci" x="305" y="890" width="290" height="48" rx="14"/>
-<text class="h" x="450.0" y="918.0" text-anchor="middle">push that mod: which case?</text>
-<rect class="box" x="655" y="850" width="265" height="44" rx="6"/>
-<text class="mono" x="787.5" y="868.2" text-anchor="middle">could not read the save</text>
-<text class="s" x="787.5" y="883.8" text-anchor="middle">skipped, the final sweep retries</text>
-<rect class="stopb" x="655" y="906" width="265" height="56" rx="6"/>
-<text class="mono" x="787.5" y="922.5" text-anchor="middle">REFUSED</text>
-<text class="s" x="787.5" y="938.0" text-anchor="middle">the device holds LESS than saves/,</text>
-<text class="s" x="787.5" y="953.5" text-anchor="middle">so this machine is on an old save</text>
-<rect class="box" x="655" y="984" width="265" height="44" rx="6"/>
-<text class="mono" x="787.5" y="1002.2" text-anchor="middle">unchanged</text>
-<text class="s" x="787.5" y="1017.8" text-anchor="middle">same count, same bytes, no commit</text>
-<rect class="box" x="325" y="984" width="250" height="48" rx="6"/>
-<text class="h" x="450.0" y="1004.2" text-anchor="middle">commit and push saves/</text>
-<text class="s" x="450.0" y="1019.8" text-anchor="middle">a failed push is survived</text>
-<rect class="okb" x="305" y="1078" width="290" height="50" rx="6"/>
-<text class="h" x="450.0" y="1099.2" text-anchor="middle">the workflow rebuilds the table</text>
-<text class="s" x="450.0" y="1114.8" text-anchor="middle">a minute or two later</text>
+<rect class="box" x="305" y="600" width="290" height="56" rx="6"/>
+<text class="h" x="450.0" y="624.2" text-anchor="middle">watch the foreground</text>
+<text class="s" x="450.0" y="639.8" text-anchor="middle">copy the open mod every 8 seconds</text>
+<rect class="deci" x="305" y="688" width="290" height="48" rx="14"/>
+<text class="h" x="450.0" y="716.0" text-anchor="middle">emulator still up?</text>
+<rect class="box" x="655" y="660" width="265" height="56" rx="6"/>
+<text class="h" x="787.5" y="676.5" text-anchor="middle">closed, or Ctrl-C</text>
+<text class="s" x="787.5" y="692.0" text-anchor="middle">the session is ending, so</text>
+<text class="s" x="787.5" y="707.5" text-anchor="middle">this is the last push</text>
+<rect class="deci" x="305" y="776" width="290" height="48" rx="14"/>
+<text class="h" x="450.0" y="804.0" text-anchor="middle">30 minutes since the last push?</text>
+<rect class="box" x="305" y="864" width="290" height="56" rx="6"/>
+<text class="h" x="450.0" y="880.5" text-anchor="middle">push what moved</text>
+<text class="s" x="450.0" y="896.0" text-anchor="middle">one commit for the batch, from the</text>
+<text class="s" x="450.0" y="911.5" text-anchor="middle">device or the copies held on close</text>
+<rect class="box" x="655" y="824" width="265" height="44" rx="6"/>
+<text class="mono" x="787.5" y="842.2" text-anchor="middle">unchanged</text>
+<text class="s" x="787.5" y="857.8" text-anchor="middle">nothing moved, no commit</text>
+<rect class="stopb" x="655" y="878" width="265" height="56" rx="6"/>
+<text class="mono" x="787.5" y="894.5" text-anchor="middle">REFUSED</text>
+<text class="s" x="787.5" y="910.0" text-anchor="middle">the device holds LESS than saves/,</text>
+<text class="s" x="787.5" y="925.5" text-anchor="middle">so this machine is on an old save</text>
+<rect class="box" x="325" y="956" width="250" height="46" rx="6"/>
+<text class="h" x="450.0" y="975.2" text-anchor="middle">commit and push saves/</text>
+<text class="s" x="450.0" y="990.8" text-anchor="middle">a failed push is survived</text>
+<rect class="okb" x="305" y="1038" width="290" height="50" rx="6"/>
+<text class="h" x="450.0" y="1059.2" text-anchor="middle">the workflow rebuilds the table</text>
+<text class="s" x="450.0" y="1074.8" text-anchor="middle">a minute or two later</text>
 <path class="edge" d="M450.0 116 L450.0 146" marker-end="url(#a)"/>
 <path class="edge" d="M595 174.0 L653 174.0" marker-end="url(#a)"/>
 <text class="elbl" x="625.0" y="167.0" text-anchor="middle">no</text>
@@ -121,23 +119,22 @@
 <path class="edge" d="M625 448 L625 534 L653 534" marker-end="url(#a)"/>
 <path class="edge" d="M450.0 474 L450.0 522" marker-end="url(#a)"/>
 <text class="elbl" x="458.0" y="490.5" text-anchor="middle">saves/ is newer, the normal case</text>
-<path class="edge" d="M450.0 566 L450.0 606" marker-end="url(#a)"/>
-<path class="edge" d="M450.0 666 L450.0 710" marker-end="url(#a)"/>
-<path class="edge" d="M595 736.0 L653 736.0" marker-end="url(#a)"/>
-<text class="elbl" x="625.0" y="729.0" text-anchor="middle">gone</text>
-<path class="edge" d="M450.0 760 L450.0 804" marker-end="url(#a)"/>
-<text class="elbl" x="458.0" y="775.5" text-anchor="middle">yes</text>
-<path class="edge" d="M450.0 852 L450.0 888" marker-end="url(#a)"/>
-<path class="edge" d="M595 914.0 L653 872.0" marker-end="url(#a)"/>
-<path class="edge" d="M595 914 L625 914 L625 934 L653 934" marker-end="url(#a)"/>
-<path class="edge" d="M625 914 L625 1006 L653 1006" marker-end="url(#a)"/>
-<path class="edge" d="M450.0 938 L450.0 982" marker-end="url(#a)"/>
-<text class="elbl" x="458.0" y="953.5" text-anchor="middle">anything changed at all</text>
-<path class="edge" d="M450.0 1032 L450.0 1076" marker-end="url(#a)"/>
-<path class="edge" d="M325 1008 L272 1008 L272 637 L305 637" marker-end="url(#a)" stroke-dasharray="4 3"/>
-<text class="elbl" x="280" y="830" text-anchor="start">keeps watching</text>
-<path class="edge" d="M920 736 L972 736 L972 1078 L597 1078" marker-end="url(#a)"/>
-<text class="elbl" x="960" y="1070" text-anchor="end">sweeps, then finishes</text>
+<path class="edge" d="M450.0 566 L450.0 598" marker-end="url(#a)"/>
+<path class="edge" d="M450.0 656 L450.0 686" marker-end="url(#a)"/>
+<path class="edge" d="M595 712.0 L653 688.0" marker-end="url(#a)"/>
+<text class="elbl" x="625.0" y="705.0" text-anchor="middle">no</text>
+<path class="edge" d="M450.0 736 L450.0 774" marker-end="url(#a)"/>
+<text class="elbl" x="458.0" y="750.0" text-anchor="middle">yes</text>
+<path class="edge" d="M450.0 824 L450.0 862" marker-end="url(#a)"/>
+<text class="elbl" x="458.0" y="838.0" text-anchor="middle">yes, time to</text>
+<path class="edge" d="M920 688 L972 688 L972 886 L597 886" marker-end="url(#a)"/>
+<text class="elbl" x="966" y="780" text-anchor="end">push once more</text>
+<path class="edge" d="M595 892.0 L653 846.0" marker-end="url(#a)"/>
+<path class="edge" d="M595 892 L625 892 L625 934 L653 934" marker-end="url(#a)"/>
+<path class="edge" d="M450.0 920 L450.0 954" marker-end="url(#a)"/>
+<path class="edge" d="M450.0 1002 L450.0 1036" marker-end="url(#a)"/>
+<path class="edge" d="M305 800 L272 800 L272 628 L305 628" marker-end="url(#a)" stroke-dasharray="4 3"/>
+<text class="elbl" x="280" y="715" text-anchor="start">no, keep watching</text>
 <rect class="noteb" x="20" y="148" width="220" height="100" rx="6"/>
 <text class="h" x="130.0" y="171.0" text-anchor="middle">Why it pulls first</text>
 <text class="s" x="130.0" y="186.5" text-anchor="middle">Play on a stale save and the next</text>
@@ -155,15 +152,15 @@
 <text class="h" x="130.0" y="623.2" text-anchor="middle">Foreground, not process</text>
 <text class="s" x="130.0" y="638.8" text-anchor="middle">Android keeps a game alive long</text>
 <text class="s" x="130.0" y="654.2" text-anchor="middle">after you leave it, so a dead</text>
-<text class="s" x="130.0" y="669.8" text-anchor="middle">process never arrives. Leaving the</text>
-<text class="s" x="130.0" y="685.2" text-anchor="middle">mod does, and the game writes its</text>
-<text class="s" x="130.0" y="700.8" text-anchor="middle">save on the way out.</text>
-<rect class="noteb" x="20" y="880" width="220" height="116" rx="6"/>
-<text class="h" x="130.0" y="903.2" text-anchor="middle">Why it pushes per mod</text>
-<text class="s" x="130.0" y="918.8" text-anchor="middle">A session that ends badly then</text>
-<text class="s" x="130.0" y="934.2" text-anchor="middle">costs you the mod you were in, not</text>
-<text class="s" x="130.0" y="949.8" text-anchor="middle">everything you played. Any byte</text>
-<text class="s" x="130.0" y="965.2" text-anchor="middle">counts: coins and the last level</text>
-<text class="s" x="130.0" y="980.8" text-anchor="middle">move even when no level does.</text>
+<text class="s" x="130.0" y="669.8" text-anchor="middle">process never arrives. The copy</text>
+<text class="s" x="130.0" y="685.2" text-anchor="middle">each pass is what the closing</text>
+<text class="s" x="130.0" y="700.8" text-anchor="middle">push commits, the device by then gone.</text>
+<rect class="noteb" x="20" y="856" width="220" height="116" rx="6"/>
+<text class="h" x="130.0" y="879.2" text-anchor="middle">Why on a timer</text>
+<text class="s" x="130.0" y="894.8" text-anchor="middle">Pushing every time a mod left the</text>
+<text class="s" x="130.0" y="910.2" text-anchor="middle">foreground put a commit in the log</text>
+<text class="s" x="130.0" y="925.8" text-anchor="middle">for every glance at a pinata. One</text>
+<text class="s" x="130.0" y="941.2" text-anchor="middle">push every half hour sweeps it all</text>
+<text class="s" x="130.0" y="956.8" text-anchor="middle">into a single commit instead.</text>
 <text class="cap" x="520.0" y="1202" text-anchor="middle">Never run sync.py pull with a mod already open: the game writes its save on exit and would wipe what you just fetched.</text>
 </svg>

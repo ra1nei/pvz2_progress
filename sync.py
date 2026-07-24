@@ -15,9 +15,10 @@ not merely inconvenient: play on a stale save and the next push overwrites
 progress made on the other machine. So `play` pulls first, and refuses to start
 the emulator if that pull fails.
 
-It then watches, and each time you leave a mod its save goes up right away
-rather than waiting for the emulator to close. Quit a session badly and only
-the mod you were in at the time is at risk, instead of everything you played.
+It then watches, pushing whatever moved every half hour and once more when the
+session ends, by the emulator closing or by Ctrl-C. The mod in front is copied
+each pass, so the last push has something to commit even after the device is
+gone.
 
 Do not run `pull` with the mod open. The game holds its progress in memory and
 writes it out on exit, so anything pushed underneath it is overwritten the
@@ -561,41 +562,62 @@ def stash(adb, dev, pkg, dpath):
                    capture_output=True)
 
 
-def watch(adb, dev, paths, force=False, every=8):
-    """Push each mod's save as you leave it, and keep a copy while you play.
+def final_push(adb, dev, paths, seen, force):
+    """The push at the end of a session, however it ends.
 
-    Watching the foreground beats watching processes: Android keeps a game's
-    process alive long after you have left it, so a dead process never arrives.
-    Leaving a mod does, and the game writes its save on the way out.
-
-    Leaving is not the only way a session ends, though. Close the emulator with
-    the mod still open and there is no transition to notice, and by the time
-    the device is gone there is nothing left to read. So the mod in front is
-    copied on every pass, and that copy is what gets committed if the emulator
-    disappears.
+    With the emulator still up, on Ctrl-C, it reads the device straight: that
+    is authoritative. With the emulator gone it cannot, so it falls back to the
+    copy held in hand for each mod that was open this session, and to nothing
+    for mods that were not, rather than trusting a copy left over from a past
+    one.
     """
-    print(f'  watching {dev}. Close the emulator when you are done.')
-    prev = ''
-    while True:
-        time.sleep(every)
-        if dev not in devices(adb):
-            print('  emulator closed')
-            if prev in paths:
-                sfx = prev.rsplit('_', 1)[-1]
-                print(f'  {sfx} was still open, committing the last copy read')
-                from_device(adb, dev, {prev: paths[prev]}, force, cached=True)
-            break
-        cur = foreground_app(adb, dev)
-        if cur in paths:
-            stash(adb, dev, cur, paths[cur])
-        if prev in paths and cur != prev:
-            print(f'\n  left {prev.rsplit("_", 1)[-1]}, saving it')
-            time.sleep(4)                  # let the game finish writing
-            try:
-                from_device(adb, dev, {prev: paths[prev]}, force)
-            except SystemExit as e:
-                print(f'  [!] {e}\n      carrying on; the final sweep retries')
-        prev = cur
+    if dev in devices(adb):
+        from_device(adb, dev, paths, force)
+        return
+    only = {pkg: paths[pkg] for pkg in seen}
+    if only:
+        from_device(adb, dev, only, force, cached=True)
+    else:
+        print('  nothing was open long enough to have a copy')
+
+
+def watch(adb, dev, paths, force=False, every=8, interval=1800):
+    """Push on a timer and once at the end, never once per mod left.
+
+    Pushing every time a mod left the foreground put a commit in the log for
+    every glance at a piñata. Instead one push every `interval` seconds sweeps
+    whatever moved into a single commit, and a last one lands when the session
+    ends, by the emulator closing or by Ctrl-C.
+
+    The copy taken each pass is for that last one. Closing the emulator is no
+    transition to notice, and by the time the device is gone there is nothing
+    left to read, so the mod in front is kept in hand as you play. Watching the
+    foreground beats watching processes: Android keeps a game alive long after
+    you leave it, so a dead process never arrives.
+    """
+    mins = max(1, interval // 60)
+    print(f'  watching {dev}. It pushes every {mins} min, and once more when '
+          f'you close the emulator or press Ctrl-C.')
+    seen = set()
+    due = time.monotonic() + interval
+    try:
+        while True:
+            time.sleep(every)
+            if dev not in devices(adb):
+                print('  emulator closed')
+                break
+            cur = foreground_app(adb, dev)
+            if cur in paths:
+                stash(adb, dev, cur, paths[cur])
+                seen.add(cur)
+            if time.monotonic() >= due:
+                print(f'\n  {mins} min on, pushing what moved')
+                from_device(adb, dev, paths, force)
+                due = time.monotonic() + interval
+    except KeyboardInterrupt:
+        print('\n  stopping')
+    print('\n== final push ==')
+    final_push(adb, dev, paths, seen, force)
 
 
 # ---------------------------------------------------------------- entry
@@ -665,12 +687,6 @@ def main():
             if exe:
                 print(f'\n== {exe} is already running ==')
         watch(adb, dev, paths, a.force)
-        # Only worth sweeping while the device is still there. Once it is gone
-        # every mod answers the same way, and the one that mattered has already
-        # been committed from the copy held during play.
-        if dev in devices(adb):
-            print('\n== final sweep ==')
-            from_device(adb, dev, paths, a.force)
         return
 
     mods = installed_mods(adb, dev, a)

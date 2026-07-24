@@ -2,7 +2,7 @@
 
 How far through each Plants vs. Zombies 2 mod I have got. The numbers are read out of my save files and out of each mod's own data, by a GitHub Action that keeps this page current on its own.
 
-Updated 2026-07-24 12:27 UTC+7 (05:27 UTC), refreshed every 6 hours. [Run log](https://github.com/ra1nei/pvz2_progress/actions/runs/30069456807).
+Updated 2026-07-24 12:43 UTC+7 (05:43 UTC), refreshed every 6 hours.
 
 <table>
 <tr><th></th><th>Mod</th><th>World</th><th>Quest</th><th>Collected</th><th>Progress</th><th>Done</th><th>Updates</th></tr>
@@ -54,12 +54,12 @@ Everything below is one section per situation. Open the one you need.
 python3 sync.py play
 ```
 
-<img src="assets/diagram/play.svg" width="1040" alt="Flowchart of sync.py play: it starts the emulator if needed, copies the newest saves on, then watches the foreground and uploads each mod's save as you leave it. Shows the KEPT and REFUSED guards and the unchanged case.">
+<img src="assets/diagram/play.svg" width="1040" alt="Flowchart of sync.py play: it starts the emulator if needed, copies the newest saves on, then pushes whatever moved every half hour and once when the session ends. Shows the KEPT and REFUSED guards and the unchanged case.">
 
 This is the whole routine. It connects to the emulator, copies the newest saves
-onto it, starts it if it is not running, then watches. Each time you leave a
-mod, that mod's save goes up straight away, and everything is swept once more
-when the emulator closes. Those uploads are what refresh the table.
+onto it, starts it if it is not running, then watches. It pushes once every
+half hour, and once more when the session ends, by the emulator closing or by
+Ctrl-C in the terminal. Those uploads are what refresh the table.
 
 ### Why it fetches before it lets you play
 
@@ -88,20 +88,21 @@ symmetrical.
 | `KEPT` | the device holds **more** than `saves/`, so this machine played and never pushed | the overwrite is skipped, and the session carries on |
 
 `KEPT` is not an error. The copy on the device is the newer one, so playing is
-safe and the watch loop sends it up when you leave the mod. Both answer to
-`--force`, which is worth reaching for only when you know which copy you mean
-to keep.
+safe and the next push sends it up. Both answer to `--force`, which is worth
+reaching for only when you know which copy you mean to keep.
 
 The guard counts levels on world maps. If a machine only finished a quest chain
 and no map level, the two counts match and it cannot tell, so `sync.py push`
 before leaving a machine is still the tidiest habit.
 
-### Why it uploads per mod
+### Why on a timer, not per mod
 
-A session that ends badly then costs you at most the mod you were in, not
-everything you played that sitting. A push that fails, on a dropped network
-say, is reported and stepped over: the commit is already here and rides up with
-the next one.
+An earlier version pushed every time a mod left the foreground, which put a
+commit in the log for every glance at a piñata and read as noise. Now a single
+push every half hour sweeps whatever moved into one commit, and a last one
+lands when you finish. Fewer commits, each one a real chunk of a session. A
+push that fails, on a dropped network say, is reported and stepped over: the
+commit is already here and rides up with the next one.
 
 Nearly any byte counts as a change, not just a finished level. Coins, costumes,
 a plant unlocked, the level you were last on: a session where you cleared
@@ -117,11 +118,11 @@ changing on its own, so being wrong about one costs a spare commit rather than
 a lost session. The header is still synced, so a machine installing a mod for
 the first time gets a complete folder.
 
-Closing the emulator with the mod still open is not a transition, and by the
-time the device has gone there is nothing left to read off it. So a copy of
-whatever is in front is taken on every pass, and that copy is what gets
-committed if the emulator disappears. Reading a save from under a running game
-is harmless; it is writing one underneath it that is not.
+The final push reads the device straight when the emulator is still up, on
+Ctrl-C. When the emulator has closed there is nothing left to read, so a copy
+of the mod in front is taken on every pass while you play, and that copy is
+what the last push commits. Reading a save from under a running game is
+harmless; it is writing one underneath it that is not.
 
 ### What travels, and what does not
 
