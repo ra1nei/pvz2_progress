@@ -265,6 +265,80 @@ def quests_on(adb, dev, dpath, sfx):
                            capture_output=True)
 
 
+# ------------------------------------------------------- the profile itself
+
+# The files a fresh install needs before it will load pp.dat at all. pp.dat is
+# the progress, but on its own it is an orphan: the game keeps the register of
+# which profiles exist in local_profiles, and without that a launch starts a
+# new game on top of the save sitting right there. global_save_data is the
+# account-wide state beside it, .hash the checksum the game reads it against.
+# None carry a machine id, so all three travel.
+PROFILE_FILES = ['local_profiles', 'global_save_data', 'global_save_data.hash']
+
+
+def profile_dir(save_path):
+    return os.path.dirname(save_path).replace(os.sep, '/')
+
+
+def profile_local(sfx):
+    return os.path.join(SAVES, f'profile_{sfx}')
+
+
+def profile_off(adb, dev, dpath, sfx, cached=False):
+    """Device -> saves/profile_<sfx>. True when anything changed.
+
+    Only the register and the account state, never the save/ folder beside
+    them: that holds the board of a half-played level, tied to the machine
+    that drew it, and syncing it is the mess this whole tool replaced.
+    """
+    stage = os.path.join(TMP, f'p_{sfx}')
+    if not cached:
+        shutil.rmtree(stage, ignore_errors=True)
+        os.makedirs(stage, exist_ok=True)
+        base = profile_dir(dpath)
+        for name in PROFILE_FILES:
+            subprocess.run([adb, '-s', dev, 'pull', f'{base}/{name}',
+                            os.path.join(stage, name)], capture_output=True)
+    got = {n: open(os.path.join(stage, n), 'rb').read()
+           for n in PROFILE_FILES if os.path.exists(os.path.join(stage, n))}
+    if not got:
+        return False                       # nothing to carry for this mod yet
+    stored = profile_local(sfx)
+    have = {n: open(os.path.join(stored, n), 'rb').read()
+            for n in PROFILE_FILES if os.path.exists(os.path.join(stored, n))}
+    if got == have:
+        return False
+    shutil.rmtree(stored, ignore_errors=True)
+    os.makedirs(stored, exist_ok=True)
+    for n, body in got.items():
+        with open(os.path.join(stored, n), 'wb') as f:
+            f.write(body)
+    return True
+
+
+def profile_on(adb, dev, dpath, sfx):
+    """saves/profile_<sfx> -> device, unless the device already has a register.
+
+    Left alone when local_profiles is already there: a machine that has played
+    the mod has its own, current and correct, and overwriting it with another
+    machine's could strand a profile. This is for the fresh install, which has
+    none.
+    """
+    local = profile_local(sfx)
+    if not os.path.isdir(local):
+        return
+    base = profile_dir(dpath)
+    if is_save(adb, dev, f'{base}/local_profiles') or sh(
+            adb, 'shell', f'[ -f "{base}/local_profiles" ] && echo Y',
+            serial=dev, check=False).strip() == 'Y':
+        return
+    for name in PROFILE_FILES:
+        src = os.path.join(local, name)
+        if os.path.exists(src):
+            subprocess.run([adb, '-s', dev, 'push', src, f'{base}/{name}'],
+                           capture_output=True)
+
+
 # ---------------------------------------------------------------- git
 
 def git(*args, check=True):
@@ -373,6 +447,7 @@ def to_device(adb, dev, paths, force=False):
             # The save and the quest state have to move together, or the game
             # reads one machine's chain progress against another's profile.
             quests_on(adb, dev, dpath, sfx)
+            profile_on(adb, dev, dpath, sfx)
             print(f'  {sfx:<5} {was:>4} cleared -> device')
     return ok
 
@@ -417,12 +492,14 @@ def from_device(adb, dev, paths, force=False, cached=False):
         # too: a quest chain half done can move on its own while the save does
         # not, so it decides whether there is anything to commit as well.
         quests = quests_off(adb, dev, dpath, sfx, cached)
-        if not moved and not quests:
+        prof = profile_off(adb, dev, dpath, sfx, cached)
+        if not moved and not quests and not prof:
             print(f'  {sfx:<5} {now:>4} cleared, unchanged')
             continue
         changed.append(f'{sfx} {now}')
-        print(f'  {sfx:<5} {now:>4} cleared -> saves/'
-              + ('' if moved else ', quest progress only'))
+        extra = '' if moved else (', quest progress only' if quests
+                                  else ', profile only')
+        print(f'  {sfx:<5} {now:>4} cleared -> saves/{extra}')
 
     if not changed or not commit_saves('saves: ' + ', '.join(changed)):
         print('  nothing to commit')
