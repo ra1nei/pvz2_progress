@@ -156,6 +156,22 @@ def cleared(path):
                for w in info.get('wmed', []))
 
 
+def launches(path):
+    """The save's launch counter, lsc, which climbs by one every time the game
+    opens and never falls.
+
+    The freshness signal cleared levels cannot give: a mod finished on every
+    map has its cleared count pinned, so a session that only moves coins or
+    gems leaves it unchanged, and the level-count guard cannot tell that save
+    from the one in the repo. lsc still went up. Device lsc above the repo's
+    means the game was opened since the last sync, which is exactly when a
+    plain pull would overwrite what that session did.
+    """
+    from pvz.rton import decode
+    from pvz.save import player_info
+    return player_info(decode(path)['data']).get('lsc') or 0
+
+
 # Fields the game rewrites merely for having been opened, with nothing played.
 # Deny by default: only what has been watched change on its own goes here, so
 # being wrong about one costs an extra commit rather than a lost session.
@@ -392,8 +408,8 @@ def commit_saves(msg):
 
 # ---------------------------------------------------------------- actions
 
-def cleared_on_device(adb, dev, dpath):
-    """Cleared events in the save sitting on the device, or None if unreadable.
+def device_state(adb, dev, dpath):
+    """(cleared, lsc) of the save on the device, or None if unreadable.
 
     Unreadable covers the ordinary case of a mod installed but never opened,
     which has no save yet.
@@ -406,7 +422,7 @@ def cleared_on_device(adb, dev, dpath):
                    capture_output=True, text=True)
     if not os.path.exists(tmp) or open(tmp, 'rb').read(4) != b'RTON':
         return None
-    return cleared(tmp)
+    return cleared(tmp), launches(tmp)
 
 
 def to_device(adb, dev, paths, force=False):
@@ -428,16 +444,20 @@ def to_device(adb, dev, paths, force=False):
 
         # Kept rather than refused: the device copy is the newer one, so the
         # session can go ahead and the watch loop sends it up at the end. Only
-        # the overwrite is skipped. Counts alone cannot tell two machines that
-        # each played different levels apart, so say the number either way.
-        was = cleared(src)
-        now = cleared_on_device(adb, dev, dpath)
-        if now is not None and now > was and not force:
-            print(f'  {sfx:<5} KEPT: device has {now} cleared, saves/ has {was}. '
-                  f'This machine played without pushing.')
-            print(f'        Send it up with `sync.py push` before playing '
-                  f'elsewhere, or overwrite it anyway with --force.')
-            continue
+        # the overwrite is skipped. Ahead by cleared levels or by launches:
+        # the second catches a finished mod, whose levels cannot climb, played
+        # only for coins or gems.
+        st = device_state(adb, dev, dpath)
+        if st is not None and not force:
+            now, dlsc = st
+            if now > cleared(src) or dlsc > launches(src):
+                why = ('more cleared' if now > cleared(src)
+                       else f'opened since ({dlsc} vs {launches(src)} launches)')
+                print(f'  {sfx:<5} KEPT: the device is ahead, {why}. This '
+                      f'machine played without pushing.')
+                print(f'        Send it up with `sync.py push` before playing '
+                      f'elsewhere, or overwrite it anyway with --force.')
+                continue
 
         r = subprocess.run([adb, '-s', dev, 'push', src, dpath],
                            capture_output=True, text=True)
@@ -449,7 +469,7 @@ def to_device(adb, dev, paths, force=False):
             # reads one machine's chain progress against another's profile.
             quests_on(adb, dev, dpath, sfx)
             profile_on(adb, dev, dpath, sfx)
-            print(f'  {sfx:<5} {was:>4} cleared -> device')
+            print(f'  {sfx:<5} {cleared(src):>4} cleared -> device')
     return ok
 
 

@@ -2,7 +2,7 @@
 
 How far through each Plants vs. Zombies 2 mod I have got. The numbers are read out of my save files and out of each mod's own data, by a GitHub Action that keeps this page current on its own.
 
-Updated 2026-07-24 15:44 UTC+7 (08:44 UTC), refreshed every 6 hours. [Run log](https://github.com/ra1nei/pvz2_progress/actions/runs/30079990914).
+Updated 2026-07-24 16:51 UTC+7 (09:51 UTC), refreshed every 6 hours.
 
 <table>
 <tr><th></th><th>Mod</th><th>World</th><th>Quest</th><th>Collected</th><th>Progress</th><th>Done</th><th>Updates</th></tr>
@@ -91,9 +91,18 @@ symmetrical.
 safe and the next push sends it up. Both answer to `--force`, which is worth
 reaching for only when you know which copy you mean to keep.
 
-The guard counts levels on world maps. If a machine only finished a quest chain
-and no map level, the two counts match and it cannot tell, so `sync.py push`
-before leaving a machine is still the tidiest habit.
+"Ahead" is decided two ways. More cleared levels is the obvious one. But a mod
+finished on every map cannot clear another, so a session spent on it for coins
+or gems leaves the level count pinned; there the guard falls back to `lsc`, a
+counter in the save that climbs by one each time the game opens and never
+falls. A device that has been opened since the last sync reads higher there,
+which is exactly when a plain pull would overwrite what that session did.
+
+So forgetting to sync before you play is caught rather than silent: `play`
+notices on its opening pull and keeps the device copy. The tidy habit is still
+to run `sync.py play` first; but if you forget, end with `sync.py push` rather
+than `play`, since push uploads the device outright while play's first act is
+to fetch.
 
 ### Why on a timer, not per mod
 
@@ -458,7 +467,7 @@ the table which mods have content it cannot see.
 | `could not read the save off the device` | The emulator went away before that mod could be read. The one that was open is committed from the copy held during play; the rest simply had nothing new. |
 | `NOT FOUND` from `find` | That mod has never been opened here, so it has no save yet. Open it once. |
 | `REFUSED: device has N cleared, saves/ has M` | This machine has less progress than the stored copy, so it played on an old save. Nothing was overwritten. Sync and replay, or use `--force` if you are sure this copy is the one to keep. |
-| `KEPT: device has N cleared, saves/ has M` | The other way round: this machine played and never pushed, so fetching would have thrown those levels away. The device copy was left alone and playing can go ahead. Send it up with `sync.py push`. |
+| `KEPT: the device is ahead` | This machine played and never pushed, so fetching would have thrown that away. Detected by more cleared levels, or by a higher launch count when the levels are maxed and only coins or gems moved. The device copy is left alone and playing can go ahead; send it up with `sync.py push`. |
 | `Pull failed, not starting the emulator` | Saves could not be brought up to date, so playing now risks losing another machine's progress. Usually network or git. |
 | `this APK changed since last time` | The file at that link is not the one installed before. Nearly always a new build, but it is also what a swapped file looks like, so it gets reported. |
 | `GitHub rate limit hit` | Anonymous API calls are capped at 60/hour. Progress still updates; only the release check is skipped that run. |
