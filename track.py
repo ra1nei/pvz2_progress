@@ -336,11 +336,11 @@ def write_readme(rows, gio):
     def quest_cell(qd, qt):
         # Blank rather than 0/0 when a mod has no quest registry: Requiem ships
         # none, and a zero there would read as nothing done rather than
-        # nothing to do.
+        # nothing to do. No percentage: the World and Quest cells carry only
+        # their counts, and the one figure that covers both sits under the bar.
         if not qt:
             return '<td align="center">-</td>'
-        return (f'<td align="center">{qd}&nbsp;/&nbsp;{qt}'
-                f'<br>{round(qd * 100 / qt)}%</td>')
+        return f'<td align="center">{qd}&nbsp;/&nbsp;{qt}</td>'
 
     def row(r):
         short, done, total, note, auto, tag, name, logo, rel, qd, qt = r
@@ -363,10 +363,10 @@ def write_readme(rows, gio):
         return ('<tr>'
                 f'<td align="center">{img}</td>'
                 f'<td align="center">{name_cell(name, short)}</td>'
-                f'<td align="center">{done}&nbsp;/&nbsp;{total}'
-                f'<br>{round(done * 100 / total)}%</td>'
+                f'<td align="center">{done}&nbsp;/&nbsp;{total}</td>'
                 + quest_cell(qd, qt) + collected(short) +
-                f'<td align="center"><img src="assets/bar/{short}.svg" width="110"></td>'
+                f'<td align="center"><img src="assets/bar/{short}.svg" width="110">'
+                f'<br>{round(pt * 100)}%</td>'
                 f'<td align="center">{"✅" if done >= total and qd >= qt else ""}</td>'
                 f'<td align="center">{badge}</td>'
                 '</tr>')
