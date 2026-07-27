@@ -189,15 +189,16 @@ def summary(path, pkg):
                 'coins': i.get('c') or 0, 'gems': i.get('g') or 0}
 
 
-def summary_line(name, before, after):
-    """One body line: each field as new, or old->new when it moved."""
+def summary_block(name, before, after):
+    """The mod on its own line, then one field per line under it: each shown
+    as new, or old->new when it moved."""
     def fld(key):
         b, a = (before or {}).get(key), after.get(key)
         if a is None:
             return None
-        return f'{key} {b}->{a}' if before and b != a else f'{key} {a}'
+        return f'  {key} {b}->{a}' if before and b != a else f'  {key} {a}'
     parts = [fld(k) for k in ('world', 'quest', 'plants', 'costumes', 'coins', 'gems')]
-    return f'{name}: ' + '  '.join(p for p in parts if p)
+    return f'{name}:\n' + '\n'.join(p for p in parts if p)
 
 
 
@@ -566,7 +567,7 @@ def from_device(adb, dev, paths, force=False, cached=False):
     # old->new where they changed. The public log then reads as a changelog of
     # progress rather than a wall of identical lines.
     names = ', '.join(display_name(sfx) for sfx, _b, _a in changed)
-    body = '\n'.join(summary_line(display_name(sfx), b, a) for sfx, b, a in changed)
+    body = '\n\n'.join(summary_block(display_name(sfx), b, a) for sfx, b, a in changed)
     if not commit_saves(f'saves: {names}\n\n{body}'):
         print('  nothing to commit')
         return
