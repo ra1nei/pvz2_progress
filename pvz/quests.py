@@ -81,12 +81,19 @@ def _find_registry(rsb):
     return None
 
 
-def read(rsb, on_map):
+def read(rsb, on_map, dead_worlds=()):
     """{'levels': {level: quest uid}, 'world': [...], 'quest': [...]}.
 
-    `tren_map` is every level the world map already shows. Returns the levels
-    it does not, split by which column they belong to.
+    `on_map` is every level the world map already shows. Returns the levels it
+    does not, split by which column they belong to.
+
+    `dead_worlds` are worlds the map does not count: coming-soon, disabled, old
+    event replays, and hidden worlds no gate leads to. A quest that points at a
+    level inside one of these is pointing at content the game never lets the
+    player reach, so it is dropped rather than counted. Addendum keeps two such
+    quests against its hidden Modern Day world and the game offers neither.
     """
+    dead = {str(w).lower() for w in dead_worlds}
     from pvz.rton import RTON
     blob = _find_registry(rsb)
     if blob is None:
@@ -130,6 +137,8 @@ def read(rsb, on_map):
             continue
         n = _key(x['LevelName'])
         if n in mapped:
+            continue
+        if n.split('/')[0] in dead:
             continue
         col = ('quest' if parent_kind == 'EpicQuestData'
                or cat in ('Epic', 'PremiumPlant') else 'world')

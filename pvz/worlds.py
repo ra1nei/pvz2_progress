@@ -149,6 +149,20 @@ def build(reader, fingerprint):
                 if t:
                     gates.add(t)
 
+    # Worlds the map does not count: coming-soon, switched off, an old event
+    # replay, or hidden with no gate leading in. The last is leftover vanilla
+    # data, and the quest registry still carries quests pointing into it.
+    # Addendum hides its Modern Day world 'outcast' this way, and files two
+    # Epic quests (Mr. Gargantuar, Witch Hazel) against a level inside it that
+    # the game therefore never offers. A quest whose level sits in one of these
+    # worlds is as uncountable as the world itself, so name them for quests.read.
+    dead_worlds = set()
+    for m in maplist:
+        nm = str(m['MapName']).lower()
+        if (m.get('ComingSoon') or m.get('Disabled') or is_lte_replay(m)
+                or (m.get('Hidden') and nm not in gates)):
+            dead_worlds.add(nm)
+
     worlds, order, on_map = {}, 0, []
     for m in maplist:
         nm = m['MapName']
@@ -218,7 +232,7 @@ def build(reader, fingerprint):
     # the world counts rather than added in, because the save records quest
     # progress by whole chains and map progress level by level.
     import pvz.quests as quests
-    q = quests.read(rsb, on_map) or {'world': {}, 'quest': {}}
+    q = quests.read(rsb, on_map, dead_worlds) or {'world': {}, 'quest': {}}
 
     from pvz import collection
     return {'_fingerprint': fingerprint, '_quest': q,
