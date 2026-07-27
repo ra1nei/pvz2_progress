@@ -430,19 +430,74 @@ def played_mods():
     return [s for _, s in sorted(out, reverse=True)]
 
 
+def _norm_ver(s):
+    """A version string reduced to something comparable: no leading v, folded."""
+    return re.sub(r'^v', '', str(s).strip().casefold())
+
+
+def _same_line(a, b):
+    """Do two versions share a leading number, i.e. count the same way.
+
+    A mod either versions its own build (Penumbra's APK reads 1.3.0, its
+    release is tagged v1.3.1b) or leaves the versionName at the base game's
+    (Addendum reads 9.6.1 while its release is v1.0.2). Only the first can be
+    compared against the tag; the second would always look out of date. The
+    leading number tells them apart: 1 against 1 is the mod's own scheme, 1
+    against 9 is the base game's, and there is nothing to compare.
+    """
+    ga, gb = re.match(r'(\d+)', _norm_ver(a)), re.match(r'(\d+)', _norm_ver(b))
+    return bool(ga and gb and ga.group(1) == gb.group(1))
+
+
+def behind(adb, dev, sfx, rec):
+    """What a machine would gain by reinstalling this mod, as a short phrase.
+
+    Answers 'is what I have here older than what install.py would put down',
+    which is device against the repo's pinned build, not the repo against the
+    newest release upstream (that is `python3 -m pvz.github`). Two signals:
+
+      - the APK version, when the mod stamps its own onto versionName and the
+        release tag carries a version to compare it with. This is the only one
+        that catches an APK-only update, which is what Penumbra's 1.3.1b was:
+        the OBB never changed, so nothing on disk gives it away.
+      - the OBB, by name and size against the published asset. The fallback for
+        every mod that keeps the base game's versionName, where the APK version
+        says nothing. Needs a GitHub call, so it is best-effort and skipped in
+        silence when the network or the rate limit does not allow it.
+    """
+    pkg = PKG.format(sfx)
+    co, ver = installed(adb, dev, pkg)
+    if not co:
+        return None
+    reasons = []
+    m = GH.search(rec.get('obb_url') or '')
+    tag = m.group(3) if m else None
+    if tag and ver and _same_line(ver, tag) and _norm_ver(ver) != _norm_ver(tag):
+        reasons.append(f'APK {ver} -> {tag.lstrip("v")}')
+    try:
+        want_name, want_size = obb_wanted(rec)
+        have_name, have_size = obb_on_device(adb, dev, pkg)
+        if want_name and want_size and (have_name != want_name or have_size != want_size):
+            reasons.append(f'OBB {have_size // 1048576}MB -> {want_size // 1048576}MB')
+    except Exception:
+        pass
+    return '; '.join(reasons) or None
+
+
 def status(adb, dev, cfg):
-    print(f'{"mod":<6}{"on device":<14}{"APK available":<34}{"OBB"}')
+    print(f'{"mod":<6}{"on device":<14}{"published":<12}{"OBB":<9}{"update"}')
     print('-' * 74)
     for sfx in sorted(cfg):
         if sfx.startswith('_'):
             continue
+        rec = cfg[sfx]
         co, ver = installed(adb, dev, PKG.format(sfx))
         _n, size = obb_on_device(adb, dev, PKG.format(sfx))
-        rec = cfg[sfx]
-        apk = rec.get('apk_name') or (f'{len(rec["apk_choices"])} to pick from'
-                                      if rec.get('apk_choices') else 'none')
-        print(f'{sfx:<6}{(ver or "-") if co else "not installed":<14}{apk[:33]:<34}'
-              f'{f"{size / 1048576:.0f}MB" if size else "-"}')
+        m = GH.search(rec.get('obb_url') or '')
+        pub = m.group(3).lstrip('v') if m else '-'
+        upd = behind(adb, dev, sfx, rec) if co else ''
+        print(f'{sfx:<6}{(ver or "-") if co else "not installed":<14}{pub:<12}'
+              f'{f"{size / 1048576:.0f}MB" if size else "-":<9}{upd or "up to date" if co else "-"}')
 
 
 def keymaps(only, force=False):
