@@ -29,7 +29,6 @@ import subprocess
 import sys
 
 import pvz.drive as drive
-from pvz import norm
 from pvz.device import pick_device, find_adb, sh
 from pvz.github import GH, latest_release
 from pvz import keymap
@@ -67,23 +66,9 @@ def progress(name):
 
 # ---------------------------------------------------------------- discovery
 
-def drive_files(items, ext):
-    """Files ending in `ext` in a Drive folder listing, and one level below.
-
-    Mods do not agree on where the builds go. Some leave them at the top of the
-    folder, Solstice sorts them into APKs and OBB, so looking only at the top
-    reports a mod as shipping neither.
-    """
-    out = {n: i for n, (i, is_dir) in items.items()
-           if not is_dir and n.lower().endswith(ext)}
-    for n, (i, is_dir) in items.items():
-        if is_dir and ext.lstrip('.') in norm(n):
-            try:
-                out.update({x: y for x, (y, sub) in drive.list_folder(i).items()
-                            if not sub and x.lower().endswith(ext)})
-            except Exception:
-                pass
-    return out
+# Finding the builds in a folder listing now lives in pvz/drive.py, since
+# addmod.py reads the same listing when it onboards a mod.
+drive_files = drive.files_of_type
 
 
 def scan():

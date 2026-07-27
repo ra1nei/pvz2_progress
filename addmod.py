@@ -13,7 +13,10 @@ What it does:
   3. extract the OBB download URL from the APK into sources.json, which is
      what lets update checks run unattended later
   4. read the OBB and count the levels
-  5. regenerate pvz_totals.json
+  5. with --link, note how the mod can be watched from then on: a GitHub
+     release is watched by the URL from step 3, and a mod published on Drive
+     by its OBB's file id, recorded into install.json
+  6. regenerate pvz_totals.json
 
 What is left to you: create a Drive folder with the same display name and
 drop the mod's save file in it. GitHub Actions handles everything else.
@@ -193,6 +196,46 @@ def add_one(pkg, forced=None, obb_url=None):
     return True
 
 
+def record_drive_obb(sfx, link):
+    """Note the mod's Drive OBB in install.json, so track.py can watch it.
+
+    Only for a mod with no GitHub release: those are re-read and recounted on
+    their own, and need nothing here. A Drive one cannot be recounted from the
+    cloud, but its OBB's size can be polled for a new build, and the file id is
+    what the poll needs. install.py records the same id while scanning for the
+    APK; doing it here too means a mod is watched from the moment it is added
+    rather than from whenever that scan next runs.
+
+    Nothing is guessed. Several OBBs in a folder, or none, leaves the id unset
+    for install.py to sort out, since installing the wrong build is worse than
+    waiting a run to be watched.
+    """
+    m = re.search(r'/folders/([\w-]+)', str(link or ''))
+    if not m:
+        return
+    p = os.path.join(HERE, 'install.json')
+    cfg = json.load(open(p, encoding='utf-8')) if os.path.exists(p) else {}
+    rec = cfg.setdefault(sfx, {})
+    if rec.get('obb_id'):
+        return
+    try:
+        import pvz.drive as drive
+        obbs = drive.files_of_type(drive.list_folder(m.group(1)), '.obb')
+    except Exception as e:
+        print(f'      [!] could not read the Drive folder: {type(e).__name__}')
+        return
+    if len(obbs) != 1:
+        print(f'      OBB in Drive: {len(obbs)} found, none recorded'
+              + (f' ({", ".join(sorted(obbs))})' if obbs else '')
+              + '; `python3 install.py scan` will ask which one')
+        return
+    rec['obb_name'], rec['obb_id'] = next(iter(obbs.items()))
+    rec.setdefault('obb_url', '')
+    with open(p, 'w', encoding='utf-8') as f:
+        json.dump(cfg, f, indent=1, ensure_ascii=False)
+    print(f'      install.json -> watching {rec["obb_name"]} by size')
+
+
 def set_link(sfx, url):
     """Record where a mod is published, keyed by package suffix.
 
@@ -246,15 +289,25 @@ def main():
     # it to a batch would file every one of them under the same page.
     linked = bool(a.link) and len(todo) == 1
     if linked:
-        set_link(todo[0].rsplit('_', 1)[-1], a.link)
+        sfx = todo[0].rsplit('_', 1)[-1]
+        set_link(sfx, a.link)
         print(f'      links.json -> {a.link}')
+        # A mod published on GitHub is watched by its release and needs nothing
+        # more. One on Drive is watched by the size of its OBB, so note which
+        # file that is while the folder is in hand.
+        from pvz.github import GH
+        sp = os.path.join(HERE, 'sources.json')
+        src = json.load(open(sp, encoding='utf-8')) if os.path.exists(sp) else {}
+        if not GH.search(str((src.get(todo[0]) or {}).get('obb_url') or '')):
+            record_drive_obb(sfx, a.link)
     elif a.link:
         print('      [!] --link needs one mod; name the package to use it')
 
     totals.main()
     steps = ([] if linked else
              ["add the mod's download page to links.json, keyed by suffix"])
-    steps += ['python3 install.py scan     finds its APK and OBB',
+    steps += ['python3 install.py scan     finds its APK (and its OBB, if that '
+              'was not recorded just now)',
               'python3 sync.py push       sends your save up',
               'commit worlds/, sources.json, links.json, install.json']
     print('\nLeft to do:')

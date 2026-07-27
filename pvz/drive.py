@@ -15,6 +15,7 @@ import re
 import urllib.parse
 
 import pvz.net as compat
+from pvz import norm
 from pvz.net import http_get
 
 UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
@@ -33,6 +34,30 @@ def list_folder(folder_id):
             r'"([0-9A-Za-z_-]{28,44})",\["' + folder_id +
             r'"\],"([^"]{1,120})","([^"]{5,80})"', u):
         out[name] = (fid, 'folder' in mime)
+    return out
+
+
+def files_of_type(items, ext):
+    """Files ending in `ext` in a folder listing, and one level below.
+
+    Mods do not agree on where the builds go. Some leave them at the top of the
+    folder, others sort them into APKs and OBB, so looking only at the top
+    reports a mod as shipping neither. A subfolder is only descended into when
+    its name says it holds this kind of file, which is what keeps a folder of
+    screenshots or old builds out of the answer.
+
+    Lives here rather than in install.py because onboarding a mod reads the
+    same listing for the same reason: to find the OBB to watch it by.
+    """
+    out = {n: i for n, (i, is_dir) in items.items()
+           if not is_dir and n.lower().endswith(ext)}
+    for n, (i, is_dir) in items.items():
+        if is_dir and ext.lstrip('.') in norm(n):
+            try:
+                out.update({x: y for x, (y, sub) in list_folder(i).items()
+                            if not sub and x.lower().endswith(ext)})
+            except Exception:
+                pass
     return out
 
 

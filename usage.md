@@ -236,7 +236,10 @@ where to download it later is something no save file records.
    device` means.
 2. Count its levels, name it, and say where it came from:
    `python3 addmod.py com.ea.game.pvz2_sol --link "https://..."`
-3. Find its APK and OBB: `python3 install.py scan`
+   A mod published on Drive also has its OBB noted here, so it is watched for
+   new builds from this point on rather than from the next scan.
+3. Find its APK: `python3 install.py scan` (it also picks up the OBB if step 2
+   found several and left the choice open)
 4. Drop a logo into `assets/logo`, named after the package suffix.
 5. Commit `links.json`, `install.json`, `sources.json`, the new `worlds/` file
    and the logo.

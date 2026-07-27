@@ -2,7 +2,7 @@
 
 How far through each Plants vs. Zombies 2 mod I have got. The numbers are read out of my save files and out of each mod's own data, by a GitHub Action that keeps this page current on its own.
 
-Updated 2026-07-27 13:30 UTC+7 (06:30 UTC), refreshed every 6 hours.
+Updated 2026-07-27 13:54 UTC+7 (06:54 UTC), refreshed every 6 hours.
 
 <table>
 <tr><th></th><th>Mod</th><th>World</th><th>Quest</th><th>Progress</th><th>Done</th><th>Updates</th></tr>
@@ -258,7 +258,10 @@ where to download it later is something no save file records.
    device` means.
 2. Count its levels, name it, and say where it came from:
    `python3 addmod.py com.ea.game.pvz2_sol --link "https://..."`
-3. Find its APK and OBB: `python3 install.py scan`
+   A mod published on Drive also has its OBB noted here, so it is watched for
+   new builds from this point on rather than from the next scan.
+3. Find its APK: `python3 install.py scan` (it also picks up the OBB if step 2
+   found several and left the choice open)
 4. Drop a logo into `assets/logo`, named after the package suffix.
 5. Commit `links.json`, `install.json`, `sources.json`, the new `worlds/` file
    and the logo.
