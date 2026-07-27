@@ -156,6 +156,32 @@ def cleared(path):
                for w in info.get('wmed', []))
 
 
+def progress(path, pkg):
+    """The freshness measure both guards compare: real levels cleared, story
+    and finished quests together.
+
+    Not the raw wmed count. That folds in rift and Penny's Pursuit and other
+    rotating events, which reset when the event ends, so the raw number can
+    fall by hundreds while nothing real was lost. A guard reading it would then
+    think the device had gone backwards and either refuse a good push or
+    overwrite the newer save. done_total and quest_done count only the story
+    and the permanent quest chains, and those never fall.
+
+    Falls back to the raw count for a mod not counted yet, which has no
+    worlds file to resolve the finer number and no rotating content tracked
+    either.
+    """
+    wp = os.path.join(HERE, 'worlds', f'{pkg}.json')
+    if not os.path.exists(wp):
+        return cleared(path)
+    try:
+        from pvz.save import extract
+        d = extract(path, pkg)
+        return (d.get('done_total') or 0) + (d.get('quest_done') or 0)
+    except Exception:
+        return cleared(path)
+
+
 def display_name(sfx):
     """The mod's name from its worlds file, or the suffix if it has none."""
     wp = os.path.join(HERE, 'worlds', f'com.ea.game.pvz2_{sfx}.json')
@@ -449,8 +475,8 @@ def commit_saves(msg):
 
 # ---------------------------------------------------------------- actions
 
-def cleared_on_device(adb, dev, dpath):
-    """Cleared events in the save sitting on the device, or None if unreadable.
+def progress_on_device(adb, dev, dpath, pkg):
+    """The device save's progress by the measure above, or None if unreadable.
 
     Unreadable covers the ordinary case of a mod installed but never opened,
     which has no save yet.
@@ -463,7 +489,7 @@ def cleared_on_device(adb, dev, dpath):
                    capture_output=True, text=True)
     if not os.path.exists(tmp) or open(tmp, 'rb').read(4) != b'RTON':
         return None
-    return cleared(tmp)
+    return progress(tmp, pkg)
 
 
 def to_device(adb, dev, paths, force=False):
@@ -487,10 +513,10 @@ def to_device(adb, dev, paths, force=False):
         # session can go ahead and the watch loop sends it up at the end. Only
         # the overwrite is skipped. Measured in cleared levels, the one signal
         # that means the same thing on every machine.
-        was = cleared(src)
-        now = cleared_on_device(adb, dev, dpath)
+        was = progress(src, pkg)
+        now = progress_on_device(adb, dev, dpath, pkg)
         if now is not None and now > was and not force:
-            print(f'  {sfx:<5} KEPT: device has {now} cleared, saves/ has {was}. '
+            print(f'  {sfx:<5} KEPT: device has {now} levels, saves/ has {was}. '
                   f'This machine played without pushing.')
             print(f'        Send it up with `sync.py push` before playing '
                   f'elsewhere, or overwrite it anyway with --force.')
@@ -529,17 +555,17 @@ def from_device(adb, dev, paths, force=False, cached=False):
                                     'could not read the save off the device'))
             continue
 
-        now = cleared(dest)
+        now = progress(dest, pkg)
         stored = os.path.join(SAVES, f'pp_{sfx}.dat')
         before = summary(stored, pkg) if os.path.exists(stored) else None
         moved = True
         if os.path.exists(stored):
-            was = cleared(stored)
-            # Fewer cleared levels than the committed copy means this machine
+            was = progress(stored, pkg)
+            # Fewer real levels than the committed copy means this machine
             # played on a stale save. Pushing would erase whatever the other
             # machine did, which is the failure this script exists to prevent.
             if now < was and not force:
-                print(f'  {sfx:<5} REFUSED: device has {now} cleared, saves/ has '
+                print(f'  {sfx:<5} REFUSED: device has {now} levels, saves/ has '
                       f'{was}. This machine played on an old save.')
                 print(f'        Keep the device copy anyway with --force.')
                 continue
@@ -553,12 +579,12 @@ def from_device(adb, dev, paths, force=False, cached=False):
         quests = quests_off(adb, dev, dpath, sfx, cached)
         prof = profile_off(adb, dev, dpath, sfx, cached)
         if not moved and not quests and not prof:
-            print(f'  {sfx:<5} {now:>4} cleared, unchanged')
+            print(f'  {sfx:<5} {now:>4} levels, unchanged')
             continue
         changed.append((sfx, before, summary(dest, pkg)))
         extra = '' if moved else (', quest progress only' if quests
                                   else ', profile only')
-        print(f'  {sfx:<5} {now:>4} cleared -> saves/{extra}')
+        print(f'  {sfx:<5} {now:>4} levels -> saves/{extra}')
 
     if not changed:
         print('  nothing to commit')
