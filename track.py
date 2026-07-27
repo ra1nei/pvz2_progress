@@ -196,45 +196,59 @@ def _img_size(path):
 SPACER = f'<img src="assets/spacer.png" width="1" height="{LOGO_BOX[1]}">'
 
 
-def logo_img(rel):
-    """<img> for a logo, fit within LOGO_BOX, behind a fixed-height spacer.
+def logo_img(pair):
+    """<img> for a logo, fit within LOGO_BOX, linked to the full-size art.
 
-    The spacer goes in even when there is no logo yet, so a mod still being
-    onboarded keeps the same row height as the rest instead of collapsing.
+    `pair` is (what to show, what to link to) from logo(). The table shows the
+    boxed copy, which is scaled down to line the column up, so the link goes to
+    the original: clicking a logo should get you the art, not the thumbnail cut
+    from it.
+
+    The spacer goes in when there is no logo yet, or when one has not been
+    boxed, so a mod still being onboarded keeps the same row height as the rest
+    instead of collapsing.
     """
-    if not rel:
+    show, full = pair if isinstance(pair, tuple) else (pair, pair)
+    if not show:
         return SPACER
-    d = _img_size(os.path.join(HERE, rel))
+    d = _img_size(os.path.join(HERE, show))
     if not d or not d[1]:
-        return SPACER + f'<img src="{rel}" width="{LOGO_BOX[0]}">'
+        return SPACER + f'<img src="{show}" width="{LOGO_BOX[0]}">'
     bw, bh = LOGO_BOX
     if d == LOGO_BOX:
         # Already boxed, so it is the full height on its own and needs no
         # spacer propping the row up beside it.
-        return f'<img src="{rel}" width="{bw}" height="{bh}">'
+        img = f'<img src="{show}" width="{bw}" height="{bh}">'
+        return f'<a href="{full}">{img}</a>' if full and full != show else img
     k = min(bw / d[0], bh / d[1])
-    return SPACER + f'<img src="{rel}" width="{round(d[0] * k)}" height="{round(d[1] * k)}">'
+    return SPACER + f'<img src="{show}" width="{round(d[0] * k)}" height="{round(d[1] * k)}">'
 
 
 def logo(sfx):
-    """The mod's logo under assets/logo, or None when it has none.
+    """(what the table shows, what it links to), or (None, None).
 
-    The boxed copy wins when there is one. Logos are drawn in whatever shape
+    Two files, and the difference matters. Logos are drawn in whatever shape
     their author chose, so scaling them to fit leaves each a different width;
-    boxlogos.py centres them on a canvas of one size, and using that is what
-    makes the column line up. The original is the fallback, so a logo just
-    dropped in still shows, at its own width, until it is boxed.
+    boxlogos.py centres them on a canvas of one size, and showing that is what
+    makes the column line up. But it is a thumbnail, a fifth of the art's width,
+    so it is only what is shown: the link stays on the original, which is the
+    logo as its author drew it.
+
+    A logo that has not been boxed is shown and linked as itself, so one just
+    dropped in still appears, at its own width, until boxlogos.py runs.
 
     Committed files only. A new mod shows a blank first column until one is
     dropped in by hand, named after the package suffix.
     """
-    boxed = os.path.join(HERE, 'assets', 'logo', 'box', f'{sfx}.png')
-    if os.path.exists(boxed):
-        return f'assets/logo/box/{sfx}.png'
+    orig = None
     for ext in ('png', 'webp', 'jpg'):
         if os.path.exists(os.path.join(HERE, 'assets', 'logo', f'{sfx}.{ext}')):
-            return f'assets/logo/{sfx}.{ext}'
-    return None
+            orig = f'assets/logo/{sfx}.{ext}'
+            break
+    boxed = f'assets/logo/box/{sfx}.png'
+    if os.path.exists(os.path.join(HERE, boxed)):
+        return boxed, orig or boxed
+    return orig, orig
 
 
 def timestamp_line(now=None):
