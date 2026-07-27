@@ -161,7 +161,7 @@ def svg_badge(text, auto):
 # squarer ones looking tiny in it, while one fixed width shrinks the banners
 # instead. Fitting each inside a box makes every logo as large as it can be
 # without any of them setting the column's size for the rest.
-LOGO_BOX = (150, 80)
+LOGO_BOX = (120, 72)
 
 
 def _img_size(path):
@@ -187,11 +187,12 @@ def _img_size(path):
     return None
 
 
-# A transparent 1px PNG, stretched to the box height, sits in every logo cell.
-# The logos fit within the box at their own aspect, so they range from 47 to 80
-# px tall, and a table row is as tall as its tallest cell: without this the 3:1
-# banners left their rows visibly shallower than the rest. GitHub strips inline
-# CSS, so a spacer image is the only way left to pin every row to one height.
+# A transparent 1px PNG stretched to the box height, for the logo cells that
+# hold an unboxed image. Those fit the box at their own aspect, so a banner is
+# far shallower than a square badge, and a row is as tall as its tallest cell:
+# without this their rows come out visibly shallower than the rest. GitHub
+# strips inline CSS, so a spacer image is the only way left to pin a row's
+# height. A boxed logo is already exactly the box and needs none.
 SPACER = f'<img src="assets/spacer.png" width="1" height="{LOGO_BOX[1]}">'
 
 
@@ -207,6 +208,10 @@ def logo_img(rel):
     if not d or not d[1]:
         return SPACER + f'<img src="{rel}" width="{LOGO_BOX[0]}">'
     bw, bh = LOGO_BOX
+    if d == LOGO_BOX:
+        # Already boxed, so it is the full height on its own and needs no
+        # spacer propping the row up beside it.
+        return f'<img src="{rel}" width="{bw}" height="{bh}">'
     k = min(bw / d[0], bh / d[1])
     return SPACER + f'<img src="{rel}" width="{round(d[0] * k)}" height="{round(d[1] * k)}">'
 

@@ -43,6 +43,18 @@ def box_one(sfx):
 
     bw, bh = LOGO_BOX
     im = Image.open(src).convert('RGBA')
+
+    # Trim the transparent margin the art was saved with, first. Centring the
+    # file rather than the drawing inside it is what left the logos looking
+    # off: the margins are not even, so one logo carries 5 px of nothing above
+    # and 20 below, another 75 to the left and 57 to the right, and each ends
+    # up sitting a little differently in its box. Trimming to where the pixels
+    # actually start means what gets centred is the drawing, and it also stops
+    # a logo saved with a wide margin from rendering smaller than the rest.
+    bb = im.getbbox()
+    if bb:
+        im = im.crop(bb)
+
     # Never enlarge. Every logo here is far bigger than the box, but blowing a
     # small one up to fill it would only make a blurry logo the same size as
     # the sharp ones.
