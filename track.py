@@ -279,11 +279,14 @@ def write_readme(rows, gio):
     def collected(short):
         """The Collected cell: plants and costumes, folded into a <details>.
 
-        Closed, the summary is the two owned counts on their own lines, which
-        is narrow enough that the disclosure triangle stays beside the first
-        one. Open, each becomes a fraction with a bar. No completion tick: it
-        was what pushed the widest row's triangle onto a line of its own, and
-        the fraction reads as complete without it once opened.
+        Both are shown as owned counts with no denominator. A mod's true
+        offering is not derivable from its files for either one: it ships the
+        base game's whole almanac and whole shop, hundreds of entries each, and
+        flags none of the ones it withholds, so a fraction would be against a
+        total mostly made of plants and costumes the mod never hands out. One
+        mod carries 470 costume entries in its shop while the game itself sells
+        a fraction of that. The owned counts come straight from the save and
+        are the real numbers.
         """
         wp = os.path.join(HERE, 'worlds', f'com.ea.game.pvz2_{short}.json')
         sp = os.path.join(HERE, 'saves', f'pp_{short}.dat')
@@ -297,39 +300,20 @@ def write_readme(rows, gio):
         if not col.get('plants') and not col.get('costumes'):
             return '<td></td>'
 
-        bar_d = os.path.join(HERE, 'assets', 'bar')
-        os.makedirs(bar_d, exist_ok=True)
-
         def owned_only(label, n):
-            # No denominator: a mod's true plant offering is not derivable from
-            # its files. It ships the base game's whole almanac, a couple of
-            # hundred entries, whether or not it hands those plants out, and
-            # does not flag the ones it withholds. So a fraction there would be
-            # against a total that is mostly plants the mod never gives. The
-            # owned count is read straight from the save and is real.
+            # No denominator, for the reason in the docstring: neither a mod's
+            # plant offering nor its costume offering can be told from its
+            # files. The owned count is read straight from the save and is real.
             return (f'<tr><td>{label}</td><td align="right">{n}</td>'
                     f'<td></td></tr>')
 
-        def with_total(label, n, tot, kind):
-            # A denominator that holds: costumes are shop items, and the shop
-            # is the definitive list of what the mod sells.
-            if not tot:
-                return owned_only(label, n)
-            pt = n / tot
-            open(os.path.join(bar_d, f'{short}_{kind}.svg'), 'w').write(
-                svg_bar(pt, w=90))
-            return (f'<tr><td>{label}</td>'
-                    f'<td align="right">{n}&nbsp;/&nbsp;{tot}</td>'
-                    f'<td><img src="assets/bar/{short}_{kind}.svg" width="90">'
-                    f'<br><sub>{round(pt * 100)}%</sub></td></tr>')
-
         pl = info.get('plants_unlocked') or 0
-        co, cot = info.get('costumes') or 0, col.get('costumes') or 0
+        co = info.get('costumes') or 0
         return ('<td align="center"><details>'
                 f'<summary>{pl}&nbsp;🌱<br>{co}&nbsp;🎩</summary>'
                 '<table>'
                 + owned_only('Plants', pl)
-                + with_total('Costumes', co, cot, 'c')
+                + owned_only('Costumes', co)
                 + '</table></details></td>')
 
     def name_cell(name, short):

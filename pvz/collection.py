@@ -89,11 +89,18 @@ def plants(rsb):
 
 
 def costumes(rsb):
-    """How many distinct costumes the mod sells, or 0.
+    """How many distinct costumes the shop lists, or 0.
 
     There is no costume registry: they exist as shop items, so the shop is
     where they are counted. Distinct ids, because a costume can be listed more
     than once when it is sold in several places.
+
+    Same warning as plants(), and for the same reason. A mod inherits the whole
+    international shop and does not flag the costumes it withholds, so this is
+    the number the files describe, not the number the game sells: Addendum
+    lists 470 here while the game itself sells a fraction of that. The table
+    shows the owned count alone and not this as a total. Kept for the mods
+    where it happens to hold, but not to be trusted as what a mod offers.
     """
     d = _registry(rsb, 'PRODUCTS.RTON', 'StoreProduct')
     if not d:
