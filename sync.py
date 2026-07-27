@@ -156,6 +156,50 @@ def cleared(path):
                for w in info.get('wmed', []))
 
 
+def display_name(sfx):
+    """The mod's name from its worlds file, or the suffix if it has none."""
+    wp = os.path.join(HERE, 'worlds', f'com.ea.game.pvz2_{sfx}.json')
+    try:
+        return json.load(open(wp, encoding='utf-8')).get('_display_name') or sfx
+    except (OSError, ValueError):
+        return sfx
+
+
+def summary(path, pkg):
+    """The numbers a commit reports for one save: world and quest levels, and
+    the plant, costume, coin and gem counts.
+
+    Read through extract, so world and quest match what the table shows. A mod
+    with no level counts yet has no worlds file for extract to use, so it falls
+    back to the raw save for everything but quest, which there is nothing to
+    resolve.
+    """
+    from pvz.rton import decode
+    from pvz.save import player_info, extract
+    try:
+        d = extract(path, pkg)
+        return {'world': d.get('done_total'), 'quest': d.get('quest_done'),
+                'plants': d.get('plants_unlocked'), 'costumes': d.get('costumes'),
+                'coins': d.get('coins'), 'gems': d.get('gems')}
+    except Exception:
+        i = player_info(decode(path)['data'])
+        return {'world': sum(len([e for e in w.get('e', []) if 'i' in e])
+                             for w in i.get('wmed', [])), 'quest': None,
+                'plants': len(i.get('p') or []), 'costumes': len(i.get('cos') or []),
+                'coins': i.get('c') or 0, 'gems': i.get('g') or 0}
+
+
+def summary_line(name, before, after):
+    """One body line: each field as new, or old->new when it moved."""
+    def fld(key):
+        b, a = (before or {}).get(key), after.get(key)
+        if a is None:
+            return None
+        return f'{key} {b}->{a}' if before and b != a else f'{key} {a}'
+    parts = [fld(k) for k in ('world', 'quest', 'plants', 'costumes', 'coins', 'gems')]
+    return f'{name}: ' + '  '.join(p for p in parts if p)
+
+
 
 # Fields the game rewrites merely for having been opened, with nothing played.
 # Deny by default: only what has been watched change on its own goes here, so
@@ -486,6 +530,7 @@ def from_device(adb, dev, paths, force=False, cached=False):
 
         now = cleared(dest)
         stored = os.path.join(SAVES, f'pp_{sfx}.dat')
+        before = summary(stored, pkg) if os.path.exists(stored) else None
         moved = True
         if os.path.exists(stored):
             was = cleared(stored)
@@ -509,18 +554,23 @@ def from_device(adb, dev, paths, force=False, cached=False):
         if not moved and not quests and not prof:
             print(f'  {sfx:<5} {now:>4} cleared, unchanged')
             continue
-        changed.append(f'{sfx} {now}')
+        changed.append((sfx, before, summary(dest, pkg)))
         extra = '' if moved else (', quest progress only' if quests
                                   else ', profile only')
         print(f'  {sfx:<5} {now:>4} cleared -> saves/{extra}')
 
-    # The commit message stays generic on purpose: this is a public repo, and
-    # the per-mod detail is printed here for you rather than written into the
-    # history. The count says how much moved without naming what.
-    if not changed or not commit_saves(f'saves: sync progress ({len(changed)})'):
+    if not changed:
         print('  nothing to commit')
         return
-    print(f'  pushed: {", ".join(changed)}')
+    # The subject names the mods that moved; the body gives each one's numbers,
+    # old->new where they changed. The public log then reads as a changelog of
+    # progress rather than a wall of identical lines.
+    names = ', '.join(display_name(sfx) for sfx, _b, _a in changed)
+    body = '\n'.join(summary_line(display_name(sfx), b, a) for sfx, b, a in changed)
+    if not commit_saves(f'saves: {names}\n\n{body}'):
+        print('  nothing to commit')
+        return
+    print(f'  pushed: {names}')
     print('  the tracker workflow runs on this push and rebuilds the table')
 
 
