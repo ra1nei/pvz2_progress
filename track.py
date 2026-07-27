@@ -300,10 +300,21 @@ def write_readme(rows, gio):
         bar_d = os.path.join(HERE, 'assets', 'bar')
         os.makedirs(bar_d, exist_ok=True)
 
-        def line(label, n, tot, kind):
+        def owned_only(label, n):
+            # No denominator: a mod's true plant offering is not derivable from
+            # its files. It ships the base game's whole almanac, a couple of
+            # hundred entries, whether or not it hands those plants out, and
+            # does not flag the ones it withholds. So a fraction there would be
+            # against a total that is mostly plants the mod never gives. The
+            # owned count is read straight from the save and is real.
+            return (f'<tr><td>{label}</td><td align="right">{n}</td>'
+                    f'<td></td></tr>')
+
+        def with_total(label, n, tot, kind):
+            # A denominator that holds: costumes are shop items, and the shop
+            # is the definitive list of what the mod sells.
             if not tot:
-                return (f'<tr><td>{label}</td><td align="right">{n}</td>'
-                        f'<td></td></tr>')
+                return owned_only(label, n)
             pt = n / tot
             open(os.path.join(bar_d, f'{short}_{kind}.svg'), 'w').write(
                 svg_bar(pt, w=90))
@@ -312,13 +323,13 @@ def write_readme(rows, gio):
                     f'<td><img src="assets/bar/{short}_{kind}.svg" width="90">'
                     f'<br><sub>{round(pt * 100)}%</sub></td></tr>')
 
-        pl, plt = info.get('plants_unlocked') or 0, col.get('plants') or 0
+        pl = info.get('plants_unlocked') or 0
         co, cot = info.get('costumes') or 0, col.get('costumes') or 0
         return ('<td align="center"><details>'
                 f'<summary>{pl}&nbsp;🌱<br>{co}&nbsp;🎩</summary>'
                 '<table>'
-                + line('Plants', pl, plt, 'p')
-                + line('Costumes', co, cot, 'c')
+                + owned_only('Plants', pl)
+                + with_total('Costumes', co, cot, 'c')
                 + '</table></details></td>')
 
     def name_cell(name, short):

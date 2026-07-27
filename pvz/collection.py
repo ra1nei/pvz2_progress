@@ -57,9 +57,15 @@ def plants(rsb):
     international game and keeps its data, so its almanac still describes
     plants it has no intention of handing out. Two flags in PLANTTYPES say
     so: HideInPlantViewers keeps a plant out of the almanac, Enabled false
-    takes it out of the game. Reflourished hides eighteen, all but one of
-    them Mints, and dropping them turns a save holding everything on offer
-    from 188 of 207 into 188 of 189.
+    takes it out of the game.
+
+    That is as far as the files go, and it is not far enough. Reflourished
+    flags its withheld plants, so this lands on the right number for it. Most
+    mods do not: Addendum leaves a hundred and sixty-odd here while the game
+    itself offers about fifty, and nothing distinguishes the difference. So
+    the table does not show this as a plant total; it shows the owned count
+    alone. The number is kept for the mods where it happens to hold, and for
+    lack of anything better, but it is not to be trusted as what a mod offers.
     """
     alm = _registry(rsb, 'PLANTALMANACDATA.RTON', 'PlantAlmanacData')
     if not alm:
