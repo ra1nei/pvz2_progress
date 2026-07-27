@@ -204,18 +204,26 @@ def drop(path):
         print(f'      (could not delete {os.path.basename(path)}: {e.strerror})')
 
 
-def fetch_apk(sfx, rec):
+def fetch_apk(sfx, rec, fresh=False):
     """Fetch the APK. `apk_url` wins over the Drive id when both are set.
 
     apk_url exists for the mods that publish somewhere this cannot scrape:
     Requiem hands out MediaFire links inside a text file, Spice ships from
     itch.io. Paste a direct link into install.json and they install like the
     rest; guessing at those hosts would break the first time they redesign.
+
+    `fresh` re-downloads even when a matching APK is already cached. A mod
+    rebuilds its APK in place, same Drive id and same filename, so the only way
+    to know the build changed is to fetch it and hash it: the cache otherwise
+    hands back the last one forever and no update is ever seen. Set for an
+    explicit `install <mod>`, where the point is to get whatever is current;
+    left off for `auto`, where re-downloading every mod each run would burn
+    bandwidth and Drive's daily quota for nothing.
     """
     os.makedirs(DOWNLOADS, exist_ok=True)
     dest = os.path.join(DOWNLOADS, f'{sfx}.apk')
     ghi = rec.get('apk_sha256')
-    if os.path.exists(dest) and ghi and sha256(dest) == ghi:
+    if not fresh and os.path.exists(dest) and ghi and sha256(dest) == ghi:
         return dest
 
     if rec.get('apk_url'):
@@ -316,14 +324,14 @@ def fetch_obb(sfx, rec):
     return None, 0
 
 
-def install_one(adb, dev, sfx, cfg, force=False):
+def install_one(adb, dev, sfx, cfg, force=False, fresh=False):
     pkg = PKG.format(sfx)
     rec = cfg.setdefault(sfx, {})
     co, ver = installed(adb, dev, pkg)
     print(f'\n== {sfx} ==')
     print(f'   installed: {ver or "no"}')
 
-    apk = fetch_apk(sfx, rec)
+    apk = fetch_apk(sfx, rec, fresh=fresh)
     write_config(cfg)
     if not apk:
         print('   no APK available, skipping')
@@ -430,62 +438,38 @@ def played_mods():
     return [s for _, s in sorted(out, reverse=True)]
 
 
-def _norm_ver(s):
-    """A version string reduced to something comparable: no leading v, folded."""
-    return re.sub(r'^v', '', str(s).strip().casefold())
-
-
-def _same_line(a, b):
-    """Do two versions share a leading number, i.e. count the same way.
-
-    A mod either versions its own build (Penumbra's APK reads 1.3.0, its
-    release is tagged v1.3.1b) or leaves the versionName at the base game's
-    (Addendum reads 9.6.1 while its release is v1.0.2). Only the first can be
-    compared against the tag; the second would always look out of date. The
-    leading number tells them apart: 1 against 1 is the mod's own scheme, 1
-    against 9 is the base game's, and there is nothing to compare.
-    """
-    ga, gb = re.match(r'(\d+)', _norm_ver(a)), re.match(r'(\d+)', _norm_ver(b))
-    return bool(ga and gb and ga.group(1) == gb.group(1))
-
-
 def behind(adb, dev, sfx, rec):
-    """What a machine would gain by reinstalling this mod, as a short phrase.
+    """Whether the device's OBB is older than the published one, as a phrase.
 
-    Answers 'is what I have here older than what install.py would put down',
-    which is device against the repo's pinned build, not the repo against the
-    newest release upstream (that is `python3 -m pvz.github`). Two signals:
+    Device against the repo's pinned build, by the OBB alone, told by name and
+    size against the published GitHub asset. Needs a GitHub call, so it is
+    best-effort and stays silent when the network or the rate limit does not
+    allow it.
 
-      - the APK version, when the mod stamps its own onto versionName and the
-        release tag carries a version to compare it with. This is the only one
-        that catches an APK-only update, which is what Penumbra's 1.3.1b was:
-        the OBB never changed, so nothing on disk gives it away.
-      - the OBB, by name and size against the published asset. The fallback for
-        every mod that keeps the base game's versionName, where the APK version
-        says nothing. Needs a GitHub call, so it is best-effort and skipped in
-        silence when the network or the rate limit does not allow it.
+    The APK is deliberately not compared. Its versionName lives in a different
+    space from the release tag: a mod tagged v1.3.1b can still stamp its APK
+    1.3.0 and leave it there for a month, so reading the tag as the APK's due
+    version flags an update that reinstalling can never clear. There is no APK
+    metadata to compare without downloading it, so the honest check is to
+    re-fetch on an explicit `install` and let fetch_apk report whether the
+    bytes changed.
     """
     pkg = PKG.format(sfx)
-    co, ver = installed(adb, dev, pkg)
+    co, _ = installed(adb, dev, pkg)
     if not co:
         return None
-    reasons = []
-    m = GH.search(rec.get('obb_url') or '')
-    tag = m.group(3) if m else None
-    if tag and ver and _same_line(ver, tag) and _norm_ver(ver) != _norm_ver(tag):
-        reasons.append(f'APK {ver} -> {tag.lstrip("v")}')
     try:
         want_name, want_size = obb_wanted(rec)
         have_name, have_size = obb_on_device(adb, dev, pkg)
         if want_name and want_size and (have_name != want_name or have_size != want_size):
-            reasons.append(f'OBB {have_size // 1048576}MB -> {want_size // 1048576}MB')
+            return f'OBB {have_size // 1048576}MB -> {want_size // 1048576}MB'
     except Exception:
         pass
-    return '; '.join(reasons) or None
+    return None
 
 
 def status(adb, dev, cfg):
-    print(f'{"mod":<6}{"on device":<14}{"published":<12}{"OBB":<9}{"update"}')
+    print(f'{"mod":<6}{"on device":<14}{"release":<12}{"OBB":<9}{"update"}')
     print('-' * 74)
     for sfx in sorted(cfg):
         if sfx.startswith('_'):
@@ -494,10 +478,14 @@ def status(adb, dev, cfg):
         co, ver = installed(adb, dev, PKG.format(sfx))
         _n, size = obb_on_device(adb, dev, PKG.format(sfx))
         m = GH.search(rec.get('obb_url') or '')
-        pub = m.group(3).lstrip('v') if m else '-'
+        rel = m.group(3).lstrip('v') if m else '-'
         upd = behind(adb, dev, sfx, rec) if co else ''
-        print(f'{sfx:<6}{(ver or "-") if co else "not installed":<14}{pub:<12}'
-              f'{f"{size / 1048576:.0f}MB" if size else "-":<9}{upd or "up to date" if co else "-"}')
+        print(f'{sfx:<6}{(ver or "-") if co else "not installed":<14}{rel:<12}'
+              f'{f"{size / 1048576:.0f}MB" if size else "-":<9}{upd or "OBB current" if co else "-"}')
+    print('\n"on device" is the APK versionName; "release" is the OBB tag, a '
+          'separate number, so a mismatch is not itself an update. The OBB is '
+          'checked here; to check the APK, run `install <mod>`, which re-fetches\n'
+          'it and says whether the build changed.')
 
 
 def keymaps(only, force=False):
@@ -558,7 +546,10 @@ def main():
         if not a.args:
             sys.exit('usage: install.py install <suffix>')
         for sfx in a.args:
-            install_one(adb, dev, sfx, cfg, a.force)
+            # Explicit install means "get me whatever is current", so the APK
+            # is re-fetched rather than served from cache. auto below keeps the
+            # cache, since it re-runs across every mod.
+            install_one(adb, dev, sfx, cfg, a.force, fresh=True)
         return
 
     want = played_mods()
