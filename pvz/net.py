@@ -118,6 +118,28 @@ def http_range(url, start, length):
         return b''
 
 
+def content_length(url, headers=None):
+    """Total size in bytes without downloading the body, or 0.
+
+    A one-byte Range probe: the reply's Content-Range carries the full size
+    after the slash (`bytes 0-0/12345`), which is there even when the server
+    will not answer a plain HEAD. Used to watch a Drive-hosted OBB for a new
+    release by its size, the same figure the GitHub mods are fingerprinted on.
+    """
+    req = urllib.request.Request(url, headers={
+        'User-Agent': UA, 'Range': 'bytes=0-0', **(headers or {})})
+    try:
+        with urllib.request.urlopen(req, timeout=90,
+                                    context=ssl_context()) as r:
+            cr = r.headers.get('Content-Range')
+            if cr and '/' in cr:
+                return int(cr.rsplit('/', 1)[-1])
+            return int(r.headers.get('Content-Length') or 0)
+    except Exception as e:
+        _blame(url, e)
+        return 0
+
+
 def http_download(url, dest, timeout=180):
     data = http_get(url, timeout=timeout)
     if not data:

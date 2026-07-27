@@ -36,6 +36,32 @@ def list_folder(folder_id):
     return out
 
 
+def file_size(file_id):
+    """Size in bytes of a shared Drive file, without downloading it, or 0.
+
+    Anything past a few megabytes answers the download URL with an HTML
+    "cannot scan for viruses" interstitial rather than the file, exactly as
+    download_big has to handle; the real file sits behind that page's form.
+    Either way the size comes from a one-byte Range probe, never the body, so
+    watching a gigabyte OBB for a new release costs one small request.
+    """
+    url = f'https://drive.google.com/uc?export=download&id={file_id}'
+    head = http_get(url, timeout=90)
+    if not head:
+        return 0
+    if head[:1] != b'<':
+        return compat.content_length(url)
+    page = head.decode('utf-8', 'replace')
+    m = re.search(r'<form[^>]*action="([^"]+)"', page)
+    if not m:
+        return 0
+    action = m.group(1).replace('&amp;', '&')
+    args = dict(re.findall(r'<input[^>]*name="([^"]+)"[^>]*value="([^"]*)"', page))
+    if not args:
+        return 0
+    return compat.content_length(f'{action}?{urllib.parse.urlencode(args)}')
+
+
 def download_big(file_id, dest, progress=None):
     """Download a large Drive file, streaming it to disk.
 

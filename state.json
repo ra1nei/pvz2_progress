@@ -44,5 +44,9 @@
  "releases": {
   "pen": "v1.3.1b"
  },
- "totals_md5_nagged": "f4b9a6034afa312a5d5312566c6efa21"
+ "totals_md5_nagged": "f4b9a6034afa312a5d5312566c6efa21",
+ "watch": {
+  "com.ea.game.pvz2_fln": 958992384,
+  "com.ea.game.pvz2_sol": 789479424
+ }
 }

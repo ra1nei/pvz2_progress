@@ -170,9 +170,11 @@ above.
 
 Two things update independently, which is worth keeping straight:
 
-- **The level count in the table** updates itself. When a mod publishes a new
-  build on GitHub Releases, the next run re-reads the count. That is what the
-  blue badge shows, and its version is the release it last read.
+- **The level count in the table** refreshes itself for a mod on GitHub
+  Releases: the next run re-reads the OBB and the count, which is what the blue
+  version badge shows. A mod hosted on Drive is only watched by its OBB size (a
+  blue `drive` badge); a size change is flagged as a new build, but the recount
+  is done by hand, because a Drive OBB cannot be read from the cloud.
 - **The mod on your machine** does not. Nothing reaches into your emulator
   uninvited; you install updates when you feel like it.
 
@@ -263,12 +265,16 @@ picks up every uncounted mod at once, and one page cannot describe them all.
 
 ### Getting the blue badge
 
-To move a mod from the amber badge to the blue one, give its OBB a GitHub
-Releases link in `sources.json`, shaped like
-`https://github.com/OWNER/REPO/releases/download/TAG/FILE.obb`. Other hosts are
-rejected on purpose: the update check works by asking the GitHub API for the
-newest release and cannot do that elsewhere. A blue badge on a mod nothing is
-actually watching would be worse than no badge.
+Blue means something is watching the mod. Best is a GitHub Releases link in
+`sources.json`, shaped like
+`https://github.com/OWNER/REPO/releases/download/TAG/FILE.obb`: the run asks the
+GitHub API for the newest release, re-reads the OBB and refreshes the count on
+its own, and the badge carries the version. A mod whose OBB is only on Drive
+gets a blue `drive` badge instead: the `obb_id` in `install.json` lets the run
+poll the file's size and flag a new build, though the recount is then by hand.
+Only a mod with neither, like an itch.io page behind a Cloudflare check, stays
+on the amber `manual` badge. A blue badge on a mod nothing is actually watching
+would be worse than none.
 
 </details>
 

@@ -137,8 +137,9 @@ def svg_bar(pt, w=140, h=12):
 
 
 def svg_badge(text, auto):
-    """Pill badge for the Updates column: blue carries a version this run
-    verified against GitHub, amber means nobody is watching that mod.
+    """Pill badge for the Updates column: blue is watched (a version verified
+    against GitHub, or `drive` for a Drive OBB polled by size), amber `manual`
+    is a mod nothing can watch.
 
     textLength pins the glyphs to the box, so the badge cannot overflow on a
     viewer whose monospace font is wider than the one used to size it.
@@ -355,11 +356,13 @@ def write_readme(rows, gio):
           'levels already on its maps. '
           'The bar and the tick both count World and Quest together, so a '
           'mod is only finished once its quests are too. '
-          'Mod names link to where the build came from. A blue badge links '
-          'to the GitHub release the level count was read from, and is '
-          're-checked every run. Amber means the mod ships its OBB outside '
-          'GitHub, so nothing can watch it: if that mod adds levels, the total '
-          'here stays wrong until the count is rebuilt by hand.']
+          'Mod names link to where the build came from. A blue version badge '
+          'links to the GitHub release the level count was read from, '
+          're-checked every run. A blue <code>drive</code> badge means the OBB '
+          'is on Drive: its size is watched for a new build, though the count '
+          'is then rebuilt by hand. Amber <code>manual</code> means nothing can '
+          'watch it (an itch.io page behind a Cloudflare check), so both the '
+          'update and the recount are spotted by hand.']
 
     # The guide lives in its own file. Everything above this line is rewritten
     # on every run, so prose typed straight into README.md would not survive
@@ -414,6 +417,46 @@ def main():
                    f'now **{total}** levels')
         state['releases'][pkg.rsplit('_', 1)[-1]] = tag
 
+    # Mods whose OBB is on Drive, not GitHub, cannot be re-read over HTTP Range
+    # to recount, but their size can be watched: when the modder ships a build
+    # the OBB changes size, and that alone says a rebuild is due. The id comes
+    # from install.json, where install.py already recorded it. Spice is left out
+    # on purpose, its itch.io page sits behind a Cloudflare check a plain
+    # request cannot pass, so there is nothing to poll.
+    import pvz.drive as drive
+    icfg = (json.load(open(os.path.join(HERE, 'install.json'), encoding='utf-8'))
+            if os.path.exists(os.path.join(HERE, 'install.json')) else {})
+    watched = set()
+    print('\n== watching Drive OBBs ==')
+    for pkg in sorted(saves):
+        short = pkg.rsplit('_', 1)[-1]
+        if GH.search(src.get(pkg, {}).get('obb_url') or ''):
+            continue
+        did = (icfg.get(short) or {}).get('obb_id')
+        if not did:
+            continue
+        prev = state.setdefault('watch', {}).get(pkg)
+        size = drive.file_size(did)
+        if not size:
+            # A read can fail transiently (Drive interstitial changing shape, a
+            # timeout). Once a size is known the mod stays watched on the last
+            # one, so its badge does not flicker to manual and back; only a mod
+            # never read at all is left unwatched.
+            if prev:
+                watched.add(short)
+                print(f'  {short}: Drive read failed, keeping last known size')
+            else:
+                print(f'  {short}: could not read the Drive OBB size, skipping')
+            continue
+        watched.add(short)
+        state['watch'][pkg] = size
+        print(f'  {short}: {size:,} bytes' + (' (unchanged)' if prev == size else ''))
+        if prev and prev != size:
+            out.append(f'- **{short}**: the Drive OBB changed '
+                       f'({prev / 1048576:.0f} -> {size / 1048576:.0f} MB), so a '
+                       f'new build is out. Rebuild its count on a machine that '
+                       f'has it: `python3 addmod.py`.')
+
     print('\n== computing progress ==')
     from pvz.totals import NAME_MAP
     rows, changed, uncounted = [], [], []
@@ -450,9 +493,11 @@ def main():
         if sp and not sp.get('_display_name') and name != short:
             sp['_display_name'] = name
             json.dump(sp, open(worlds_path(pkg), 'w'), indent=1, ensure_ascii=False)
+        is_gh = bool(GH.search(rec.get('obb_url') or ''))
         rows.append((short, cur['done'], cur['total'], note,
-                     bool(GH.search(rec.get('obb_url') or '')), _tag(rec), name,
-                     logo(short), link_release(rec, _tag(rec)),
+                     is_gh or short in watched,
+                     _tag(rec) if is_gh else ('drive' if short in watched else ''),
+                     name, logo(short), link_release(rec, _tag(rec)),
                      d.get('quest_done') or 0, d.get('quest_total') or 0))
 
     open(os.path.join(HERE, 'README.md'), 'w', encoding='utf-8').write(
@@ -498,18 +543,26 @@ def main():
                     f'run `python3 addmod.py`, then commit the new '
                     f'`worlds/` file and `sources.json`.']
 
-    # Mods whose OBB is not on GitHub Releases cannot be re-read from the
-    # cloud, so their level count is frozen. Say so rather than quietly
-    # serving a stale number. Mods with no count at all are reported above
-    # instead: telling you an absent number cannot be refreshed helps nobody.
+    # Non-GitHub mods, split by whether anything can watch them. A Drive OBB
+    # has its size polled above, so a new build is at least noticed; the count
+    # still has to be rebuilt by hand, since a Drive OBB cannot be read over
+    # Range the way a GitHub one can. What is left has nothing to poll at all.
+    if watched:
+        out += ['', f'> Watched by their Drive OBB size: '
+                    f'**{", ".join(sorted(watched))}**. A size change flags a '
+                    f'new build; the count is then rebuilt on a machine that '
+                    f'has the mod with `python3 addmod.py` (a Drive OBB cannot '
+                    f'be re-read from the cloud like a GitHub one).']
     blind = sorted(p.rsplit('_', 1)[-1] for p in saves
                 if p.rsplit('_', 1)[-1] not in uncounted
+                and p.rsplit('_', 1)[-1] not in watched
                 and not GH.search(src.get(p, {}).get('obb_url') or ''))
     if blind:
-        out += ['', f'> Cannot be checked automatically: **{", ".join(blind)}** '
-                    f'(no GitHub Releases URL for their OBB). When these '
-                    f'update, the level count has to be rebuilt locally with '
-                    f'`pvz/worlds.py`.']
+        out += ['', f'> Cannot be watched at all: **{", ".join(blind)}** '
+                    f'(no GitHub release and no pollable Drive OBB; itch.io '
+                    f'sits behind a Cloudflare check). Their updates have to be '
+                    f'spotted by hand, then the count rebuilt with `python3 '
+                    f'addmod.py`.']
 
     totals.main()
     json.dump(state, open(STATE, 'w'), indent=1, ensure_ascii=False)
