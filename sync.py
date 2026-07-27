@@ -156,21 +156,6 @@ def cleared(path):
                for w in info.get('wmed', []))
 
 
-def launches(path):
-    """The save's launch counter, lsc, which climbs by one every time the game
-    opens and never falls.
-
-    The freshness signal cleared levels cannot give: a mod finished on every
-    map has its cleared count pinned, so a session that only moves coins or
-    gems leaves it unchanged, and the level-count guard cannot tell that save
-    from the one in the repo. lsc still went up. Device lsc above the repo's
-    means the game was opened since the last sync, which is exactly when a
-    plain pull would overwrite what that session did.
-    """
-    from pvz.rton import decode
-    from pvz.save import player_info
-    return player_info(decode(path)['data']).get('lsc') or 0
-
 
 # Fields the game rewrites merely for having been opened, with nothing played.
 # Deny by default: only what has been watched change on its own goes here, so
@@ -302,12 +287,23 @@ def profile_local(sfx):
 
 
 def profile_off(adb, dev, dpath, sfx, cached=False):
-    """Device -> saves/profile_<sfx>. True when anything changed.
+    """Device -> saves/profile_<sfx>, but only to bootstrap. True if captured.
 
-    Only the register and the account state, never the save/ folder beside
-    them: that holds the board of a half-played level, tied to the machine
-    that drew it, and syncing it is the mess this whole tool replaced.
+    These files exist to let a fresh install load pp.dat, and once the repo
+    has them that job is done. They are not re-captured after: local_profiles
+    carries per-machine transient bits, last level played and per-profile
+    event counts, that differ between machines by a few dozen bytes, and
+    re-capturing on every change had two machines overwriting each other's
+    copy back and forth, a commit each time, the file growing and shrinking
+    with nothing real behind it. The profile register itself is stable, so the
+    first copy serves every fresh install.
+
+    Never the save/ folder beside them: that holds the board of a half-played
+    level, tied to the machine that drew it, and syncing it is the mess this
+    whole tool replaced.
     """
+    if os.path.isdir(profile_local(sfx)):
+        return False                       # already bootstrapped, leave it
     stage = os.path.join(TMP, f'p_{sfx}')
     if not cached:
         shutil.rmtree(stage, ignore_errors=True)
@@ -408,8 +404,8 @@ def commit_saves(msg):
 
 # ---------------------------------------------------------------- actions
 
-def device_state(adb, dev, dpath):
-    """(cleared, lsc) of the save on the device, or None if unreadable.
+def cleared_on_device(adb, dev, dpath):
+    """Cleared events in the save sitting on the device, or None if unreadable.
 
     Unreadable covers the ordinary case of a mod installed but never opened,
     which has no save yet.
@@ -422,7 +418,7 @@ def device_state(adb, dev, dpath):
                    capture_output=True, text=True)
     if not os.path.exists(tmp) or open(tmp, 'rb').read(4) != b'RTON':
         return None
-    return cleared(tmp), launches(tmp)
+    return cleared(tmp)
 
 
 def to_device(adb, dev, paths, force=False):
@@ -444,20 +440,16 @@ def to_device(adb, dev, paths, force=False):
 
         # Kept rather than refused: the device copy is the newer one, so the
         # session can go ahead and the watch loop sends it up at the end. Only
-        # the overwrite is skipped. Ahead by cleared levels or by launches:
-        # the second catches a finished mod, whose levels cannot climb, played
-        # only for coins or gems.
-        st = device_state(adb, dev, dpath)
-        if st is not None and not force:
-            now, dlsc = st
-            if now > cleared(src) or dlsc > launches(src):
-                why = ('more cleared' if now > cleared(src)
-                       else f'opened since ({dlsc} vs {launches(src)} launches)')
-                print(f'  {sfx:<5} KEPT: the device is ahead, {why}. This '
-                      f'machine played without pushing.')
-                print(f'        Send it up with `sync.py push` before playing '
-                      f'elsewhere, or overwrite it anyway with --force.')
-                continue
+        # the overwrite is skipped. Measured in cleared levels, the one signal
+        # that means the same thing on every machine.
+        was = cleared(src)
+        now = cleared_on_device(adb, dev, dpath)
+        if now is not None and now > was and not force:
+            print(f'  {sfx:<5} KEPT: device has {now} cleared, saves/ has {was}. '
+                  f'This machine played without pushing.')
+            print(f'        Send it up with `sync.py push` before playing '
+                  f'elsewhere, or overwrite it anyway with --force.')
+            continue
 
         r = subprocess.run([adb, '-s', dev, 'push', src, dpath],
                            capture_output=True, text=True)
@@ -469,7 +461,7 @@ def to_device(adb, dev, paths, force=False):
             # reads one machine's chain progress against another's profile.
             quests_on(adb, dev, dpath, sfx)
             profile_on(adb, dev, dpath, sfx)
-            print(f'  {sfx:<5} {cleared(src):>4} cleared -> device')
+            print(f'  {sfx:<5} {was:>4} cleared -> device')
     return ok
 
 

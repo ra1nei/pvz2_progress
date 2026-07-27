@@ -2,7 +2,7 @@
 
 How far through each Plants vs. Zombies 2 mod I have got. The numbers are read out of my save files and out of each mod's own data, by a GitHub Action that keeps this page current on its own.
 
-Updated 2026-07-27 02:36 UTC+7 (19:36 UTC), refreshed every 6 hours. [Run log](https://github.com/ra1nei/pvz2_progress/actions/runs/30217198829).
+Updated 2026-07-27 10:23 UTC+7 (03:23 UTC), refreshed every 6 hours.
 
 <table>
 <tr><th></th><th>Mod</th><th>World</th><th>Quest</th><th>Collected</th><th>Progress</th><th>Done</th><th>Updates</th></tr>
@@ -13,9 +13,9 @@ Updated 2026-07-27 02:36 UTC+7 (19:36 UTC), refreshed every 6 hours. [Run log](h
 <tr><td align="center"><img src="assets/logo/pen.png" width="110" height="80"></td><td align="center"><a href="https://drive.google.com/drive/folders/1GDnnr2nrWFBupEFWUvYN5EOP6x7QsnQL">Penumbra</a></td><td align="center">11&nbsp;/&nbsp;102</td><td align="center">0&nbsp;/&nbsp;9</td><td align="center"><details><summary>9&nbsp;🌱<br>2&nbsp;🎩</summary><table><tr><td>Plants</td><td align="right">9&nbsp;/&nbsp;90</td><td><img src="assets/bar/pen_p.svg" width="90"><br><sub>10%</sub></td></tr><tr><td>Costumes</td><td align="right">2&nbsp;/&nbsp;189</td><td><img src="assets/bar/pen_c.svg" width="90"><br><sub>1%</sub></td></tr></table></details></td><td align="center"><img src="assets/bar/pen.svg" width="110"><br>10%</td><td align="center"></td><td align="center"><a href="https://github.com/PvZ2OBBHost/PvZ2PenumbraOBB/releases/tag/v1.3.1b"><img src="assets/tag/pen.svg" height="20"></a></td></tr>
 <tr><td align="center"><img src="assets/logo/auz.webp" width="150" height="77"></td><td align="center"><a href="https://drive.google.com/drive/folders/1ckXFy-1cv7Ka0eCxOXMweHWb_atzOc1z">Alternate&nbsp;UniverZ</a></td><td align="center">42&nbsp;/&nbsp;470</td><td align="center">-</td><td align="center"><details><summary>22&nbsp;🌱<br>4&nbsp;🎩</summary><table><tr><td>Plants</td><td align="right">22&nbsp;/&nbsp;148</td><td><img src="assets/bar/auz_p.svg" width="90"><br><sub>15%</sub></td></tr><tr><td>Costumes</td><td align="right">4&nbsp;/&nbsp;611</td><td><img src="assets/bar/auz_c.svg" width="90"><br><sub>1%</sub></td></tr></table></details></td><td align="center"><img src="assets/bar/auz.svg" width="110"><br>9%</td><td align="center"></td><td align="center"><a href="https://github.com/PvZ2OBBHost/PvZ2AltverZOBB/releases/tag/v1.8.2d"><img src="assets/tag/auz.svg" height="20"></a></td></tr>
 <tr><td align="center"><img src="assets/logo/rsn.png" width="145" height="80"></td><td align="center"><a href="https://drive.google.com/drive/folders/1QqS4lTbGtVvNR_kxPz9PwBRCk5yNKhAI">Resonance</a></td><td align="center">2&nbsp;/&nbsp;169</td><td align="center">-</td><td align="center"><details><summary>8&nbsp;🌱<br>0&nbsp;🎩</summary><table><tr><td>Plants</td><td align="right">8&nbsp;/&nbsp;116</td><td><img src="assets/bar/rsn_p.svg" width="90"><br><sub>7%</sub></td></tr><tr><td>Costumes</td><td align="right">0&nbsp;/&nbsp;310</td><td><img src="assets/bar/rsn_c.svg" width="90"><br><sub>0%</sub></td></tr></table></details></td><td align="center"><img src="assets/bar/rsn.svg" width="110"><br>1%</td><td align="center"></td><td align="center"><a href="https://github.com/PvZ2OBBHost/PvZ2ResonanceOBB/releases/tag/v1.2.1b"><img src="assets/tag/rsn.svg" height="20"></a></td></tr>
-<tr><td align="center"><img src="assets/logo/fln.webp" width="150" height="38"></td><td align="center"><a href="https://drive.google.com/drive/folders/1v2jT-DF6bmuP6drWfAd66EbDM_G072cd">Fallen</a></td><td align="center">36&nbsp;/&nbsp;215</td><td align="center">-</td><td></td><td align="center"><img src="assets/bar/fln.svg" width="110"><br>17%</td><td align="center"></td><td align="center"><img src="assets/tag/fln.svg" height="20"></td></tr>
+<tr><td align="center"><img src="assets/logo/fln.png" width="150" height="47"></td><td align="center"><a href="https://drive.google.com/drive/folders/1v2jT-DF6bmuP6drWfAd66EbDM_G072cd">Fallen</a></td><td align="center">36&nbsp;/&nbsp;215</td><td align="center">-</td><td></td><td align="center"><img src="assets/bar/fln.svg" width="110"><br>17%</td><td align="center"></td><td align="center"><img src="assets/tag/fln.svg" height="20"></td></tr>
 <tr><td align="center"><img src="assets/logo/spi.png" width="144" height="80"></td><td align="center"><a href="https://peakedcomedy.itch.io/spice-reseasoned">Spice&nbsp;Re:Seasoned</a></td><td align="center">3&nbsp;/&nbsp;58</td><td align="center">-</td><td></td><td align="center"><img src="assets/bar/spi.svg" width="110"><br>5%</td><td align="center"></td><td align="center"><img src="assets/tag/spi.svg" height="20"></td></tr>
-<tr><td align="center"><img src="assets/logo/sol.png" width="150" height="38"></td><td align="center"><a href="https://drive.google.com/drive/folders/1UxRE6BW69D1QKfCusDfPxDV5jXU_kkLO">Solstice</a></td><td align="center">8&nbsp;/&nbsp;259</td><td align="center">0&nbsp;/&nbsp;219</td><td align="center"><details><summary>8&nbsp;🌱<br>0&nbsp;🎩</summary><table><tr><td>Plants</td><td align="right">8&nbsp;/&nbsp;93</td><td><img src="assets/bar/sol_p.svg" width="90"><br><sub>9%</sub></td></tr><tr><td>Costumes</td><td align="right">0&nbsp;/&nbsp;354</td><td><img src="assets/bar/sol_c.svg" width="90"><br><sub>0%</sub></td></tr></table></details></td><td align="center"><img src="assets/bar/sol.svg" width="110"><br>2%</td><td align="center"></td><td align="center"><img src="assets/tag/sol.svg" height="20"></td></tr>
+<tr><td align="center"><img src="assets/logo/sol.png" width="150" height="51"></td><td align="center"><a href="https://drive.google.com/drive/folders/1UxRE6BW69D1QKfCusDfPxDV5jXU_kkLO">Solstice</a></td><td align="center">8&nbsp;/&nbsp;259</td><td align="center">0&nbsp;/&nbsp;219</td><td align="center"><details><summary>8&nbsp;🌱<br>0&nbsp;🎩</summary><table><tr><td>Plants</td><td align="right">8&nbsp;/&nbsp;93</td><td><img src="assets/bar/sol_p.svg" width="90"><br><sub>9%</sub></td></tr><tr><td>Costumes</td><td align="right">0&nbsp;/&nbsp;354</td><td><img src="assets/bar/sol_c.svg" width="90"><br><sub>0%</sub></td></tr></table></details></td><td align="center"><img src="assets/bar/sol.svg" width="110"><br>2%</td><td align="center"></td><td align="center"><img src="assets/tag/sol.svg" height="20"></td></tr>
 </table>
 
 World is the levels the game shows on its world maps. Quest is the levels reachable only through the quest system, which is where the Epic chains live; a chain counts as done all at once, because that is the only granularity the save records. A dash means there is nothing to count: Requiem ships no registry at all, and Alternate UniverZ's quests are either switched off, repeating events, or levels already on its maps. Collected opens where it sits, for the plants and costumes that save holds against what the mod offers. The bar and the tick both count World and Quest together, so a mod is only finished once its quests are too. Mod names link to where the build came from. A blue badge links to the GitHub release the level count was read from, and is re-checked every run. Amber means the mod ships its OBB outside GitHub, so nothing can watch it: if that mod adds levels, the total here stays wrong until the count is rebuilt by hand.
@@ -91,18 +91,13 @@ symmetrical.
 safe and the next push sends it up. Both answer to `--force`, which is worth
 reaching for only when you know which copy you mean to keep.
 
-"Ahead" is decided two ways. More cleared levels is the obvious one. But a mod
-finished on every map cannot clear another, so a session spent on it for coins
-or gems leaves the level count pinned; there the guard falls back to `lsc`, a
-counter in the save that climbs by one each time the game opens and never
-falls. A device that has been opened since the last sync reads higher there,
-which is exactly when a plain pull would overwrite what that session did.
-
-So forgetting to sync before you play is caught rather than silent: `play`
-notices on its opening pull and keeps the device copy. The tidy habit is still
-to run `sync.py play` first; but if you forget, end with `sync.py push` rather
-than `play`, since push uploads the device outright while play's first act is
-to fetch.
+The guard measures cleared levels, the one count that means the same thing on
+every machine. It cannot see a session that only moved coins or gems on a mod
+already finished, since the level count there is pinned. So the habit matters:
+run `sync.py play` first. If you forget and play anyway, end with `sync.py
+push` rather than `play`, because push uploads the device as it is while play's
+first act is to fetch, which on equal level counts would overwrite what you
+just did.
 
 ### Why on a timer, not per mod
 
@@ -467,7 +462,7 @@ the table which mods have content it cannot see.
 | `could not read the save off the device` | The emulator went away before that mod could be read. The one that was open is committed from the copy held during play; the rest simply had nothing new. |
 | `NOT FOUND` from `find` | That mod has never been opened here, so it has no save yet. Open it once. |
 | `REFUSED: device has N cleared, saves/ has M` | This machine has less progress than the stored copy, so it played on an old save. Nothing was overwritten. Sync and replay, or use `--force` if you are sure this copy is the one to keep. |
-| `KEPT: the device is ahead` | This machine played and never pushed, so fetching would have thrown that away. Detected by more cleared levels, or by a higher launch count when the levels are maxed and only coins or gems moved. The device copy is left alone and playing can go ahead; send it up with `sync.py push`. |
+| `KEPT: device has N cleared, saves/ has M` | This machine played and never pushed, so fetching would have thrown those levels away. The device copy was left alone and playing can go ahead. Send it up with `sync.py push`. |
 | `Pull failed, not starting the emulator` | Saves could not be brought up to date, so playing now risks losing another machine's progress. Usually network or git. |
 | `this APK changed since last time` | The file at that link is not the one installed before. Nearly always a new build, but it is also what a swapped file looks like, so it gets reported. |
 | `GitHub rate limit hit` | Anonymous API calls are capped at 60/hour. Progress still updates; only the release check is skipped that run. |
