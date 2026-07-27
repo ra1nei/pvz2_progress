@@ -32,12 +32,28 @@ Everything below is one section per situation. Open the one you need.
 python3 sync.py play
 ```
 
-<img src="assets/diagram/play.svg" width="1040" alt="Flowchart of sync.py play: it starts the emulator if needed, copies the newest saves on, then pushes whatever moved every half hour and once when the session ends. Shows the KEPT and REFUSED guards and the unchanged case.">
+<img src="assets/diagram/play.svg" width="1040" alt="Flowchart of sync.py play: it starts the emulator if needed, copies the newest saves on, then watches, printing where each mod stands whenever its save moves, and pushes once when the session ends. Shows the KEPT and REFUSED guards and the unchanged case.">
 
 This is the whole routine. It connects to the emulator, copies the newest saves
-onto it, starts it if it is not running, then watches. It pushes once every
-half hour, and once more when the session ends, by the emulator closing or by
-Ctrl-C in the terminal. Those uploads are what refresh the table.
+onto it, starts it if it is not running, then watches. As you play it prints
+where each mod has got to, with the time, so a run through several of them
+reads back as a timeline:
+
+```
+  21:14  Reflourished, starting from
+          world 570  quest 249  plants 60  costumes 40  coins 13080  gems 5
+
+  21:38  Reflourished
+          world 570->578  quest 249->251  plants 60->61  costumes 40->42  coins 13080->21000  gems 5->7
+
+  22:02  Addendum
+          world 110->112  quest 22->23  plants 52  costumes 71  coins 30500->31690  gems 0
+```
+
+Each line is against where that mod stood when the session began, which is what
+the commit at the end says too. The upload happens once, when the session ends,
+by the emulator closing or by Ctrl-C in the terminal; that upload is what
+refreshes the table.
 
 ### Why it fetches before it lets you play
 
@@ -77,14 +93,15 @@ push` rather than `play`, because push uploads the device as it is while play's
 first act is to fetch, which on equal level counts would overwrite what you
 just did.
 
-### Why on a timer, not per mod
+### Why once at the end, not as you go
 
-An earlier version pushed every time a mod left the foreground, which put a
-commit in the log for every glance at a piñata and read as noise. Now a single
-push every half hour sweeps whatever moved into one commit, and a last one
-lands when you finish. Fewer commits, each one a real chunk of a session. A
-push that fails, on a dropped network say, is reported and stepped over: the
-commit is already here and rides up with the next one.
+The first version pushed every time a mod left the foreground, which put a
+commit in the log for every glance at a piñata; the next pushed every half
+hour, which was quieter but still cut a night into arbitrary slices. Now the
+session is reported to the terminal as it happens and pushed once when it ends,
+so the log carries one commit per sitting and you still see progress as you
+make it. A push that fails, on a dropped network say, is reported and stepped
+over: the commit is already here and rides up with the next one.
 
 Nearly any byte counts as a change, not just a finished level. Coins, costumes,
 a plant unlocked, the level you were last on: a session where you cleared

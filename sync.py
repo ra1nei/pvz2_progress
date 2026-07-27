@@ -15,10 +15,12 @@ not merely inconvenient: play on a stale save and the next push overwrites
 progress made on the other machine. So `play` pulls first, and refuses to start
 the emulator if that pull fails.
 
-It then watches, pushing whatever moved every half hour and once more when the
-session ends, by the emulator closing or by Ctrl-C. The mod in front is copied
-each pass, so the last push has something to commit even after the device is
-gone.
+It then watches and reports: as each mod writes its save, its levels, plants,
+costumes, coins and gems are printed with the time, against where that mod
+stood when the session began. Nothing is pushed until the session ends, by the
+emulator closing or by Ctrl-C, so a night across several mods lands as one
+commit. The mod in front is copied each pass, so that last push has something
+to commit even after the device is gone.
 
 Do not run `pull` with the mod open. The game holds its progress in memory and
 writes it out on exit, so anything pushed underneath it is overwritten the
@@ -670,41 +672,92 @@ def final_push(adb, dev, paths, seen, force):
         print('  nothing was open long enough to have a copy')
 
 
-def watch(adb, dev, paths, force=False, every=8, interval=1800):
-    """Push on a timer and once at the end, never once per mod left.
+def fields(before, after):
+    """The six numbers on one line, each as a value or old->new when it moved."""
+    out = []
+    for k in ('world', 'quest', 'plants', 'costumes', 'coins', 'gems'):
+        a = after.get(k)
+        if a is None:
+            continue
+        b = (before or {}).get(k)
+        out.append(f'{k} {b}->{a}' if before and b != a else f'{k} {a}')
+    return '  '.join(out)
 
-    Pushing every time a mod left the foreground put a commit in the log for
-    every glance at a piñata. Instead one push every `interval` seconds sweeps
-    whatever moved into a single commit, and a last one lands when the session
-    ends, by the emulator closing or by Ctrl-C.
 
-    The copy taken each pass is for that last one. Closing the emulator is no
-    transition to notice, and by the time the device is gone there is nothing
-    left to read, so the mod in front is kept in hand as you play. Watching the
-    foreground beats watching processes: Android keeps a game alive long after
-    you leave it, so a dead process never arrives.
+def watch(adb, dev, paths, force=False, every=8):
+    """Report as you play, push once at the end.
+
+    The session is printed rather than pushed: each time a mod writes its save
+    the numbers appear with the time, against where that mod stood when the
+    session began, so a run through several mods reads back as a timeline of
+    what each of them gained. Nothing reaches the repo until the session ends,
+    by the emulator closing or by Ctrl-C, which keeps a night's play as one
+    commit rather than one every half hour.
+
+    The copy taken each pass is what that last push falls back on. Closing the
+    emulator is no transition to notice, and by the time the device is gone
+    there is nothing left to read, so the mod in front is kept in hand as you
+    play. Watching the foreground beats watching processes: Android keeps a
+    game alive long after you leave it, so a dead process never arrives.
     """
-    mins = max(1, interval // 60)
-    print(f'  watching {dev}. It pushes every {mins} min, and once more when '
-          f'you close the emulator or press Ctrl-C.')
-    seen = set()
-    due = time.monotonic() + interval
+    print(f'  watching {dev}. Numbers appear here as you play; nothing is '
+          f'pushed until you close the emulator or press Ctrl-C.')
+    seen, base, last, when = set(), {}, {}, {}
+
+    def look(pkg):
+        """Print the mod's numbers if its save has moved since last time."""
+        sfx = pkg.rsplit('_', 1)[-1]
+        copy = os.path.join(TMP, f'pp_{sfx}.dat')
+        if not os.path.exists(copy):
+            return
+        try:
+            now = summary(copy, pkg)
+        except Exception:
+            return                     # caught mid-write, it will be read again
+        name = display_name(sfx)
+        if pkg not in base:
+            # Where this mod stood when the session began, which is what the
+            # commit at the end will diff against too, so the arrows on screen
+            # and the arrows in the commit are the same arrows.
+            stored = os.path.join(SAVES, f'pp_{sfx}.dat')
+            try:
+                base[pkg] = summary(stored, pkg) if os.path.exists(stored) else now
+            except Exception:
+                base[pkg] = now
+            last[pkg] = None
+            when[pkg] = time.strftime('%H:%M')
+            print(f'\n  {when[pkg]}  {name}, starting from')
+            print(f'          {fields(None, base[pkg])}')
+        if last[pkg] is None:
+            if now == base[pkg]:
+                return                 # open, but nothing played yet
+        elif now == last[pkg]:
+            return                     # nothing new since the last line
+        last[pkg] = now
+        print(f'\n  {time.strftime("%H:%M")}  {name}')
+        print(f'          {fields(base[pkg], now)}')
+
     try:
         while True:
             time.sleep(every)
             if dev not in devices(adb):
-                print('  emulator closed')
+                print('\n  emulator closed')
                 break
             cur = foreground_app(adb, dev)
             if cur in paths:
                 stash(adb, dev, cur, paths[cur])
                 seen.add(cur)
-            if time.monotonic() >= due:
-                print(f'\n  {mins} min on, pushing what moved')
-                from_device(adb, dev, paths, force)
-                due = time.monotonic() + interval
+                look(cur)
     except KeyboardInterrupt:
         print('\n  stopping')
+
+    moved = [p for p in seen if last.get(p) and last[p] != base.get(p)]
+    if moved:
+        print('\n== this session ==')
+        for pkg in sorted(moved, key=lambda p: when.get(p, '')):
+            sfx = pkg.rsplit('_', 1)[-1]
+            print(f'  {when.get(pkg, "")}  {display_name(sfx)}')
+            print(f'          {fields(base[pkg], last[pkg])}')
     print('\n== final push ==')
     final_push(adb, dev, paths, seen, force)
 
