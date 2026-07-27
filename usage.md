@@ -460,6 +460,7 @@ built out of, grouped by what it touches.
 | `addmod.py` | Sets up a mod the repo has never seen. |
 | `track.py` | What GitHub Actions runs: reads saves, checks releases, rewrites the table. |
 | `boxlogos.py` | Centres each logo on one canvas so the table lines up. Needs Pillow; run by hand when a logo changes. |
+| `mkflow.py` | Draws the diagrams on this page. Edit the diagram there, not the SVG, and rerun it. |
 | `pvz/rton.py`, `pvz/rsb.py` | PopCap's binary JSON and archive formats. Everything depends on these. |
 | `pvz/worlds.py` | Counts a mod's levels from its OBB. The counting rules live here. |
 | `pvz/quests.py` | The other place levels live, and which of them are worth counting. |
