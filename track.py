@@ -186,16 +186,28 @@ def _img_size(path):
     return None
 
 
+# A transparent 1px PNG, stretched to the box height, sits in every logo cell.
+# The logos fit within the box at their own aspect, so they range from 47 to 80
+# px tall, and a table row is as tall as its tallest cell: without this the 3:1
+# banners left their rows visibly shallower than the rest. GitHub strips inline
+# CSS, so a spacer image is the only way left to pin every row to one height.
+SPACER = f'<img src="assets/spacer.png" width="1" height="{LOGO_BOX[1]}">'
+
+
 def logo_img(rel):
-    """<img> for a logo, scaled to fit LOGO_BOX. Falls back to a plain width."""
+    """<img> for a logo, fit within LOGO_BOX, behind a fixed-height spacer.
+
+    The spacer goes in even when there is no logo yet, so a mod still being
+    onboarded keeps the same row height as the rest instead of collapsing.
+    """
     if not rel:
-        return ''
+        return SPACER
     d = _img_size(os.path.join(HERE, rel))
     if not d or not d[1]:
-        return f'<img src="{rel}" width="{LOGO_BOX[0]}">'
+        return SPACER + f'<img src="{rel}" width="{LOGO_BOX[0]}">'
     bw, bh = LOGO_BOX
     k = min(bw / d[0], bh / d[1])
-    return f'<img src="{rel}" width="{round(d[0] * k)}" height="{round(d[1] * k)}">'
+    return SPACER + f'<img src="{rel}" width="{round(d[0] * k)}" height="{round(d[1] * k)}">'
 
 
 def logo(sfx):
