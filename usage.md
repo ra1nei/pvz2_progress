@@ -35,9 +35,9 @@ python3 sync.py play
 <img src="assets/diagram/play.svg" width="1040" alt="Flowchart of sync.py play: it starts the emulator if needed, copies the newest saves on, then watches, printing where each mod stands whenever its save moves, and pushes once when the session ends. Shows the KEPT and REFUSED guards and the unchanged case.">
 
 This is the whole routine. It connects to the emulator, copies the newest saves
-onto it, starts it if it is not running, then watches. As you play it prints
-where each mod has got to, with the time, so a run through several of them
-reads back as a timeline:
+onto it, starts it if it is not running, then watches. Every half hour it reads
+whichever mod is open and prints where it has got to, with the time, so a run
+through several of them reads back as a timeline:
 
 ```
   21:14  Reflourished, starting from
@@ -54,6 +54,12 @@ Each line is against where that mod stood when the session began, which is what
 the commit at the end says too. The upload happens once, when the session ends,
 by the emulator closing or by Ctrl-C in the terminal; that upload is what
 refreshes the table.
+
+Half an hour is a cadence, not a rule: `--every 10` reads more often. Reading
+is not free, though. It copies the save off the device and parses it, so doing
+it every few seconds hitches the game and prints a line for every ten coins
+picked up, which is what it used to do. Ctrl-C takes a reading of its own, so
+the last stretch is never missing from the recap or the commit.
 
 ### Why it fetches before it lets you play
 

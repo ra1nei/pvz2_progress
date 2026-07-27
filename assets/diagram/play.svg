@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1040" height="1220" viewBox="0 0 1040 1220" role="img" aria-labelledby="t d">
 <title id="t">What sync.py play does, branch by branch</title>
-<desc id="d">A flowchart of sync.py play: it connects to the emulator, copies the newest saves onto it, then watches the foreground and prints each mod's progress as it happens, uploading once at the end. Every refusal notes on the left explaining why each guard exists.</desc>
+<desc id="d">A flowchart of sync.py play: it connects to the emulator, copies the newest saves onto it, then reads the open mod every half hour and prints its progress, uploading once at the end. Every refusal notes on the left explaining why each guard exists.</desc>
 <style>
   .bg    { fill: #ffffff; }
   .box   { fill: #f6f8fa; stroke: #d0d7de; stroke-width: 1; }
@@ -100,7 +100,7 @@
 <text class="s" x="450" y="549" text-anchor="middle">N cleared -&gt; device</text>
 <rect class="box" x="305" y="600" width="290" height="56" rx="6"/>
 <text class="h" x="450" y="624.25" text-anchor="middle">watch the foreground</text>
-<text class="s" x="450" y="639.75" text-anchor="middle">copy the open mod every 8 seconds</text>
+<text class="s" x="450" y="639.75" text-anchor="middle">is the emulator still there? every 15s</text>
 <rect class="deci" x="305" y="688" width="290" height="48" rx="14"/>
 <text class="h" x="450" y="716" text-anchor="middle">emulator still up?</text>
 <rect class="box" x="655" y="660" width="265" height="56" rx="6"/>
@@ -108,9 +108,9 @@
 <text class="s" x="787.5" y="692" text-anchor="middle">the session is ending, so</text>
 <text class="s" x="787.5" y="707.5" text-anchor="middle">this is the last push</text>
 <rect class="deci" x="305" y="776" width="290" height="48" rx="14"/>
-<text class="h" x="450" y="804" text-anchor="middle">did the save move?</text>
+<text class="h" x="450" y="804" text-anchor="middle">half an hour since the last read?</text>
 <rect class="box" x="305" y="864" width="290" height="56" rx="6"/>
-<text class="h" x="450" y="880.5" text-anchor="middle">print where it stands</text>
+<text class="h" x="450" y="880.5" text-anchor="middle">copy the open mod, print where it is</text>
 <text class="s" x="450" y="896" text-anchor="middle">levels, plants, costumes, coins and</text>
 <text class="s" x="450" y="911.5" text-anchor="middle">gems, against where the mod started</text>
 <rect class="box" x="655" y="1000" width="265" height="44" rx="6"/>
@@ -157,7 +157,7 @@
 <text class="elbl" x="266" y="770">then keep watching</text>
 <path class="edge" d="M450 1002 L450 1036" marker-end="url(#a)"/>
 <path class="edge" d="M305 800 L272 800 L272 628 L305 628" marker-end="url(#a)" stroke-dasharray="4 3"/>
-<text class="elbl" x="280" y="715">no, keep watching</text>
+<text class="elbl" x="280" y="715">not yet, keep watching</text>
 <rect class="noteb" x="20" y="148" width="220" height="100" rx="6"/>
 <text class="h" x="130" y="171" text-anchor="middle">Why it pulls first</text>
 <text class="s" x="130" y="186.5" text-anchor="middle">Play on a stale save and the next</text>
@@ -179,11 +179,11 @@
 <text class="s" x="130" y="685.25" text-anchor="middle">each pass is what the closing</text>
 <text class="s" x="130" y="700.75" text-anchor="middle">push commits, the device by then gone.</text>
 <rect class="noteb" x="20" y="856" width="220" height="116" rx="6"/>
-<text class="h" x="130" y="879.25" text-anchor="middle">Why once at the end</text>
-<text class="s" x="130" y="894.75" text-anchor="middle">Pushing per mod put a commit in the</text>
-<text class="s" x="130" y="910.25" text-anchor="middle">log for every glance at a pinata, and</text>
-<text class="s" x="130" y="925.75" text-anchor="middle">a half-hour timer cut a night into</text>
-<text class="s" x="130" y="941.25" text-anchor="middle">arbitrary slices. One sitting is now</text>
-<text class="s" x="130" y="956.75" text-anchor="middle">one commit, watched on screen instead.</text>
+<text class="h" x="130" y="879.25" text-anchor="middle">Why on a timer</text>
+<text class="s" x="130" y="894.75" text-anchor="middle">Reading copies the save off the</text>
+<text class="s" x="130" y="910.25" text-anchor="middle">device and parses it. Doing that</text>
+<text class="s" x="130" y="925.75" text-anchor="middle">every few seconds hitched the game</text>
+<text class="s" x="130" y="941.25" text-anchor="middle">and printed a line for every ten</text>
+<text class="s" x="130" y="956.75" text-anchor="middle">coins. --every changes the interval.</text>
 <text class="cap" x="520" y="1202" text-anchor="middle">Never run sync.py pull with a mod already open: the game writes its save on exit and would wipe what you just fetched.</text>
 </svg>

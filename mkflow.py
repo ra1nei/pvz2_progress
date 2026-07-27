@@ -201,9 +201,9 @@ def play():
     s = Sheet('play', 1040, 1220,
         'What sync.py play does, branch by branch',
         'A flowchart of sync.py play: it connects to the emulator, copies the '
-        'newest saves onto it, then watches the foreground and prints each '
-        "mod's progress as it happens, uploading once at the end. Every "
-        'refusal notes on the left explaining why each guard exists.')
+        'newest saves onto it, then reads the open mod every half hour and '
+        'prints its progress, uploading once at the end. Every refusal notes '
+        'on the left explaining why each guard exists.')
     s.text('sect', 20, 34, 'python3 sync.py play')
     s.text('cap', 20, 54, 'The daily one. Follow the spine down the middle; every branch peels off to the right.')
     s.node('cmdb', 325, 72, 250, 44, [('cmd', 'sync.py play')])
@@ -216,11 +216,11 @@ def play():
     s.node('warnb', 655, 434, 265, 56, [('mono', 'KEPT'), ('s', 'the device holds MORE progress,'), ('s', 'so it is not overwritten')])
     s.node('stopb', 655, 509, 265, 50, [('h', 'STOP: adb push failed'), ('s', 'playing now would use an old save')])
     s.node('okb', 325, 524, 250, 42, [('s', 'N cleared -> device')])
-    s.node('box', 305, 600, 290, 56, [('h', 'watch the foreground'), ('s', 'copy the open mod every 8 seconds')])
+    s.node('box', 305, 600, 290, 56, [('h', 'watch the foreground'), ('s', 'is the emulator still there? every 15s')])
     s.node('deci', 305, 688, 290, 48, [('h', 'emulator still up?')], rx=14)
     s.node('box', 655, 660, 265, 56, [('h', 'closed, or Ctrl-C'), ('s', 'the session is ending, so'), ('s', 'this is the last push')])
-    s.node('deci', 305, 776, 290, 48, [('h', 'did the save move?')], rx=14)
-    s.node('box', 305, 864, 290, 56, [('h', 'print where it stands'), ('s', 'levels, plants, costumes, coins and'), ('s', 'gems, against where the mod started')])
+    s.node('deci', 305, 776, 290, 48, [('h', 'half an hour since the last read?')], rx=14)
+    s.node('box', 305, 864, 290, 56, [('h', 'copy the open mod, print where it is'), ('s', 'levels, plants, costumes, coins and'), ('s', 'gems, against where the mod started')])
     s.node('box', 655, 1000, 265, 44, [('mono', 'unchanged'), ('s', 'nothing moved, no commit')])
     s.node('stopb', 655, 1054, 265, 56, [('mono', 'REFUSED'), ('s', 'the device holds LESS than saves/,'), ('s', 'so this machine is on an old save')])
     s.node('box', 325, 956, 250, 46, [('h', 'commit and push saves/'), ('s', 'a failed push is survived')])
@@ -245,11 +245,11 @@ def play():
     s.edge([(575, 978), (625, 978), (625, 1082), (653, 1082)])
     s.edge([(305, 892), (258, 892), (258, 612), (305, 612)], label=('then keep watching', 266, 770, 'start'), dashed=True)
     s.edge([(450, 1002), (450, 1036)])
-    s.edge([(305, 800), (272, 800), (272, 628), (305, 628)], label=('no, keep watching', 280, 715, 'start'), dashed=True)
+    s.edge([(305, 800), (272, 800), (272, 628), (305, 628)], label=('not yet, keep watching', 280, 715, 'start'), dashed=True)
     s.node('noteb', 20, 148, 220, 100, [('h', 'Why it pulls first'), ('s', 'Play on a stale save and the next'), ('s', 'push erases the other machine, with'), ('s', 'no warning. So it refuses to start'), ('s', 'the emulator if the pull failed.')])
     s.node('noteb', 20, 400, 220, 116, [('h', 'Why the two guards differ'), ('s', 'KEPT is not an error. The device'), ('s', 'copy is the newer one, so the session'), ('s', 'goes ahead and the watch loop sends'), ('s', 'it up later. Only the overwrite is'), ('s', 'skipped. Both answer to --force.')])
     s.node('noteb', 20, 600, 220, 116, [('h', 'Foreground, not process'), ('s', 'Android keeps a game alive long'), ('s', 'after you leave it, so a dead'), ('s', 'process never arrives. The copy'), ('s', 'each pass is what the closing'), ('s', 'push commits, the device by then gone.')])
-    s.node('noteb', 20, 856, 220, 116, [('h', 'Why once at the end'), ('s', 'Pushing per mod put a commit in the'), ('s', 'log for every glance at a pinata, and'), ('s', 'a half-hour timer cut a night into'), ('s', 'arbitrary slices. One sitting is now'), ('s', 'one commit, watched on screen instead.')])
+    s.node('noteb', 20, 856, 220, 116, [('h', 'Why on a timer'), ('s', 'Reading copies the save off the'), ('s', 'device and parses it. Doing that'), ('s', 'every few seconds hitched the game'), ('s', 'and printed a line for every ten'), ('s', 'coins. --every changes the interval.')])
     s.text('cap', 520, 1202, 'Never run sync.py pull with a mod already open: the game writes its save on exit and would wipe what you just fetched.', anchor='middle')
     return s
 

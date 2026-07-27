@@ -15,12 +15,13 @@ not merely inconvenient: play on a stale save and the next push overwrites
 progress made on the other machine. So `play` pulls first, and refuses to start
 the emulator if that pull fails.
 
-It then watches and reports: as each mod writes its save, its levels, plants,
-costumes, coins and gems are printed with the time, against where that mod
-stood when the session began. Nothing is pushed until the session ends, by the
-emulator closing or by Ctrl-C, so a night across several mods lands as one
-commit. The mod in front is copied each pass, so that last push has something
-to commit even after the device is gone.
+It then watches and reports: every half hour, and once more on the way out, it
+reads whichever mod is open and prints its levels, plants, costumes, coins and
+gems with the time, against where that mod stood when the session began.
+Nothing is pushed until the session ends, by the emulator closing or by Ctrl-C,
+so a night across several mods lands as one commit. Each reading also leaves a
+copy behind, so that last push has something to commit even after the device is
+gone. `--every` changes the interval.
 
 Do not run `pull` with the mod open. The game holds its progress in memory and
 writes it out on exit, so anything pushed underneath it is overwritten the
@@ -684,24 +685,37 @@ def fields(before, after):
     return '  '.join(out)
 
 
-def watch(adb, dev, paths, force=False, every=8):
-    """Report as you play, push once at the end.
+def watch(adb, dev, paths, force=False, tick=15, interval=1800):
+    """Report on a timer, push once at the end.
 
-    The session is printed rather than pushed: each time a mod writes its save
-    the numbers appear with the time, against where that mod stood when the
+    Every `interval` the open mod's save is copied off the device and its
+    numbers printed with the time, against where that mod stood when the
     session began, so a run through several mods reads back as a timeline of
     what each of them gained. Nothing reaches the repo until the session ends,
     by the emulator closing or by Ctrl-C, which keeps a night's play as one
     commit rather than one every half hour.
 
-    The copy taken each pass is what that last push falls back on. Closing the
-    emulator is no transition to notice, and by the time the device is gone
-    there is nothing left to read, so the mod in front is kept in hand as you
-    play. Watching the foreground beats watching processes: Android keeps a
-    game alive long after you leave it, so a dead process never arrives.
+    Reading is on a timer because it is not free: it copies a save off the
+    device and parses it, and doing that every few seconds both hitched the
+    game and filled the screen with a line for every ten coins picked up. Only
+    the check for whether the emulator is still there runs often, and that one
+    asks adb, not the device.
+
+    The copy is what the last push falls back on. Closing the emulator is no
+    transition to notice, and by the time the device is gone there is nothing
+    left to read, so the mod in front is kept in hand as you play. A mod played
+    entirely between two reads and then closed with the emulator has no copy;
+    it is not lost, it stays on the device and the guard stops the next session
+    overwriting it, but it lands in a later commit. Ctrl-C has no such gap: the
+    device is still up, so everything is read straight from it.
+
+    Watching the foreground beats watching processes: Android keeps a game
+    alive long after you leave it, so a dead process never arrives.
     """
-    print(f'  watching {dev}. Numbers appear here as you play; nothing is '
-          f'pushed until you close the emulator or press Ctrl-C.')
+    mins = max(1, interval // 60)
+    print(f'  watching {dev}. It reads the open mod every {mins} min and says '
+          f'where you have got to; nothing is pushed until you close the '
+          f'emulator or press Ctrl-C.')
     seen, base, last, when = set(), {}, {}, {}
 
     def look(pkg):
@@ -737,19 +751,30 @@ def watch(adb, dev, paths, force=False, every=8):
         print(f'\n  {time.strftime("%H:%M")}  {name}')
         print(f'          {fields(base[pkg], now)}')
 
+    def read():
+        """Copy whatever is in front and say where it stands."""
+        cur = foreground_app(adb, dev)
+        if cur in paths:
+            stash(adb, dev, cur, paths[cur])
+            seen.add(cur)
+            look(cur)
+
+    due = time.monotonic()                 # the first read anchors the session
     try:
         while True:
-            time.sleep(every)
+            if time.monotonic() >= due:
+                read()
+                due = time.monotonic() + interval
+            time.sleep(tick)
             if dev not in devices(adb):
                 print('\n  emulator closed')
                 break
-            cur = foreground_app(adb, dev)
-            if cur in paths:
-                stash(adb, dev, cur, paths[cur])
-                seen.add(cur)
-                look(cur)
     except KeyboardInterrupt:
         print('\n  stopping')
+    if dev in devices(adb):
+        # One last look while there is still something to look at, so the recap
+        # and the commit report the same session rather than the last timer.
+        read()
 
     moved = [p for p in seen if last.get(p) and last[p] != base.get(p)]
     if moved:
@@ -784,6 +809,10 @@ def main():
     ap.add_argument('--device', help='adb serial, default the first connected')
     ap.add_argument('--pkg', help='one package instead of every installed mod')
     ap.add_argument('--exe', help='emulator to launch, when it is not where it usually is')
+    ap.add_argument('--every', type=int, default=30, metavar='MIN',
+                    help='minutes between reads while playing (default 30). '
+                         'Reading copies the save off the device, so a short '
+                         'interval means more chatter and more work mid-game')
     ap.add_argument('--force', action='store_true',
                     help='ignore the progress guard, in whichever direction it fires')
     a = ap.parse_args()
@@ -828,7 +857,7 @@ def main():
                          'would be playing on an old save.')
             if exe:
                 print(f'\n== {exe} is already running ==')
-        watch(adb, dev, paths, a.force)
+        watch(adb, dev, paths, a.force, interval=max(1, a.every) * 60)
         return
 
     mods = installed_mods(adb, dev, a)
