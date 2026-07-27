@@ -240,7 +240,10 @@ where to download it later is something no save file records.
    new builds from this point on rather than from the next scan.
 3. Find its APK: `python3 install.py scan` (it also picks up the OBB if step 2
    found several and left the choice open)
-4. Drop a logo into `assets/logo`, named after the package suffix.
+4. Drop a logo into `assets/logo`, named after the package suffix, then run
+   `python3 boxlogos.py <sfx>` to centre it on the same canvas as the rest.
+   Without that it still shows, just at its own width, and the column looks
+   ragged next to the boxed ones.
 5. Commit `links.json`, `install.json`, `sources.json`, the new `worlds/` file
    and the logo.
 
@@ -439,6 +442,7 @@ built out of, grouped by what it touches.
 | `install.py` | Installs and updates mods on a machine, and applies the keymap. |
 | `addmod.py` | Sets up a mod the repo has never seen. |
 | `track.py` | What GitHub Actions runs: reads saves, checks releases, rewrites the table. |
+| `boxlogos.py` | Centres each logo on one canvas so the table lines up. Needs Pillow; run by hand when a logo changes. |
 | `pvz/rton.py`, `pvz/rsb.py` | PopCap's binary JSON and archive formats. Everything depends on these. |
 | `pvz/worlds.py` | Counts a mod's levels from its OBB. The counting rules live here. |
 | `pvz/quests.py` | The other place levels live, and which of them are worth counting. |
@@ -457,6 +461,7 @@ built out of, grouped by what it touches.
 | `saves/*.dat` | The save files themselves. |
 | `saves/quests_*/` | How far into each quest chain you are, which the save does not record. |
 | `assets/logo/*` | One image per mod, named after the package suffix. Added by hand. |
+| `assets/logo/box/*` | The same logos centred on one canvas, which is what the table shows. Written by `boxlogos.py`. |
 
 </details>
 

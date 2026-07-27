@@ -214,9 +214,18 @@ def logo_img(rel):
 def logo(sfx):
     """The mod's logo under assets/logo, or None when it has none.
 
+    The boxed copy wins when there is one. Logos are drawn in whatever shape
+    their author chose, so scaling them to fit leaves each a different width;
+    boxlogos.py centres them on a canvas of one size, and using that is what
+    makes the column line up. The original is the fallback, so a logo just
+    dropped in still shows, at its own width, until it is boxed.
+
     Committed files only. A new mod shows a blank first column until one is
     dropped in by hand, named after the package suffix.
     """
+    boxed = os.path.join(HERE, 'assets', 'logo', 'box', f'{sfx}.png')
+    if os.path.exists(boxed):
+        return f'assets/logo/box/{sfx}.png'
     for ext in ('png', 'webp', 'jpg'):
         if os.path.exists(os.path.join(HERE, 'assets', 'logo', f'{sfx}.{ext}')):
             return f'assets/logo/{sfx}.{ext}'
