@@ -374,30 +374,6 @@ entirely, along with the fifteen Travel Log worlds that replay past events:
 they are old content on rotation, not something to finish. Counting them left
 Reflourished short of 100% when in fact it was finished.
 
-### Plants and costumes
-
-The Collected column shows what a save holds. Closed, it is the two owned
-counts; open it for the detail. Costumes carry a denominator, plants do not,
-and the reason is which totals can be trusted.
-
-Costumes are shop items, and the shop is the definitive list of what a mod
-sells, so a costume fraction is against a real total: bought out of what is on
-offer.
-
-Plants have no such list. A mod ships the base game's whole almanac, a couple
-of hundred entries, whether or not it hands those plants out, and does not
-flag the ones it withholds. Addendum's almanac carries a hundred and sixty-odd
-while the game itself offers about fifty; nothing in the files draws that line.
-Reflourished happens to flag its withheld plants and so could be counted, but
-most mods do not, so a plant fraction would mostly measure plants the mod never
-gives. The owned count is read straight from the save and is real; the total is
-left off rather than invented.
-
-How many, never which ones. The numbers in a save are ids from a space the game
-keeps to itself, not positions in any list, so no name is ever put to a number.
-
-A mod whose OBB nothing can reach has an empty cell.
-
 ### What counts as a level
 
 The numbers are meant to match what the game shows on each world map, which

@@ -273,48 +273,8 @@ def write_readme(rows, gio):
          gio, '',
          '<table>',
          '<tr><th></th><th>Mod</th><th>World</th><th>Quest</th>'
-         '<th>Collected</th><th>Progress</th><th>Done</th>'
+         '<th>Progress</th><th>Done</th>'
          '<th>Updates</th></tr>']
-
-    def collected(short):
-        """The Collected cell: plants and costumes, folded into a <details>.
-
-        Both are shown as owned counts with no denominator. A mod's true
-        offering is not derivable from its files for either one: it ships the
-        base game's whole almanac and whole shop, hundreds of entries each, and
-        flags none of the ones it withholds, so a fraction would be against a
-        total mostly made of plants and costumes the mod never hands out. One
-        mod carries 470 costume entries in its shop while the game itself sells
-        a fraction of that. The owned counts come straight from the save and
-        are the real numbers.
-        """
-        wp = os.path.join(HERE, 'worlds', f'com.ea.game.pvz2_{short}.json')
-        sp = os.path.join(HERE, 'saves', f'pp_{short}.dat')
-        if not (os.path.exists(wp) and os.path.exists(sp)):
-            return '<td></td>'
-        try:
-            col = json.load(open(wp, encoding='utf-8')).get('_collection') or {}
-            info = extract(sp, f'com.ea.game.pvz2_{short}')
-        except Exception:
-            return '<td></td>'
-        if not col.get('plants') and not col.get('costumes'):
-            return '<td></td>'
-
-        def owned_only(label, n):
-            # No denominator, for the reason in the docstring: neither a mod's
-            # plant offering nor its costume offering can be told from its
-            # files. The owned count is read straight from the save and is real.
-            return (f'<tr><td>{label}</td><td align="right">{n}</td>'
-                    f'<td></td></tr>')
-
-        pl = info.get('plants_unlocked') or 0
-        co = info.get('costumes') or 0
-        return ('<td align="center"><details>'
-                f'<summary>{pl}&nbsp;🌱<br>{co}&nbsp;🎩</summary>'
-                '<table>'
-                + owned_only('Plants', pl)
-                + owned_only('Costumes', co)
-                + '</table></details></td>')
 
     def name_cell(name, short):
         # The link is the mod's own source page, from links.json. Never a Drive
@@ -359,7 +319,7 @@ def write_readme(rows, gio):
                 f'<td align="center">{img}</td>'
                 f'<td align="center">{name_cell(name, short)}</td>'
                 f'<td align="center">{done}&nbsp;/&nbsp;{total}</td>'
-                + quest_cell(qd, qt) + collected(short) +
+                + quest_cell(qd, qt) +
                 f'<td align="center"><img src="assets/bar/{short}.svg" width="110">'
                 f'<br>{round(pt * 100)}%</td>'
                 f'<td align="center">{"✅" if done >= total and qd >= qt else ""}</td>'
@@ -372,7 +332,7 @@ def write_readme(rows, gio):
         img = logo_img(logo)
         L.append(f'<tr><td align="center">{img}</td>'
                  f'<td align="center">{name_cell(name, short)}</td>'
-                 f'<td colspan="6">no level count yet</td></tr>')
+                 f'<td colspan="5">no level count yet</td></tr>')
     L += ['</table>', '',
           'World is the levels the game shows on its world maps. Quest is the '
           'levels reachable only through the quest system, which is where the '
@@ -380,8 +340,7 @@ def write_readme(rows, gio):
           'is the only granularity the save records. A dash means there is '
           'nothing to count: Requiem ships no registry at all, and Alternate '
           "UniverZ's quests are either switched off, repeating events, or "
-          'levels already on its maps. Collected opens where it sits, for the '
-          'plants and costumes that save holds against what the mod offers. '
+          'levels already on its maps. '
           'The bar and the tick both count World and Quest together, so a '
           'mod is only finished once its quests are too. '
           'Mod names link to where the build came from. A blue badge links '
