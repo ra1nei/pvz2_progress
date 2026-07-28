@@ -19,7 +19,7 @@ import os
 import sys
 
 from pvz.rsb import RSB, AdbReader, FileReader, HttpReader
-from pvz.device import find_adb, pick_device, sh
+from pvz.device import find_adb, device_with, sh
 
 from pvz import ROOT as HERE
 WORLDS_DIR = os.path.join(HERE, 'worlds')
@@ -278,7 +278,7 @@ def main():
               'mtime': int(os.path.getmtime(a.obb))}
     else:
         adb = find_adb()
-        dev = pick_device(adb, a.pkg)
+        dev = device_with(adb, a.pkg)
         path, size, mtime = obb_info(adb, dev, a.pkg)
         print(f'reading {path}  ({size:,} bytes) from device {dev}')
         reader = AdbReader(adb, dev, path)

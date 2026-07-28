@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Put the mods you are playing onto a machine that has none of them.
 
+    python3 install.py add <url>   take on a mod from its download page
     python3 install.py scan        find the APK and OBB for each mod
     python3 install.py status      installed here vs available
     python3 install.py auto        install or update everything you play
@@ -71,69 +72,130 @@ def progress(name):
 drive_files = drive.files_of_type
 
 
-def scan():
-    """Find each mod's APK in its Drive folder and its OBB source.
+def scan_one(sfx, url, cfg, src):
+    """Read one mod's Drive folder into its install.json entry.
 
     Ambiguous cases are written out as choices rather than guessed at: Collided
     ships a 30 and a 60 FPS build, Fallen a 32 and a 64 bit one, and picking
     for you would install something you did not ask for.
     """
+    rec = cfg.setdefault(sfx, {})
+    rec['obb_url'] = src.get(PKG.format(sfx), {}).get('obb_url', '')
+
+    m = re.search(r'/folders/([\w-]+)', str(url))
+    if not m:
+        print(f'{sfx:<5} {url} is not a Drive folder, APK must be set by hand')
+        return
+    try:
+        items = drive.list_folder(m.group(1))
+    except Exception as e:
+        print(f'{sfx:<5} cannot read the Drive folder: {e}')
+        return
+    if not items:
+        # Empty is not the same as "no APK there". A machine whose HTTPS is
+        # broken gets an empty listing for every mod, and treating that as
+        # fact used to wipe the ids that were already known good.
+        print(f'{sfx:<5} the folder listing came back empty, leaving what '
+              f'is already known alone')
+        return
+    # An OBB in the folder is only worth looking for when GitHub has none.
+    if not rec['obb_url']:
+        obbs = drive_files(items, '.obb')
+        if len(obbs) == 1:
+            rec['obb_name'], rec['obb_id'] = next(iter(obbs.items()))
+            print(f'{sfx:<5} OBB in Drive: {rec["obb_name"]}')
+        elif obbs:
+            print(f'{sfx:<5} {len(obbs)} OBBs in Drive, none chosen: {sorted(obbs)}')
+
+    apks = drive_files(items, '.apk')
+    if not apks:
+        # The folder read fine and genuinely holds no APK. Keep the id
+        # anyway: it worked before, and a file that moved is far more
+        # likely than one that is gone for good.
+        print(f'{sfx:<5} no APK in the folder'
+              + (', keeping the one already recorded' if rec.get('apk_id') else ''))
+    elif len(apks) == 1:
+        n, i = next(iter(apks.items()))
+        rec['apk_name'], rec['apk_id'] = n, i
+        rec.pop('apk_choices', None)
+        print(f'{sfx:<5} {n}')
+    else:
+        rec['apk_choices'] = apks
+        keep = rec.get('apk_name')
+        print(f'{sfx:<5} {len(apks)} APKs, pick one with '
+              f'`install.py pick {sfx} "<name>"`:')
+        for n in sorted(apks):
+            print(f'        {"* " if n == keep else "  "}{n}')
+
+
+def scan():
+    """Find every known mod's APK in its Drive folder, and its OBB source."""
     links = json.load(open(os.path.join(HERE, 'links.json'), encoding='utf-8'))
     src = json.load(open(os.path.join(HERE, 'sources.json'), encoding='utf-8'))
     cfg = read_config()
-
     for sfx, url in sorted(links.items()):
         if sfx.startswith('_'):
             continue
-        rec = cfg.setdefault(sfx, {})
-        rec['obb_url'] = src.get(PKG.format(sfx), {}).get('obb_url', '')
-
-        m = re.search(r'/folders/([\w-]+)', str(url))
-        if not m:
-            print(f'{sfx:<5} {url} is not a Drive folder, APK must be set by hand')
-            continue
-        try:
-            items = drive.list_folder(m.group(1))
-        except Exception as e:
-            print(f'{sfx:<5} cannot read the Drive folder: {e}')
-            continue
-        if not items:
-            # Empty is not the same as "no APK there". A machine whose HTTPS is
-            # broken gets an empty listing for every mod, and treating that as
-            # fact used to wipe the ids that were already known good.
-            print(f'{sfx:<5} the folder listing came back empty, leaving what '
-                  f'is already known alone')
-            continue
-        # An OBB in the folder is only worth looking for when GitHub has none.
-        if not rec['obb_url']:
-            obbs = drive_files(items, '.obb')
-            if len(obbs) == 1:
-                rec['obb_name'], rec['obb_id'] = next(iter(obbs.items()))
-                print(f'{sfx:<5} OBB in Drive: {rec["obb_name"]}')
-            elif obbs:
-                print(f'{sfx:<5} {len(obbs)} OBBs in Drive, none chosen: {sorted(obbs)}')
-
-        apks = drive_files(items, '.apk')
-        if not apks:
-            # The folder read fine and genuinely holds no APK. Keep the id
-            # anyway: it worked before, and a file that moved is far more
-            # likely than one that is gone for good.
-            print(f'{sfx:<5} no APK in the folder'
-                  + (', keeping the one already recorded' if rec.get('apk_id') else ''))
-        elif len(apks) == 1:
-            n, i = next(iter(apks.items()))
-            rec['apk_name'], rec['apk_id'] = n, i
-            rec.pop('apk_choices', None)
-            print(f'{sfx:<5} {n}')
-        else:
-            rec['apk_choices'] = apks
-            keep = rec.get('apk_name')
-            print(f'{sfx:<5} {len(apks)} APKs, pick one with '
-                  f'`install.py pick {sfx} "<name>"`:')
-            for n in sorted(apks):
-                print(f'        {"* " if n == keep else "  "}{n}')
+        scan_one(sfx, url, cfg, src)
         write_config(cfg)
     print(f'\n-> {CONFIG}')
+
+
+def add(url):
+    """Take a mod nothing here has seen from its download page, by URL alone.
+
+    Which package a folder holds is not something to be told: the OBB beside
+    the APK is named after it, `main.675.com.ea.game.pvz2_xx.obb`, so the name
+    is read off it rather than asked for. That is the one fact that had to be
+    known in advance to get started, and it was already sitting in the folder.
+
+    Only the entry is written, not the mod. Installing means a gigabyte over
+    the wire and a choice of build to make first, so that stays a command of
+    its own.
+    """
+    m = re.search(r'/folders/([\w-]+)', str(url))
+    if not m:
+        sys.exit(f'Not a Drive folder link: {url}\n'
+                 f'A mod published elsewhere has to be added by hand: put it '
+                 f'in links.json, then set apk_url in install.json.')
+    try:
+        items = drive.list_folder(m.group(1))
+    except Exception as e:
+        sys.exit(f'Cannot read that folder: {e}')
+    obbs = drive_files(items, '.obb')
+    pkg = next((mm.group(1) for n in obbs
+                for mm in [re.match(r'main\.\d+\.(com\.ea\.game\.pvz2_\w+)\.obb',
+                                    n, re.I)] if mm), None)
+    if not pkg:
+        sys.exit(f'No OBB named after a package in that folder, so there is '
+                 f'nothing to read the package name off.\n'
+                 f'Found: {sorted(items) if items else "nothing"}')
+    sfx = pkg.rsplit('_', 1)[-1]
+    print(f'{sfx:<5} {pkg}, read off {next(iter(obbs))}')
+
+    lp = os.path.join(HERE, 'links.json')
+    links = json.load(open(lp, encoding='utf-8'))
+    if links.get(sfx) and links[sfx] != url:
+        print(f'{sfx:<5} NOTE: links.json already points somewhere else, '
+              f'replacing it\n        was {links[sfx]}')
+    links[sfx] = url
+    with open(lp, 'w', encoding='utf-8') as f:
+        json.dump(links, f, indent=1, ensure_ascii=False)
+        f.write('\n')
+
+    src = json.load(open(os.path.join(HERE, 'sources.json'), encoding='utf-8'))
+    cfg = read_config()
+    scan_one(sfx, url, cfg, src)
+    write_config(cfg)
+    print(f'\n-> links.json, {CONFIG}')
+    nxt = []
+    if cfg.get(sfx, {}).get('apk_choices'):
+        nxt.append(f'python3 install.py pick {sfx} "<name from the list above>"')
+    nxt += [f'python3 install.py install {sfx}     downloads and installs it',
+            f'python3 addmod.py                  counts its levels and names it']
+    print('\nNext:')
+    for i, s in enumerate(nxt, 1):
+        print(f'  {i}. {s}')
 
 
 def pick(sfx, name):
@@ -499,13 +561,18 @@ def keymaps(only, force=False):
 def main():
     ap = argparse.ArgumentParser(description='Install the PvZ2 mods you play onto this machine')
     ap.add_argument('action',
-                    choices=['scan', 'pick', 'status', 'auto', 'install', 'keymap'])
+                    choices=['add', 'scan', 'pick', 'status', 'auto', 'install',
+                             'keymap'])
     ap.add_argument('args', nargs='*')
     ap.add_argument('--device')
     ap.add_argument('--force', action='store_true',
                     help='uninstall and reinstall when the signature changed')
     a = ap.parse_args()
 
+    if a.action == 'add':
+        if len(a.args) != 1:
+            sys.exit('usage: install.py add "<the mod\'s Drive folder link>"')
+        return add(a.args[0])
     if a.action == 'scan':
         return scan()
     if a.action == 'keymap':

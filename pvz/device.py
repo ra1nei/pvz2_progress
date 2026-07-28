@@ -42,7 +42,15 @@ def find_device(adb, pkg):
     return None
 
 
-def pick_device(adb, pkg):
+def device_with(adb, pkg):
+    """The device holding `pkg`, or exit explaining which part is missing.
+
+    Kept apart from pick_device on purpose. They answer different questions,
+    "which device has this mod" against "which of these serials", and while
+    both were called pick_device the second definition simply replaced the
+    first: a caller asking the first question got the second answer and walked
+    the package name as though it were a list of devices, one letter at a time.
+    """
     d = find_device(adb, pkg)
     if d:
         return d

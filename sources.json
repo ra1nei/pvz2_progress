@@ -132,5 +132,15 @@
  },
  "com.ea.game.pvz2_rsn": {
   "obb_url": "https://github.com/PvZ2OBBHost/PvZ2ResonanceOBB/releases/download/v1.2.1b/main.675.com.ea.game.pvz2_rsn.obb"
+ },
+ "com.ea.game.pvz2_gar": {
+  "apk_size": 39057513,
+  "candidates": [
+   "http://www.dom.com/path",
+   "https://config.unityads.unitychina.cn/webview/",
+   "https://ping1.tnt-ea.com",
+   "https://www.linkedin.com",
+   "https://www.paypal.com"
+  ]
  }
 }

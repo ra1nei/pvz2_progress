@@ -304,11 +304,19 @@ def main():
         print('      [!] --link needs one mod; name the package to use it')
 
     totals.main()
-    steps = ([] if linked else
-             ["add the mod's download page to links.json, keyed by suffix"])
-    steps += ['python3 install.py scan     finds its APK (and its OBB, if that '
-              'was not recorded just now)',
-              'python3 sync.py push       sends your save up',
+    # A mod taken on with `install.py add` already has its page recorded, and
+    # its APK and OBB found, so saying to do that again is noise.
+    known = json.load(open(os.path.join(HERE, 'links.json'), encoding='utf-8'))
+    have_link = linked or all(p.rsplit('_', 1)[-1] in known for p in todo)
+    cfg_path = os.path.join(HERE, 'install.json')
+    cfg = json.load(open(cfg_path, encoding='utf-8')) if os.path.exists(cfg_path) else {}
+    have_files = all((cfg.get(p.rsplit('_', 1)[-1]) or {}).get('apk_id') for p in todo)
+    steps = ([] if have_link else
+             ["add the mod's download page: python3 install.py add \"<url>\""])
+    if not have_files:
+        steps.append('python3 install.py scan     finds its APK (and its OBB, '
+                     'if that was not recorded just now)')
+    steps += ['python3 sync.py push       sends your save up',
               'commit worlds/, sources.json, links.json, install.json']
     print('\nLeft to do:')
     for i, s in enumerate(steps, 1):

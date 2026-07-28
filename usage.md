@@ -5,7 +5,8 @@
 | play, on whichever machine I am at | `python3 sync.py play` |
 | put the mods on a machine that has none | `python3 install.py auto` |
 | see whether a mod has a newer build | `python3 install.py status` |
-| add a mod nothing here knows about | `python3 addmod.py <pkg> --link "<page>"` |
+| take on a mod I have not installed anywhere | `python3 install.py add "<its Drive folder>"` |
+| take on a mod I installed myself | `python3 addmod.py --link "<page>"` |
 
 <img src="assets/diagram/cases.svg" width="880" alt="Four situations side by side: playing a session, a machine with no mods installed, applying an update, and adding a mod never played before">
 
@@ -253,22 +254,40 @@ where to download it later is something no save file records.
 
 <img src="assets/diagram/newmod.svg" width="1040" alt="Flowchart of adding a new mod: install it yourself, run addmod.py with --link to count and name it, run install.py scan to find its APK and OBB, drop a logo in, commit. The three steps that cannot be automated are marked BY HAND.">
 
-1. Install it yourself, however its author distributes it, and make sure its
-   OBB really landed. An APK on its own gives an app that cannot start, and
-   with no OBB there is nothing to count; that is what `No OBB for ... on
-   device` means.
-2. Count its levels, name it, and say where it came from:
-   `python3 addmod.py com.ea.game.pvz2_sol --link "https://..."`
-   A mod published on Drive also has its OBB noted here, so it is watched for
-   new builds from this point on rather than from the next scan.
-3. Find its APK: `python3 install.py scan` (it also picks up the OBB if step 2
-   found several and left the choice open)
-4. Drop a logo into `assets/logo`, named after the package suffix, then run
-   `python3 boxlogos.py <sfx>` to centre it on the same canvas as the rest.
-   Without that it still shows, just at its own width, and the column looks
-   ragged next to the boxed ones.
-5. Commit `links.json`, `install.json`, `sources.json`, the new `worlds/` file
-   and the logo.
+**A mod published on Drive, that you have not installed anywhere.** The folder
+holds everything needed to start, including which package it is: the OBB beside
+the APK is named after it. So the link on its own is enough.
+
+```
+python3 install.py add "https://drive.google.com/drive/folders/..."
+python3 install.py pick <sfx> "<build>"     only when it ships more than one
+python3 install.py install <sfx>            downloads both, installs, pushes the OBB
+python3 addmod.py                           counts its levels and names it
+```
+
+**A mod you installed yourself**, from wherever its author publishes it. Make
+sure its OBB really landed: an APK on its own gives an app that cannot start,
+and with no OBB there is nothing to count, which is what `No OBB for ... on
+device` means. Then, in one command:
+
+```
+python3 addmod.py --link "https://..."
+```
+
+It scans the emulator for mods it does not yet track, so the package name is
+not something to look up. Name it directly, `python3 addmod.py
+com.ea.game.pvz2_xx`, only when several new mods turn up at once and the link
+has to be attached to one of them, or when the mod is not on this machine.
+
+Either way it counts the levels, reads the mod's own name off its APK, and for
+a Drive-hosted mod notes the OBB so new builds are watched from then on.
+Then, either way: drop a logo into `assets/logo`, named after the package
+suffix, and run `python3 boxlogos.py <sfx>` to centre it on the same canvas as
+the rest. Without that it still shows, just at its own width, and the column
+looks ragged next to the boxed ones.
+
+Finally commit `links.json`, `install.json`, `sources.json`, the new `worlds/`
+file and the logo.
 
 ### What is worked out for you, and what is not
 
@@ -277,12 +296,17 @@ answers `PvZ2 Addendum` and is filed as Addendum. Pass `--name` only if that
 comes out wrong. Reading the label needs `aapt2`, which ships with the Android
 SDK next to `adb`.
 
-Three things cannot be worked out, and they are the only typing involved:
+Nor is the package something to look up: `addmod.py` asks the emulator which
+mods it holds and takes the ones with no counts, and `install.py add` reads the
+name off the OBB sitting in the folder.
+
+What is left is the short list of things nothing here can know:
 
 | | Why not |
 |---|---|
-| **installing the mod** | every author publishes differently |
-| **`--link`, its download page** | nothing on the device records where its mod came from. The package name gives no page, and an APK carries a URL only when the mod ships a downloader, which is why Collided fills its own in and Solstice cannot |
+| **its download page** | nothing on the device records where its mod came from. The package name gives no page, and an APK carries a URL only when the mod ships a downloader, which is why Collided fills its own in and Solstice cannot. Hand it the page and the rest follows |
+| **which build**, when a mod ships several | 30 or 60 FPS, 32 or 64 bit, normal or expert: only you know which you want, so it lists them and waits |
+| **installing it yourself**, for a mod published anywhere but Drive | itch.io sits behind a Cloudflare check and a MediaFire link lives inside a text file, so those are fetched by hand |
 | **the logo** | `assets/logo/<sfx>.png`, WebP and JPG also read. Nothing goes looking for one |
 
 Skipping `--link` is survivable: the mod is still counted and still appears.
