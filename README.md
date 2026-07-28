@@ -2,7 +2,7 @@
 
 How far through each Plants vs. Zombies 2 mod I have got. The numbers are read out of my save files and out of each mod's own data, by a GitHub Action that keeps this page current on its own.
 
-Updated 2026-07-28 21:00 UTC+7 (14:00 UTC), refreshed every 6 hours. [Run log](https://github.com/ra1nei/pvz2_progress/actions/runs/30366235464).
+Updated 2026-07-28 21:40 UTC+7 (14:40 UTC), refreshed every 6 hours. [Run log](https://github.com/ra1nei/pvz2_progress/actions/runs/30369503913).
 
 <table>
 <tr><th></th><th>Mod</th><th>World</th><th>Quest</th><th>Progress</th><th>Done</th><th>Updates</th></tr>
