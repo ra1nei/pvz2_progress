@@ -39,6 +39,10 @@
   "com.ea.game.pvz2_rsn": {
    "done": 2,
    "total": 169
+  },
+  "com.ea.game.pvz2_gar": {
+   "done": 3,
+   "total": 13
   }
  },
  "releases": {
@@ -47,6 +51,7 @@
  "totals_md5_nagged": "f4b9a6034afa312a5d5312566c6efa21",
  "watch": {
   "com.ea.game.pvz2_fln": 958992384,
-  "com.ea.game.pvz2_sol": 789479424
+  "com.ea.game.pvz2_sol": 789479424,
+  "com.ea.game.pvz2_gar": 801955840
  }
 }
