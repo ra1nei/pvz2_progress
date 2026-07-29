@@ -7,6 +7,7 @@
 | see whether a mod has a newer build | `python3 install.py status` |
 | take on a mod I have not installed anywhere | `python3 install.py add "<its Drive folder>"` |
 | take on a mod I installed myself | `python3 addmod.py --link "<page>"` |
+| stop tracking one | `python3 install.py remove <sfx> --force` |
 
 <img src="assets/diagram/cases.svg" width="880" alt="Four situations side by side: playing a session, a machine with no mods installed, applying an update, and adding a mod never played before">
 
@@ -288,6 +289,32 @@ looks ragged next to the boxed ones.
 
 Finally commit `links.json`, `install.json`, `sources.json`, the new `worlds/`
 file and the logo.
+
+### Dropping one
+
+```
+python3 install.py remove <sfx>            lists what would go, does nothing
+python3 install.py remove <sfx> --force    actually does it
+python3 track.py                           redraw the table, then commit
+```
+
+Everything for that mod goes together: the save, the counts, its entries in
+`links.json`, `install.json` and `sources.json`, its logo and bars, and what
+`state.json` remembered about it. Half of it removed by hand is worse than
+either state, since a save with no counts leaves an empty row and counts with
+no save leave a mod being watched that nobody plays.
+
+The mod stays on the emulator. `adb uninstall com.ea.game.pvz2_<sfx>` is what
+takes it off there.
+
+**What it costs.** New builds are spotted by comparison, a GitHub release
+against the tag recorded in the counts file, a Drive OBB against the size in
+`state.json`, and removal takes both of those with it. Add the mod back and the
+first reading becomes the new baseline: it cannot tell you the build changed
+while the mod was gone, because nothing here saw the old one. It will not cry
+wolf either, since there is nothing to compare against and a first reading is
+just recorded. Everything else survives in git, and `git log -- saves/pp_<sfx>.dat`
+still reads the progress back.
 
 ### What is worked out for you, and what is not
 

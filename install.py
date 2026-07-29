@@ -2,6 +2,7 @@
 """Put the mods you are playing onto a machine that has none of them.
 
     python3 install.py add <url>   take on a mod from its download page
+    python3 install.py remove xx   drop one: its save, counts, entries and art
     python3 install.py scan        find the APK and OBB for each mod
     python3 install.py status      installed here vs available
     python3 install.py auto        install or update everything you play
@@ -196,6 +197,88 @@ def add(url):
     print('\nNext:')
     for i, s in enumerate(nxt, 1):
         print(f'  {i}. {s}')
+
+
+def remove(sfx, force=False):
+    """Take a mod out of the repo: its save, its counts, its entries, its art.
+
+    Everything for one mod goes at once, which is the point of having this as a
+    command. Left half-done by hand, the leftovers are worse than either state:
+    a save with no counts puts an empty row in the table, and counts with no
+    save leave a mod being watched that nobody plays.
+
+    What this costs, and it is worth being plain about it: the memory of where
+    that mod stood. Updates are spotted by comparison, a GitHub release against
+    the tag in its counts file, a Drive OBB against the size recorded in
+    state.json, and both of those are among the things removed. Take a mod out
+    and add it back and the first reading becomes the new baseline: it cannot
+    tell you the build changed while it was gone, because nothing here saw the
+    old one. Nothing is lost beyond that, since git keeps every version of all
+    of it, and `git log -- saves/pp_<sfx>.dat` still reads back the progress.
+
+    Prints what would go and stops; --force is what actually deletes.
+    """
+    pkg = PKG.format(sfx)
+    files = [os.path.join(HERE, 'saves', f'pp_{sfx}.dat'),
+             os.path.join(HERE, 'saves', f'profile_{sfx}'),
+             os.path.join(HERE, 'worlds', f'{pkg}.json'),
+             os.path.join(HERE, 'assets', 'logo', 'box', f'{sfx}.png'),
+             os.path.join(HERE, 'assets', 'bar', f'{sfx}.svg'),
+             os.path.join(HERE, 'assets', 'tag', f'{sfx}.svg'),
+             os.path.join(DOWNLOADS, f'{sfx}.apk')]
+    files += [os.path.join(HERE, 'assets', 'logo', f'{sfx}.{e}')
+              for e in ('png', 'webp', 'jpg')]
+    files = [p for p in files if os.path.exists(p)]
+
+    edits = []           # (file, key it holds for this mod)
+    for name, key in (('links.json', sfx), ('install.json', sfx),
+                      ('sources.json', pkg)):
+        p = os.path.join(HERE, name)
+        if os.path.exists(p) and key in json.load(open(p, encoding='utf-8')):
+            edits.append((name, key))
+    sp = os.path.join(HERE, 'state.json')
+    state = json.load(open(sp, encoding='utf-8')) if os.path.exists(sp) else {}
+    in_state = [k for k, d in (('mods', state.get('mods', {})),
+                               ('releases', state.get('releases', {})),
+                               ('watch', state.get('watch', {})))
+                if pkg in d or sfx in d]
+
+    if not files and not edits and not in_state:
+        sys.exit(f'Nothing here for {sfx}. Tracking: '
+                 f'{", ".join(sorted(k for k in read_config() if not k.startswith("_")))}')
+
+    print(f'Removing {sfx} ({pkg}) would delete:')
+    for p in files:
+        print(f'  {os.path.relpath(p, HERE)}')
+    for name, key in edits:
+        print(f'  the {key} entry in {name}')
+    for k in in_state:
+        print(f'  its {k} entry in state.json')
+
+    if not force:
+        print(f'\nNothing done. Run it again with --force to go ahead.')
+        print(f'The mod stays installed on the emulator either way; '
+              f'`adb uninstall {pkg}` is what removes it there.')
+        return
+
+    import shutil
+    for p in files:
+        shutil.rmtree(p) if os.path.isdir(p) else os.remove(p)
+    for name, key in edits:
+        p = os.path.join(HERE, name)
+        d = json.load(open(p, encoding='utf-8'))
+        d.pop(key, None)
+        with open(p, 'w', encoding='utf-8') as f:
+            json.dump(d, f, indent=1, ensure_ascii=False)
+            f.write('\n')
+    for k in in_state:
+        state[k].pop(pkg, None)
+        state[k].pop(sfx, None)
+    if in_state:
+        json.dump(state, open(sp, 'w'), indent=1, ensure_ascii=False)
+    print(f'\n{sfx} is out. Run `python3 track.py` to redraw the table, then '
+          f'commit.\nIt is still installed on the emulator; '
+          f'`adb uninstall {pkg}` removes it there.')
 
 
 def pick(sfx, name):
@@ -561,8 +644,8 @@ def keymaps(only, force=False):
 def main():
     ap = argparse.ArgumentParser(description='Install the PvZ2 mods you play onto this machine')
     ap.add_argument('action',
-                    choices=['add', 'scan', 'pick', 'status', 'auto', 'install',
-                             'keymap'])
+                    choices=['add', 'remove', 'scan', 'pick', 'status', 'auto',
+                             'install', 'keymap'])
     ap.add_argument('args', nargs='*')
     ap.add_argument('--device')
     ap.add_argument('--force', action='store_true',
@@ -573,6 +656,10 @@ def main():
         if len(a.args) != 1:
             sys.exit('usage: install.py add "<the mod\'s Drive folder link>"')
         return add(a.args[0])
+    if a.action == 'remove':
+        if len(a.args) != 1:
+            sys.exit('usage: install.py remove <suffix> [--force]')
+        return remove(a.args[0], a.force)
     if a.action == 'scan':
         return scan()
     if a.action == 'keymap':

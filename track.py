@@ -296,13 +296,26 @@ def write_readme(rows, gio):
     pinned = {norm(x) for x in PINNED}
     done = [r for r in rows if r[1] is not None]
     pending = [r for r in rows if r[1] is None]
-    # Pinned first, then the mods that are actually watched, and within each
-    # group by completion. Manual mods sink to the bottom because their totals
-    # are the ones that can quietly go stale.
-    # Sorted on the same figure the bar draws, both columns together, so the
-    # order and the bars agree.
+
+    def watched_rank(r):
+        """How closely a mod can be watched, which is what the order follows.
+
+        A GitHub release is checked and its count rebuilt without anyone
+        lifting a finger; a Drive OBB is only measured, so a new build is
+        noticed but the recount is by hand; a mod with neither is watched by
+        nobody and its total is the one that can quietly go stale. Sorting by
+        that puts the trustworthy numbers at the top and the ones to take with
+        a pinch of salt at the bottom.
+        """
+        if r[8]:                       # a release link, so GitHub
+            return 0
+        return 1 if r[5] == 'drive' else 2
+
+    # Pinned first, then by how the mod is watched, then by completion within
+    # each group. Sorted on the same figure the bar draws, both columns
+    # together, so the order and the bars agree.
     done.sort(key=lambda r: (0 if norm(r[6]) in pinned else 1,
-                             0 if r[4] else 1,
+                             watched_rank(r),
                              -(r[1] + r[9]) / (r[2] + r[10])))
 
     # Raw HTML, not a markdown table: markdown has no colspan, and "Progress"

@@ -2,20 +2,20 @@
 
 How far through each Plants vs. Zombies 2 mod I have got. The numbers are read out of my save files and out of each mod's own data, by a GitHub Action that keeps this page current on its own.
 
-Updated 2026-07-29 02:54 UTC+7 (19:54 UTC), refreshed every 6 hours. [Run log](https://github.com/ra1nei/pvz2_progress/actions/runs/30393968274).
+Updated 2026-07-29 09:15 UTC+7 (02:15 UTC), refreshed every 6 hours.
 
 <table>
 <tr><th></th><th>Mod</th><th>World</th><th>Quest</th><th>Progress</th><th>Done</th><th>Updates</th></tr>
 <tr><td align="center"><a href="assets/logo/rfl.webp"><img src="assets/logo/box/rfl.png" width="120" height="72"></a></td><td align="center">⭐ <a href="https://drive.google.com/drive/folders/1y5lVZh-flKWxpeXSFYJprzJlL4Jlcfm4">Reflourished</a></td><td align="center">578&nbsp;/&nbsp;578</td><td align="center">251&nbsp;/&nbsp;251</td><td align="center"><img src="assets/bar/rfl.svg" width="110"><br>100%</td><td align="center">✅</td><td align="center"><a href="https://github.com/lantern-fans/obbybackup/releases/tag/1.4.2-R1"><img src="assets/tag/rfl.svg" height="20"></a></td></tr>
 <tr><td align="center"><a href="assets/logo/adm.png"><img src="assets/logo/box/adm.png" width="120" height="72"></a></td><td align="center"><a href="https://drive.google.com/drive/folders/12Cm7Ojau_LsQnllR3LFMq0mkEoDNko7Y">Addendum</a></td><td align="center">112&nbsp;/&nbsp;112</td><td align="center">23&nbsp;/&nbsp;23</td><td align="center"><img src="assets/bar/adm.svg" width="110"><br>100%</td><td align="center">✅</td><td align="center"><a href="https://github.com/TheShero/TheShero/releases/tag/v1.0.2"><img src="assets/tag/adm.svg" height="20"></a></td></tr>
 <tr><td align="center"><a href="assets/logo/cld.png"><img src="assets/logo/box/cld.png" width="120" height="72"></a></td><td align="center"><a href="https://drive.google.com/drive/folders/1MiMd_ecvIIH3XGcs8NeK7oLUxzvOf4OH">Collided</a></td><td align="center">67&nbsp;/&nbsp;71</td><td align="center">0&nbsp;/&nbsp;5</td><td align="center"><img src="assets/bar/cld.svg" width="110"><br>88%</td><td align="center"></td><td align="center"><a href="https://github.com/Milkypug2/pvz2collided/releases/tag/v1.1.0"><img src="assets/tag/cld.svg" height="20"></a></td></tr>
-<tr><td align="center"><a href="assets/logo/gar.png"><img src="assets/logo/box/gar.png" width="120" height="72"></a></td><td align="center"><a href="https://drive.google.com/drive/folders/1u0rwqBS-b4QC5vYS6AGg-4IzK9tNYYkv">Garden&nbsp;Rush</a></td><td align="center">3&nbsp;/&nbsp;13</td><td align="center">-</td><td align="center"><img src="assets/bar/gar.svg" width="110"><br>23%</td><td align="center"></td><td align="center"><img src="assets/tag/gar.svg" height="20"></td></tr>
-<tr><td align="center"><a href="assets/logo/fln.png"><img src="assets/logo/box/fln.png" width="120" height="72"></a></td><td align="center"><a href="https://drive.google.com/drive/folders/1v2jT-DF6bmuP6drWfAd66EbDM_G072cd">Fallen</a></td><td align="center">44&nbsp;/&nbsp;215</td><td align="center">-</td><td align="center"><img src="assets/bar/fln.svg" width="110"><br>20%</td><td align="center"></td><td align="center"><img src="assets/tag/fln.svg" height="20"></td></tr>
 <tr><td align="center"><a href="assets/logo/rqm.png"><img src="assets/logo/box/rqm.png" width="120" height="72"></a></td><td align="center"><a href="https://drive.google.com/drive/folders/1A45mhlvghNYLBXI9HJqjdHyO6MvUdW29">Requiem</a></td><td align="center">23&nbsp;/&nbsp;196</td><td align="center">-</td><td align="center"><img src="assets/bar/rqm.svg" width="110"><br>12%</td><td align="center"></td><td align="center"><a href="https://github.com/PvZ2OBBHost/PvZ2RequiemOBB/releases/tag/v1.2.2b"><img src="assets/tag/rqm.svg" height="20"></a></td></tr>
 <tr><td align="center"><a href="assets/logo/pen.png"><img src="assets/logo/box/pen.png" width="120" height="72"></a></td><td align="center"><a href="https://drive.google.com/drive/folders/1GDnnr2nrWFBupEFWUvYN5EOP6x7QsnQL">Penumbra</a></td><td align="center">11&nbsp;/&nbsp;102</td><td align="center">0&nbsp;/&nbsp;9</td><td align="center"><img src="assets/bar/pen.svg" width="110"><br>10%</td><td align="center"></td><td align="center"><a href="https://github.com/PvZ2OBBHost/PvZ2PenumbraOBB/releases/tag/v1.3.1b"><img src="assets/tag/pen.svg" height="20"></a></td></tr>
 <tr><td align="center"><a href="assets/logo/auz.webp"><img src="assets/logo/box/auz.png" width="120" height="72"></a></td><td align="center"><a href="https://drive.google.com/drive/folders/1ckXFy-1cv7Ka0eCxOXMweHWb_atzOc1z">Alternate&nbsp;UniverZ</a></td><td align="center">42&nbsp;/&nbsp;470</td><td align="center">-</td><td align="center"><img src="assets/bar/auz.svg" width="110"><br>9%</td><td align="center"></td><td align="center"><a href="https://github.com/PvZ2OBBHost/PvZ2AltverZOBB/releases/tag/v1.8.2d"><img src="assets/tag/auz.svg" height="20"></a></td></tr>
-<tr><td align="center"><a href="assets/logo/sol.png"><img src="assets/logo/box/sol.png" width="120" height="72"></a></td><td align="center"><a href="https://drive.google.com/drive/folders/1UxRE6BW69D1QKfCusDfPxDV5jXU_kkLO">Solstice</a></td><td align="center">15&nbsp;/&nbsp;259</td><td align="center">0&nbsp;/&nbsp;219</td><td align="center"><img src="assets/bar/sol.svg" width="110"><br>3%</td><td align="center"></td><td align="center"><img src="assets/tag/sol.svg" height="20"></td></tr>
 <tr><td align="center"><a href="assets/logo/rsn.png"><img src="assets/logo/box/rsn.png" width="120" height="72"></a></td><td align="center"><a href="https://drive.google.com/drive/folders/1QqS4lTbGtVvNR_kxPz9PwBRCk5yNKhAI">Resonance</a></td><td align="center">2&nbsp;/&nbsp;169</td><td align="center">-</td><td align="center"><img src="assets/bar/rsn.svg" width="110"><br>1%</td><td align="center"></td><td align="center"><a href="https://github.com/PvZ2OBBHost/PvZ2ResonanceOBB/releases/tag/v1.2.1b"><img src="assets/tag/rsn.svg" height="20"></a></td></tr>
+<tr><td align="center"><a href="assets/logo/gar.png"><img src="assets/logo/box/gar.png" width="120" height="72"></a></td><td align="center"><a href="https://drive.google.com/drive/folders/1u0rwqBS-b4QC5vYS6AGg-4IzK9tNYYkv">Garden&nbsp;Rush</a></td><td align="center">3&nbsp;/&nbsp;13</td><td align="center">-</td><td align="center"><img src="assets/bar/gar.svg" width="110"><br>23%</td><td align="center"></td><td align="center"><img src="assets/tag/gar.svg" height="20"></td></tr>
+<tr><td align="center"><a href="assets/logo/fln.png"><img src="assets/logo/box/fln.png" width="120" height="72"></a></td><td align="center"><a href="https://drive.google.com/drive/folders/1v2jT-DF6bmuP6drWfAd66EbDM_G072cd">Fallen</a></td><td align="center">44&nbsp;/&nbsp;215</td><td align="center">-</td><td align="center"><img src="assets/bar/fln.svg" width="110"><br>20%</td><td align="center"></td><td align="center"><img src="assets/tag/fln.svg" height="20"></td></tr>
+<tr><td align="center"><a href="assets/logo/sol.png"><img src="assets/logo/box/sol.png" width="120" height="72"></a></td><td align="center"><a href="https://drive.google.com/drive/folders/1UxRE6BW69D1QKfCusDfPxDV5jXU_kkLO">Solstice</a></td><td align="center">15&nbsp;/&nbsp;259</td><td align="center">0&nbsp;/&nbsp;219</td><td align="center"><img src="assets/bar/sol.svg" width="110"><br>3%</td><td align="center"></td><td align="center"><img src="assets/tag/sol.svg" height="20"></td></tr>
 <tr><td align="center"><a href="assets/logo/spi.png"><img src="assets/logo/box/spi.png" width="120" height="72"></a></td><td align="center"><a href="https://peakedcomedy.itch.io/spice-reseasoned">Spice&nbsp;Re:Seasoned</a></td><td align="center">3&nbsp;/&nbsp;58</td><td align="center">-</td><td align="center"><img src="assets/bar/spi.svg" width="110"><br>5%</td><td align="center"></td><td align="center"><img src="assets/tag/spi.svg" height="20"></td></tr>
 </table>
 
@@ -30,6 +30,7 @@ World is the levels the game shows on its world maps. Quest is the levels reacha
 | see whether a mod has a newer build | `python3 install.py status` |
 | take on a mod I have not installed anywhere | `python3 install.py add "<its Drive folder>"` |
 | take on a mod I installed myself | `python3 addmod.py --link "<page>"` |
+| stop tracking one | `python3 install.py remove <sfx> --force` |
 
 <img src="assets/diagram/cases.svg" width="880" alt="Four situations side by side: playing a session, a machine with no mods installed, applying an update, and adding a mod never played before">
 
@@ -311,6 +312,32 @@ looks ragged next to the boxed ones.
 
 Finally commit `links.json`, `install.json`, `sources.json`, the new `worlds/`
 file and the logo.
+
+### Dropping one
+
+```
+python3 install.py remove <sfx>            lists what would go, does nothing
+python3 install.py remove <sfx> --force    actually does it
+python3 track.py                           redraw the table, then commit
+```
+
+Everything for that mod goes together: the save, the counts, its entries in
+`links.json`, `install.json` and `sources.json`, its logo and bars, and what
+`state.json` remembered about it. Half of it removed by hand is worse than
+either state, since a save with no counts leaves an empty row and counts with
+no save leave a mod being watched that nobody plays.
+
+The mod stays on the emulator. `adb uninstall com.ea.game.pvz2_<sfx>` is what
+takes it off there.
+
+**What it costs.** New builds are spotted by comparison, a GitHub release
+against the tag recorded in the counts file, a Drive OBB against the size in
+`state.json`, and removal takes both of those with it. Add the mod back and the
+first reading becomes the new baseline: it cannot tell you the build changed
+while the mod was gone, because nothing here saw the old one. It will not cry
+wolf either, since there is nothing to compare against and a first reading is
+just recorded. Everything else survives in git, and `git log -- saves/pp_<sfx>.dat`
+still reads the progress back.
 
 ### What is worked out for you, and what is not
 
