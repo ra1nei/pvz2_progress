@@ -2,7 +2,9 @@
 """Put the mods you are playing onto a machine that has none of them.
 
     python3 install.py add <url>   take on a mod from its download page
-    python3 install.py remove xx   drop one: its save, counts, entries and art
+    python3 install.py remove cld  take one off THIS machine, repo untouched
+    python3 install.py clean       drop every cached download
+    python3 install.py forget xx   stop tracking a mod in the repo entirely
     python3 install.py scan        find the APK and OBB for each mod
     python3 install.py status      installed here vs available
     python3 install.py auto        install or update everything you play
@@ -199,7 +201,120 @@ def add(url):
         print(f'  {i}. {s}')
 
 
-def remove(sfx, force=False):
+def cached_files(sfx):
+    """What downloads/ is holding for one mod: the APK, the OBB, the kept save."""
+    import glob
+    out = []
+    for p in glob.glob(os.path.join(DOWNLOADS, '*')):
+        n = os.path.basename(p)
+        if n in (f'{sfx}.apk', f'pp_{sfx}.keep') or f'pvz2_{sfx}.obb' in n:
+            out.append(p)
+    return out
+
+
+def remove(adb, dev, sfx, force=False):
+    """Take a mod off THIS machine. The repo, and every other machine, keep it.
+
+    The counterpart of install. A finished mod is a gigabyte of OBB on the
+    emulator and often another gigabyte cached in downloads/, and none of that
+    is a last copy: the save and the level counts live in the repo, and the
+    build itself is a download away. So this frees the disk and leaves the row
+    in the table exactly as it was, still showing the progress, still watched
+    for new builds, because none of that is read off this machine.
+
+    The one thing the emulator holds alone is the save, and uninstalling
+    deletes it. So the repo is checked first, by the same comparison the sync
+    guard makes: if the device is further along, this stops and says to push.
+
+    Nothing here is platform-specific. adb is found the same way on Windows,
+    macOS and Linux, and the rest is deleting files.
+    """
+    pkg = PKG.format(sfx)
+    co, ver = installed(adb, dev, pkg)
+    _obb_name, obb_size = obb_on_device(adb, dev, pkg)
+    files = cached_files(sfx)
+    cached = sum(os.path.getsize(p) for p in files)
+
+    if not co and not obb_size and not files:
+        print(f'{sfx} is not on this machine, and nothing is cached for it.')
+        return
+    print(f'Removing {sfx} from this machine:')
+    if co:
+        print(f'  the app, version {ver or "?"}')
+    if obb_size:
+        print(f'  its OBB on the emulator{"":<22}{obb_size / 1048576:>8.0f} MB')
+    for p in files:
+        print(f'  downloads/{os.path.basename(p):<34}{os.path.getsize(p) / 1048576:>8.0f} MB')
+    print(f'  {"":<44}{(obb_size + cached) / 1073741824:>8.2f} GB in total')
+
+    # The save is the one thing that is not a copy of something else.
+    behind = None
+    if co:
+        from sync import progress, progress_on_device
+        dpath = save_paths(adb, dev, [pkg]).get(pkg)
+        stored = os.path.join(SAVES, f'pp_{sfx}.dat')
+        if dpath:
+            here = progress_on_device(adb, dev, dpath, pkg)
+            there = progress(stored, pkg) if os.path.exists(stored) else -1
+            if here > there:
+                behind = (here, there)
+    if behind:
+        print(f'\nSTOP: the emulator is further along than saves/ '
+              f'({behind[0]} against {behind[1]}), and uninstalling deletes '
+              f'the save.\n      Run `python3 sync.py push` first. '
+              f'--force removes it anyway.')
+        if not force:
+            return
+    if not force:
+        print('\nNothing done. Add --force to go ahead.')
+        return
+
+    if co:
+        r = subprocess.run([adb, '-s', dev, 'uninstall', pkg],
+                           capture_output=True, text=True)
+        print(f'  app: {"uninstalled" if "Success" in (r.stdout or "") else (r.stdout + r.stderr).strip()[:70]}')
+    # Uninstalling does not always take the OBB folder with it, and that is
+    # where the weight is, so it goes explicitly.
+    sh(adb, 'shell', f'rm -rf /sdcard/Android/obb/{pkg}', serial=dev, check=False)
+    left, _ = obb_on_device(adb, dev, pkg)
+    print(f'  OBB: {"gone" if not left else "still there, remove it by hand"}')
+    for p in files:
+        os.remove(p)
+    if files:
+        print(f'  downloads: {len(files)} file(s) deleted')
+    print(f'\nFreed about {(obb_size + cached) / 1073741824:.2f} GB. The repo '
+          f'still has the save and the counts, so the table is unchanged.\n'
+          f'`python3 install.py install {sfx}` puts it back.')
+
+
+def clean(force=False):
+    """Delete every cached download. Nothing else on the machine is touched.
+
+    downloads/ is a staging area, not a store: an APK is kept so a re-run does
+    not fetch it again, an OBB so a reinstall does not pull a gigabyte twice,
+    and a .keep is the save held aside during an install. All of it is
+    re-fetchable, and it is usually the largest thing in the folder.
+    """
+    import glob
+    files = [p for p in glob.glob(os.path.join(DOWNLOADS, '*')) if os.path.isfile(p)]
+    if not files:
+        print('downloads/ is already empty.')
+        return
+    total = sum(os.path.getsize(p) for p in files)
+    print(f'downloads/ holds {len(files)} file(s), {total / 1073741824:.2f} GB:')
+    for p in sorted(files, key=os.path.getsize, reverse=True)[:12]:
+        print(f'  {os.path.basename(p):<45}{os.path.getsize(p) / 1048576:>8.0f} MB')
+    if len(files) > 12:
+        print(f'  ... and {len(files) - 12} smaller')
+    if not force:
+        print('\nNothing done. Add --force to go ahead.')
+        return
+    for p in files:
+        os.remove(p)
+    print(f'\nfreed {total / 1073741824:.2f} GB')
+
+
+def forget(sfx, force=False):
     """Take a mod out of the repo: its save, its counts, its entries, its art.
 
     Everything for one mod goes at once, which is the point of having this as a
@@ -247,7 +362,7 @@ def remove(sfx, force=False):
         sys.exit(f'Nothing here for {sfx}. Tracking: '
                  f'{", ".join(sorted(k for k in read_config() if not k.startswith("_")))}')
 
-    print(f'Removing {sfx} ({pkg}) would delete:')
+    print(f'Forgetting {sfx} ({pkg}) would delete:')
     for p in files:
         print(f'  {os.path.relpath(p, HERE)}')
     for name, key in edits:
@@ -644,8 +759,8 @@ def keymaps(only, force=False):
 def main():
     ap = argparse.ArgumentParser(description='Install the PvZ2 mods you play onto this machine')
     ap.add_argument('action',
-                    choices=['add', 'remove', 'scan', 'pick', 'status', 'auto',
-                             'install', 'keymap'])
+                    choices=['add', 'install', 'remove', 'clean', 'forget',
+                             'scan', 'pick', 'status', 'auto', 'keymap'])
     ap.add_argument('args', nargs='*')
     ap.add_argument('--device')
     ap.add_argument('--force', action='store_true',
@@ -656,10 +771,12 @@ def main():
         if len(a.args) != 1:
             sys.exit('usage: install.py add "<the mod\'s Drive folder link>"')
         return add(a.args[0])
-    if a.action == 'remove':
+    if a.action == 'clean':
+        return clean(a.force)
+    if a.action == 'forget':
         if len(a.args) != 1:
-            sys.exit('usage: install.py remove <suffix> [--force]')
-        return remove(a.args[0], a.force)
+            sys.exit('usage: install.py forget <suffix> [--force]')
+        return forget(a.args[0], a.force)
     if a.action == 'scan':
         return scan()
     if a.action == 'keymap':
@@ -681,6 +798,12 @@ def main():
 
     if a.action == 'status':
         return status(adb, dev, cfg)
+    if a.action == 'remove':
+        if not a.args:
+            sys.exit('usage: install.py remove <suffix> [--force]')
+        for sfx in a.args:
+            remove(adb, dev, sfx, a.force)
+        return
     if a.action == 'install':
         if not a.args:
             sys.exit('usage: install.py install <suffix>')

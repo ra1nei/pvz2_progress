@@ -7,7 +7,8 @@
 | see whether a mod has a newer build | `python3 install.py status` |
 | take on a mod I have not installed anywhere | `python3 install.py add "<its Drive folder>"` |
 | take on a mod I installed myself | `python3 addmod.py --link "<page>"` |
-| stop tracking one | `python3 install.py remove <sfx> --force` |
+| take a mod off this machine | `python3 install.py remove <sfx> --force` |
+| free the disk without losing a mod | `python3 install.py clean --force` |
 
 <img src="assets/diagram/cases.svg" width="880" alt="Four situations side by side: playing a session, a machine with no mods installed, applying an update, and adding a mod never played before">
 
@@ -290,31 +291,49 @@ looks ragged next to the boxed ones.
 Finally commit `links.json`, `install.json`, `sources.json`, the new `worlds/`
 file and the logo.
 
-### Dropping one
+### Finished with a mod, or short of disk
+
+Three different things, and it is worth keeping them apart. Each prints what it
+would do and stops; `--force` is what carries it out.
 
 ```
-python3 install.py remove <sfx>            lists what would go, does nothing
-python3 install.py remove <sfx> --force    actually does it
-python3 track.py                           redraw the table, then commit
+python3 install.py remove cld --force    take it off this machine
+python3 install.py clean --force         drop every cached download
+python3 install.py forget cld --force    stop tracking it in the repo
 ```
 
-Everything for that mod goes together: the save, the counts, its entries in
-`links.json`, `install.json` and `sources.json`, its logo and bars, and what
-`state.json` remembered about it. Half of it removed by hand is worse than
-either state, since a save with no counts leaves an empty row and counts with
-no save leave a mod being watched that nobody plays.
+**`remove`** is the counterpart of `install`, and the usual one. It uninstalls
+the mod from the emulator on whichever machine you run it, deletes the OBB
+there and the copies cached in `downloads/`, and touches nothing else. Runs the
+same on Windows, macOS and Linux. A finished mod is easily two gigabytes across
+those two places and none of it is a last copy.
 
-The mod stays on the emulator. `adb uninstall com.ea.game.pvz2_<sfx>` is what
-takes it off there.
+What stays is everything the table is drawn from: the save, the level counts,
+the entries, the logo. The row keeps its numbers, keeps its badge, and is still
+watched for new builds, because none of that is read off your machine. The only
+thing that needs the mod installed again is recounting a Drive-hosted mod's
+levels after it updates, which is what `addmod.py` does and what a GitHub-hosted
+mod never needs, since its OBB can be read from the cloud.
 
-**What it costs.** New builds are spotted by comparison, a GitHub release
-against the tag recorded in the counts file, a Drive OBB against the size in
-`state.json`, and removal takes both of those with it. Add the mod back and the
-first reading becomes the new baseline: it cannot tell you the build changed
-while the mod was gone, because nothing here saw the old one. It will not cry
-wolf either, since there is nothing to compare against and a first reading is
-just recorded. Everything else survives in git, and `git log -- saves/pp_<sfx>.dat`
-still reads the progress back.
+The one thing the emulator holds alone is the save, and uninstalling deletes
+it. So the repo is checked first, by the same comparison the sync guard makes:
+if the device is further along it stops and tells you to push.
+
+**`clean`** deletes cached downloads only, for every mod at once. `downloads/`
+is a staging area, an APK kept so a re-run does not fetch it again, an OBB so a
+reinstall does not pull a gigabyte twice. It is usually the largest thing in
+the folder and everything in it comes back on demand.
+
+**`forget`** is the rare one: the mod leaves the repo altogether, save, counts,
+entries and art. Use it for a mod you no longer want in the table at all.
+
+It costs the memory of where that mod stood. New builds are spotted by
+comparison, a GitHub release against the tag in the counts file, a Drive OBB
+against the size in `state.json`, and both go with it. Add the mod back and the
+first reading becomes the new baseline: it cannot report a build that changed
+while the mod was gone, and equally will not invent one. Git keeps every
+version of all of it, so `git log -- saves/pp_<sfx>.dat` still reads the
+progress back.
 
 ### What is worked out for you, and what is not
 
