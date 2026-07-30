@@ -339,6 +339,10 @@ def quests_on(adb, dev, dpath, sfx):
                serial=dev, check=False)
             subprocess.run([adb, '-s', dev, 'push', src, dst],
                            capture_output=True)
+    # A folder adb made belongs to `shell`, and the game cannot write inside
+    # one: it goes on playing but saves nothing, so every launch starts over.
+    # See the same fix in install.py, where it cost two days to spot.
+    sh(adb, 'shell', f'chmod -R 777 "{remote}"', serial=dev, check=False)
 
 
 # ------------------------------------------------------- the profile itself

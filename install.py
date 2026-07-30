@@ -661,6 +661,16 @@ def install_one(adb, dev, sfx, cfg, force=False, fresh=False):
                serial=dev, check=False)
         r = subprocess.run([adb, '-s', dev, 'push', save, dest],
                            capture_output=True, text=True)
+        # A folder adb created belongs to `shell`, and the game, running as its
+        # own user, then cannot write in it. It reads the save and plays, but
+        # saves nothing: every launch replays the prologue and the terms screen,
+        # and no progress ever sticks. The folder looks perfectly normal while
+        # this happens, which is what made it hard to see; what gives it away is
+        # that the game's own files, the per-profile draper and loot ones, never
+        # appear beside the save. Widening the permissions is enough, and it
+        # costs nothing on a folder the emulator alone can reach.
+        sh(adb, 'shell', f'chmod -R 777 {os.path.dirname(dest)}',
+           serial=dev, check=False)
         if r.returncode == 0:
             print(f'   save in place: {cleared(save)} cleared '
                   f'({"from saves/" if save == tu_repo else "the one held aside"})')
