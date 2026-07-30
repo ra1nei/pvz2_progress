@@ -127,11 +127,19 @@ def find_save_path(adb, dev, pkg):
     return None
 
 
-def save_paths(adb, dev, pkgs):
-    """{package: device path}, cached so the search runs once per machine."""
+def save_paths(adb, dev, pkgs, quiet=False):
+    """{package: device path}, cached so the search runs once per machine.
+
+    A mod whose save cannot be found is named rather than dropped in silence.
+    Dropping it quietly is how a real fault stayed hidden: two mods had saves
+    the game had rewritten as its own user, which adb then could not read, so
+    they simply stopped appearing in every pull and push while everything
+    carried on looking normal. A mod that has never been opened lands here too,
+    which is why this says what it does not know rather than calling it wrong.
+    """
     cache = json.load(open(CACHE, encoding='utf-8')) if os.path.exists(CACHE) else {}
     changed = False
-    out = {}
+    out, missing = {}, []
     for pkg in pkgs:
         p = cache.get(pkg)
         if p and is_save(adb, dev, p):
@@ -141,8 +149,15 @@ def save_paths(adb, dev, pkgs):
         if p:
             out[pkg] = cache[pkg] = p
             changed = True
+        else:
+            missing.append(pkg.rsplit('_', 1)[-1])
     if changed:
         json.dump(cache, open(CACHE, 'w'), indent=1)
+    if missing and not quiet:
+        print(f'  [!] no save adb can read for: {", ".join(sorted(missing))}. '
+              f'Never opened here, or the game rewrote it as its own user.\n'
+              f'      Those mods are left out of this pull and push. '
+              f'`python3 sync.py find` says which path it tried.')
     return out
 
 
@@ -689,6 +704,54 @@ def fields(before, after):
     return '  '.join(out)
 
 
+def check_updates(adb, dev, paths):
+    """Say which mods have a newer build published. Installs nothing.
+
+    Reporting and not acting is the whole point. Installing means a gigabyte
+    over the wire, and for a mod that changed signing key it means uninstalling
+    first, which is no way to treat somebody who just sat down to play. So this
+    prints a line and gets out of the way; `install.py install <mod>` is there
+    for when you feel like it.
+
+    install.py is imported here rather than at the top because it imports this
+    module, and the two would deadlock at import time. By the time anyone calls
+    this, sync is loaded and the import is free.
+
+    Judged by the OBB alone, as install.py status is, so a mod that publishes
+    an APK-only update goes unmentioned: its versionName and its release tag are
+    separate numbers and comparing them cries wolf forever.
+    """
+    try:
+        from install import behind, read_config
+        from pvz.github import RateLimited
+    except Exception:
+        return
+    cfg = read_config()
+    news, checked = [], 0
+    for pkg in sorted(paths):
+        sfx = pkg.rsplit('_', 1)[-1]
+        rec = cfg.get(sfx)
+        if not rec:
+            continue
+        try:
+            b = behind(adb, dev, sfx, rec)
+            checked += 1
+        except RateLimited:
+            print('  GitHub rate limit reached, update check skipped')
+            return
+        except Exception:
+            continue
+        if b:
+            news.append((sfx, b))
+    if not news:
+        print(f'  {checked} mods checked, all current')
+        return
+    for sfx, b in news:
+        print(f'  {sfx:<5} NEW BUILD: {b}')
+    print(f'  install when you feel like it: python3 install.py install '
+          f'{" ".join(s for s, _ in news)}')
+
+
 def watch(adb, dev, paths, force=False, tick=15, interval=1800):
     """Report on a timer, push once at the end.
 
@@ -813,6 +876,8 @@ def main():
     ap.add_argument('--device', help='adb serial, default the first connected')
     ap.add_argument('--pkg', help='one package instead of every installed mod')
     ap.add_argument('--exe', help='emulator to launch, when it is not where it usually is')
+    ap.add_argument('--no-check', action='store_true',
+                    help='skip the look for newer mod builds when play starts')
     ap.add_argument('--every', type=int, default=30, metavar='MIN',
                     help='minutes between reads while playing (default 30). '
                          'Reading copies the save off the device, so a short '
@@ -861,6 +926,9 @@ def main():
                          'would be playing on an old save.')
             if exe:
                 print(f'\n== {exe} is already running ==')
+        if not a.no_check:
+            print('\n== checking for new builds ==')
+            check_updates(adb, dev, paths)
         watch(adb, dev, paths, a.force, interval=max(1, a.every) * 60)
         return
 

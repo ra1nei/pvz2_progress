@@ -2,7 +2,7 @@
 
 How far through each Plants vs. Zombies 2 mod I have got. The numbers are read out of my save files and out of each mod's own data, by a GitHub Action that keeps this page current on its own.
 
-Updated 2026-07-30 02:46 UTC+7 (19:46 UTC), refreshed every 6 hours. [Run log](https://github.com/ra1nei/pvz2_progress/actions/runs/30485866796).
+Updated 2026-07-30 10:34 UTC+7 (03:34 UTC), refreshed every 6 hours.
 
 <table>
 <tr><th></th><th>Mod</th><th>World</th><th>Quest</th><th>Progress</th><th>Done</th><th>Updates</th></tr>
@@ -80,6 +80,12 @@ Each line is against where that mod stood when the session began, which is what
 the commit at the end says too. The upload happens once, when the session ends,
 by the emulator closing or by Ctrl-C in the terminal; that upload is what
 refreshes the table.
+
+When it starts, after the pull, it also asks whether any mod has a newer build
+published and prints a line if so. It never installs one: that is a gigabyte
+over the wire and, for a mod that changed signing key, an uninstall first, which
+is no way to treat somebody who just sat down to play. `--no-check` skips the
+question, for a slow connection or a spent GitHub rate limit.
 
 Half an hour is a cadence, not a rule: `--every 10` reads more often. Reading
 is not free, though. It copies the save off the device and parses it, so doing

@@ -58,6 +58,12 @@ the commit at the end says too. The upload happens once, when the session ends,
 by the emulator closing or by Ctrl-C in the terminal; that upload is what
 refreshes the table.
 
+When it starts, after the pull, it also asks whether any mod has a newer build
+published and prints a line if so. It never installs one: that is a gigabyte
+over the wire and, for a mod that changed signing key, an uninstall first, which
+is no way to treat somebody who just sat down to play. `--no-check` skips the
+question, for a slow connection or a spent GitHub rate limit.
+
 Half an hour is a cadence, not a rule: `--every 10` reads more often. Reading
 is not free, though. It copies the save off the device and parses it, so doing
 it every few seconds hitches the game and prints a line for every ten coins
