@@ -93,10 +93,10 @@
 <text class="s" x="330" y="216" text-anchor="middle">APK and OBB installed,</text>
 <text class="s" x="330" y="233" text-anchor="middle">your save put back</text>
 <rect class="box" x="230" y="278" width="200" height="82" rx="6" stroke-dasharray="4 3"/>
-<text class="h" x="330" y="300" text-anchor="middle">First time only</text>
-<text class="s" x="330" y="318" text-anchor="middle">no save folder exists yet:</text>
-<text class="s" x="330" y="334" text-anchor="middle">open the mod once, then</text>
-<text class="cmd" x="330" y="352" text-anchor="middle">sync.py pull</text>
+<text class="h" x="330" y="300" text-anchor="middle">The save folder</text>
+<text class="s" x="330" y="318" text-anchor="middle">is the game’s to make, so</text>
+<text class="s" x="330" y="334" text-anchor="middle">the mod is opened for a</text>
+<text class="s" x="330" y="352" text-anchor="middle">moment to let it</text>
 <rect class="hd3" x="450" y="16" width="200" height="52" rx="6"/>
 <text class="h" x="550" y="38" text-anchor="middle">A mod has</text>
 <text class="h" x="550" y="56" text-anchor="middle">a new build</text>

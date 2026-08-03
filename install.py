@@ -31,6 +31,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 
 import pvz.drive as drive
 from pvz.device import pick_device, find_adb, sh
@@ -569,6 +570,38 @@ def fetch_obb(sfx, rec):
     return None, 0
 
 
+def wake_folder(adb, dev, pkg, wait=60):
+    """Have the mod make its own save folder, by opening it and closing it.
+
+    The folder has to belong to the game, not to adb. One made over adb belongs
+    to `shell`, and then the files the game writes inside land in a group adb
+    cannot read, so the save quietly stops syncing; made by the game, the folder
+    carries setgid and everything inside stays readable both ways. That is the
+    whole difference between a mod that syncs for months and one that does not.
+
+    It costs a launch, and no more than that. The folder appears within seconds
+    of the app starting, long before the terms screen and nowhere near the
+    prologue, so nothing has to be played and nothing has to be tapped. Then the
+    app is stopped again and the save goes in.
+
+    Returns the folder, or None if it never appeared.
+    """
+    base = os.path.dirname(SAVE_PATHS[0].format(pkg=pkg))
+    subprocess.run([adb, '-s', dev, 'shell', 'monkey', '-p', pkg,
+                    '-c', 'android.intent.category.LAUNCHER', '1'],
+                   capture_output=True)
+    found = False
+    for _ in range(max(1, wait // 5)):
+        time.sleep(5)
+        if sh(adb, 'shell', f'[ -d "{base}" ] && echo Y',
+              serial=dev, check=False).strip() == 'Y':
+            found = True
+            break
+    sh(adb, 'shell', f'am force-stop {pkg}', serial=dev, check=False)
+    time.sleep(2)
+    return base if found else None
+
+
 def install_one(adb, dev, sfx, cfg, force=False, fresh=False):
     pkg = PKG.format(sfx)
     rec = cfg.setdefault(sfx, {})
@@ -649,28 +682,21 @@ def install_one(adb, dev, sfx, cfg, force=False, fresh=False):
     tu_repo = os.path.join(SAVES, f'pp_{sfx}.dat')
     save = tu_repo if os.path.exists(tu_repo) else kept
     if save:
-        paths = save_paths(adb, dev, [pkg])
+        paths = save_paths(adb, dev, [pkg], quiet=True)
         dest = paths.get(pkg)
         if not dest:
-            # A freshly installed mod has not made its save folder yet, so
-            # there is nowhere to put the save and the search finds nothing.
-            # Make the folder and drop the save in: the game reads it on first
-            # launch, which saves having to start the mod and sync again.
-            dest = SAVE_PATHS[0].format(pkg=pkg)
-            sh(adb, 'shell', f'mkdir -p {os.path.dirname(dest)}',
-               serial=dev, check=False)
+            # The save folder is the game's to make, not ours: see wake_folder.
+            # So the mod is opened for a few seconds and closed again, which is
+            # all it takes, rather than adb making the folder itself.
+            print('   no save folder yet, opening the mod so it makes its own')
+            base = wake_folder(adb, dev, pkg)
+            if not base:
+                print(f'   it did not appear. Open {sfx} once by hand, then: '
+                      f'python3 sync.py pull')
+                return True
+            dest = f'{base}/pp.dat'
         r = subprocess.run([adb, '-s', dev, 'push', save, dest],
                            capture_output=True, text=True)
-        # A folder adb created belongs to `shell`, and the game, running as its
-        # own user, then cannot write in it. It reads the save and plays, but
-        # saves nothing: every launch replays the prologue and the terms screen,
-        # and no progress ever sticks. The folder looks perfectly normal while
-        # this happens, which is what made it hard to see; what gives it away is
-        # that the game's own files, the per-profile draper and loot ones, never
-        # appear beside the save. Widening the permissions is enough, and it
-        # costs nothing on a folder the emulator alone can reach.
-        sh(adb, 'shell', f'chmod -R 777 {os.path.dirname(dest)}',
-           serial=dev, check=False)
         if r.returncode == 0:
             print(f'   save in place: {cleared(save)} cleared '
                   f'({"from saves/" if save == tu_repo else "the one held aside"})')

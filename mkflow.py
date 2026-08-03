@@ -379,7 +379,7 @@ def cases():
     s.node('hd2', 230, 16, 200, 52, [('h', 'A machine with'), ('h', 'no mods on it')])
     s.node('box', 230, 96, 200, 70, [('cmd', 'install.py auto'), ('s', 'reads saves/ to see what'), ('s', 'you play, then fetches it')], ys=[120, 139, 155])
     s.node('box', 230, 194, 200, 56, [('s', 'APK and OBB installed,'), ('s', 'your save put back')], lead=17, dy=2.5)
-    s.node('box', 230, 278, 200, 82, [('h', 'First time only'), ('s', 'no save folder exists yet:'), ('s', 'open the mod once, then'), ('cmd', 'sync.py pull')], ys=[300, 318, 334, 352], dashed=True)
+    s.node('box', 230, 278, 200, 82, [('h', 'The save folder'), ('s', 'is the game’s to make, so'), ('s', 'the mod is opened for a'), ('s', 'moment to let it')], ys=[300, 318, 334, 352], dashed=True)
     s.node('hd3', 450, 16, 200, 52, [('h', 'A mod has'), ('h', 'a new build')])
     s.node('box', 450, 96, 200, 70, [('cmd', 'install.py status'), ('s', 'shows installed version'), ('s', 'next to published one')], ys=[120, 139, 155])
     s.node('box', 450, 194, 200, 56, [('cmd', 'install.py install cld'), ('s', 'when the two differ')], lead=19, dy=2.5)

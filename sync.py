@@ -352,6 +352,17 @@ def quests_on(adb, dev, dpath, sfx):
     if not os.path.isdir(local):
         return
     remote = quests_path(dpath)
+    # Only into a folder the game already made. One made over adb belongs to
+    # `shell`, and the game, running as its own user, cannot write inside one:
+    # it plays on and keeps nothing. That is what happened to the save folder,
+    # and this is the same folder one level down, so it gets the same rule. A
+    # mod that has not made it yet simply carries no half-finished chains over
+    # until it has been opened once, which is a step it needs anyway.
+    if sh(adb, 'shell', f'[ -d "{remote}" ] && echo Y', serial=dev,
+          check=False).strip() != 'Y':
+        print(f'  {sfx:<5} no quest folder on the device yet, so the '
+              f'half-finished chains stay here until the mod has been opened')
+        return
     for root, _dirs, files in os.walk(local):
         for name in files:
             src = os.path.join(root, name)
@@ -361,9 +372,8 @@ def quests_on(adb, dev, dpath, sfx):
                serial=dev, check=False)
             subprocess.run([adb, '-s', dev, 'push', src, dst],
                            capture_output=True)
-    # A folder adb made belongs to `shell`, and the game cannot write inside
-    # one: it goes on playing but saves nothing, so every launch starts over.
-    # See the same fix in install.py, where it cost two days to spot.
+    # The files themselves are pushed as shell and stay readable both ways;
+    # widening them keeps the game able to rewrite them in place.
     sh(adb, 'shell', f'chmod -R 777 "{remote}"', serial=dev, check=False)
 
 

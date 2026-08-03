@@ -308,6 +308,13 @@ python3 install.py clean --force         drop every cached download
 python3 install.py forget cld --force    stop tracking it in the repo
 ```
 
+A mod that has never run on this machine has no save folder yet, and that
+folder has to be the game's own: one made over adb belongs to `shell`, and the
+files the game then writes land in a group adb cannot read, so the save quietly
+stops syncing. So `install` opens the mod for a few seconds and closes it,
+which is all it takes for the folder to appear, well before the terms screen
+and nowhere near the prologue. Nothing to play, nothing to tap.
+
 **`remove`** is the counterpart of `install`, and the usual one. It uninstalls
 the mod from the emulator on whichever machine you run it, deletes the OBB
 there and the copies cached in `downloads/`, and touches nothing else. Runs the
