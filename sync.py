@@ -90,10 +90,17 @@ EMULATORS = {
 # ---------------------------------------------------------------- device
 
 def connect(adb):
-    """Devices, connecting to the usual emulator ports first if none show up."""
-    d = devices(adb)
-    if d:
-        return d
+    """Every device, having first knocked on the usual emulator ports.
+
+    The knock happens even when adb already lists something, which it did not
+    use to. A phone plugged in over USB is listed, so the emulator was never
+    connected, and the run then went looking for mods on the phone and
+    announced there were none: `No PvZ2 mods are installed on R5GYC26ZNZX`,
+    while BlueStacks sat there with eleven of them and no adb connection.
+
+    It costs nothing to knock. A port already connected answers instantly, and
+    a closed one on localhost refuses just as fast.
+    """
     for c in PORTS:
         subprocess.run([adb, 'connect', c], capture_output=True, timeout=15)
     d = devices(adb)
