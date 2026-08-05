@@ -719,6 +719,37 @@ def played_mods():
     return [s for _, s in sorted(out, reverse=True)]
 
 
+def apk_behind(sfx, rec):
+    """Whether the Drive folder now offers a different APK file, or None.
+
+    Told by the file id, not by any version. A mod fixing a crash re-uploads
+    the APK under the same name and the same version number, leaves the OBB
+    alone, and says nothing anywhere: the name matches, the versionName matches,
+    the OBB matches, and the only thing that moved is which file the folder
+    points at. Reflourished did exactly that and every check here was blind to
+    it, which is what this is for.
+
+    The recorded id going 404 says the same thing from the other side, and is
+    worth catching because that is what an install would hit.
+    """
+    p = os.path.join(HERE, 'links.json')
+    links = json.load(open(p, encoding='utf-8')) if os.path.exists(p) else {}
+    m = re.search(r'/folders/([\w-]+)', str(links.get(sfx) or ''))
+    have = rec.get('apk_id')
+    if not m or not have:
+        return None
+    try:
+        apks = drive.files_of_type(drive.list_folder(m.group(1)), '.apk')
+    except Exception:
+        return None
+    if not apks or have in apks.values():
+        return None                      # the folder still points at ours
+    name = rec.get('apk_name')
+    if name in apks:
+        return f'APK re-uploaded as {name}'
+    return f'APK replaced, the folder now has: {", ".join(sorted(apks))}'
+
+
 def behind(adb, dev, sfx, rec):
     """Whether the device's OBB is older than the published one, as a phrase.
 
@@ -739,14 +770,18 @@ def behind(adb, dev, sfx, rec):
     co, _ = installed(adb, dev, pkg)
     if not co:
         return None
+    news = []
     try:
         want_name, want_size = obb_wanted(rec)
         have_name, have_size = obb_on_device(adb, dev, pkg)
         if want_name and want_size and (have_name != want_name or have_size != want_size):
-            return f'OBB {have_size // 1048576}MB -> {want_size // 1048576}MB'
+            news.append(f'OBB {have_size // 1048576}MB -> {want_size // 1048576}MB')
     except Exception:
         pass
-    return None
+    a = apk_behind(sfx, rec)
+    if a:
+        news.append(a)
+    return '; '.join(news) or None
 
 
 def status(adb, dev, cfg):
@@ -764,9 +799,12 @@ def status(adb, dev, cfg):
         print(f'{sfx:<6}{(ver or "-") if co else "not installed":<14}{rel:<12}'
               f'{f"{size / 1048576:.0f}MB" if size else "-":<9}{upd or "OBB current" if co else "-"}')
     print('\n"on device" is the APK versionName; "release" is the OBB tag, a '
-          'separate number, so a mismatch is not itself an update. The OBB is '
-          'checked here; to check the APK, run `install <mod>`, which re-fetches\n'
-          'it and says whether the build changed.')
+          'separate number, so a mismatch is not itself an update. What is '
+          'compared is the OBB, by size, and the APK, by which file the mod\'s\n'
+          'folder points at: a rebuild is re-uploaded under the same name and '
+          'the same version, so the file id is the only thing that moves.\n'
+          'After an APK change run `install.py scan` first, which picks up the '
+          'new file, then `install.py install <mod>`.')
 
 
 def keymaps(only, force=False):

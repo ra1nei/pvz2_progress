@@ -765,8 +765,14 @@ def check_updates(adb, dev, paths):
         return
     for sfx, b in news:
         print(f'  {sfx:<5} NEW BUILD: {b}')
-    print(f'  install when you feel like it: python3 install.py install '
-          f'{" ".join(s for s, _ in news)}')
+    who = ' '.join(s for s, _ in news)
+    if any('APK' in b for _, b in news):
+        # A re-uploaded APK sits at a new file id, so the recorded one is gone:
+        # installing without scanning first would fetch a 404.
+        print(f'  when you feel like it: python3 install.py scan, then '
+              f'python3 install.py install {who}')
+    else:
+        print(f'  install when you feel like it: python3 install.py install {who}')
 
 
 def watch(adb, dev, paths, force=False, tick=15, interval=1800):

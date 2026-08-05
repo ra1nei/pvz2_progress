@@ -2,7 +2,7 @@
 
 How far through each Plants vs. Zombies 2 mod I have got. The numbers are read out of my save files and out of each mod's own data, by a GitHub Action that keeps this page current on its own.
 
-Updated 2026-08-05 07:53 UTC+7 (00:53 UTC), refreshed every 6 hours. [Run log](https://github.com/ra1nei/pvz2_progress/actions/runs/30964706940).
+Updated 2026-08-05 13:08 UTC+7 (06:08 UTC), refreshed every 6 hours.
 
 <table>
 <tr><th></th><th>Mod</th><th>World</th><th>Quest</th><th>Progress</th><th>Done</th><th>Updates</th></tr>
@@ -83,9 +83,18 @@ refreshes the table.
 
 When it starts, after the pull, it also asks whether any mod has a newer build
 published and prints a line if so. It never installs one: that is a gigabyte
-over the wire and, for a mod that changed signing key, an uninstall first, which
-is no way to treat somebody who just sat down to play. `--no-check` skips the
-question, for a slow connection or a spent GitHub rate limit.
+over the wire and, for a mod that changed signing key, an uninstall first,
+which is no way to treat somebody who just sat down to play. `--no-check` skips
+the question, for a slow connection or a spent GitHub rate limit.
+
+Two things are compared: the OBB by size, and the APK by which file the mod's
+folder points at. That second one matters more than it sounds. A mod fixing a
+crash re-uploads its APK under the same name and the same version number and
+leaves the OBB alone, so the name matches, the versionName matches, the OBB
+matches, and the only thing that moves is the file id. Reflourished did exactly
+that and nothing here noticed until the check started reading ids. When it
+reports one, run `install.py scan` before installing: the recorded id is the
+dead one.
 
 Half an hour is a cadence, not a rule: `--every 10` reads more often. Reading
 is not free, though. It copies the save off the device and parses it, so doing
