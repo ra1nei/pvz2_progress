@@ -610,14 +610,34 @@ def wake_folder(adb, dev, pkg, wait=60):
     return base if found else None
 
 
-def install_one(adb, dev, sfx, cfg, force=False, fresh=False):
+def install_one(adb, dev, sfx, cfg, force=False, fresh=False, apk_path=None):
     pkg = PKG.format(sfx)
     rec = cfg.setdefault(sfx, {})
     co, ver = installed(adb, dev, pkg)
     print(f'\n== {sfx} ==')
     print(f'   installed: {ver or "no"}')
 
-    apk = fetch_apk(sfx, rec, fresh=fresh)
+    if apk_path:
+        # A build handed over by hand, for when the folder will not serve it.
+        # Drive stops serving a popular file once it has been fetched too often
+        # that day, and both of Reflourished's copies hit that at once, so the
+        # only way through was a copy from elsewhere. Checked like any other:
+        # what arrives from a quota page is an HTML file with an APK's name.
+        import zipfile
+        apk = apk_path
+        try:
+            with zipfile.ZipFile(apk) as z:
+                ok = 'AndroidManifest.xml' in z.namelist()
+        except Exception:
+            ok = False
+        if not ok:
+            print(f'   {apk} is not an APK, refusing to install it')
+            return False
+        rec['apk_sha256'] = sha256(apk)
+        print(f'   using {os.path.basename(apk)} '
+              f'({os.path.getsize(apk) / 1048576:.0f}MB, given by hand)')
+    else:
+        apk = fetch_apk(sfx, rec, fresh=fresh)
     write_config(cfg)
     if not apk:
         print('   no APK available, skipping')
@@ -847,6 +867,9 @@ def main():
     ap.add_argument('--device')
     ap.add_argument('--force', action='store_true',
                     help='uninstall and reinstall when the signature changed')
+    ap.add_argument('--apk', metavar='PATH',
+                    help='install this APK file instead of fetching one, for '
+                         'when the mod\'s folder has stopped serving it')
     a = ap.parse_args()
 
     if a.action == 'add':
@@ -889,11 +912,14 @@ def main():
     if a.action == 'install':
         if not a.args:
             sys.exit('usage: install.py install <suffix>')
+        if a.apk and len(a.args) != 1:
+            sys.exit('--apk installs one mod: python3 install.py install rfl '
+                     '--apk "<file>"')
         for sfx in a.args:
             # Explicit install means "get me whatever is current", so the APK
             # is re-fetched rather than served from cache. auto below keeps the
             # cache, since it re-runs across every mod.
-            install_one(adb, dev, sfx, cfg, a.force, fresh=True)
+            install_one(adb, dev, sfx, cfg, a.force, fresh=True, apk_path=a.apk)
         return
 
     want = played_mods()
