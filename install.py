@@ -126,6 +126,14 @@ def scan_one(sfx, url, cfg, src):
     else:
         rec['apk_choices'] = apks
         keep = rec.get('apk_name')
+        # A build already picked keeps its name but not necessarily its file. A
+        # mod that re-uploads to fix a crash leaves the name and the version
+        # alone, so only the id moves, and the recorded one becomes a 404 that
+        # an install would fetch. Following the name is what keeps the choice
+        # meaning what it meant.
+        if keep in apks and rec.get('apk_id') != apks[keep]:
+            rec['apk_id'] = apks[keep]
+            print(f'{sfx:<5} {keep} was re-uploaded, now pointing at the new file')
         print(f'{sfx:<5} {len(apks)} APKs, pick one with '
               f'`install.py pick {sfx} "<name>"`:')
         for n in sorted(apks):
