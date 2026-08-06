@@ -2,7 +2,7 @@
 
 How far through each Plants vs. Zombies 2 mod I have got. The numbers are read out of my save files and out of each mod's own data, by a GitHub Action that keeps this page current on its own.
 
-Updated 2026-08-06 10:41 UTC+7 (03:41 UTC), refreshed every 6 hours. [Run log](https://github.com/ra1nei/pvz2_progress/actions/runs/31069125410).
+Updated 2026-08-06 14:59 UTC+7 (07:59 UTC), refreshed every 6 hours.
 
 <table>
 <tr><th></th><th>Mod</th><th>World</th><th>Quest</th><th>Progress</th><th>Done</th><th>Updates</th></tr>
@@ -140,6 +140,39 @@ push` rather than `play`, because push uploads the device as it is while play's
 first act is to fetch, which on equal level counts would overwrite what you
 just did.
 
+### Close the mod first
+
+Every one of these commands reads or writes `pp.dat`, and while a mod is open
+that file is not what the screen says. The game holds coins, gems and the level
+you have just finished in memory and writes them out at moments of its own, so
+until then the disk is behind. That gap is quiet in every direction:
+
+| Command, with the mod open | What you get |
+|---|---|
+| `sync.py push` | the unwritten part is not in the push, and the run looks normal |
+| `sync.py pull` | the game writes its own copy back over what just landed |
+| `install.py install` | the install stops the game, and the unwritten part goes with it, with no copy of it anywhere |
+
+So each of the three now says the mod is open. `install` stops there and asks
+you to close the game, since that is the one where what is lost cannot be got
+back. Closing means back to the world map, or out to the Android home screen,
+and a few seconds for the game to write. `--force` goes ahead anyway.
+
+The install also keeps the save it takes off the device under a name with the
+date and time on it, in `downloads/`, on top of the copy it puts back. Those are
+a few kilobytes each and they are not overwritten by the next install.
+
+### What the install puts back
+
+It used to put back the copy in `saves/` whenever there was one, on the
+reasoning that the repo holds what the other machine last played. That reasoning
+holds only while every session gets pushed. Play here, install before pushing,
+and the older repo copy lands over the newer one.
+
+Now it compares the two, the same count the guards use, and puts back whichever
+is further on. When the device is ahead it says so and tells you to push once
+the game is closed.
+
 ### Why once at the end, not as you go
 
 The first version pushed every time a mod left the foreground, which put a
@@ -243,6 +276,15 @@ Two things update independently, which is worth keeping straight:
   uninvited; you install updates when you feel like it.
 
 So the table reading v1.4.2 while your copy is on v1.4.0 is normal, not a bug.
+
+An APK rebuild is a separate signal from an OBB change, and a quieter one. A mod
+fixing a crash re-uploads the APK under the same name and the same version and
+leaves the OBB untouched, so the only thing that moves is which file its Drive
+folder points at. That is what `status` compares, and it compares against the
+file that went on the device, kept apart from the one the folder is serving now.
+They used to be a single note, so the first look at the folder recorded the new
+file and the two agreed from then on: the warning appeared once and never again,
+while the device still had the old build. Looking is now a read.
 
 ### When the install is refused
 

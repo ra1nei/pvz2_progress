@@ -29,6 +29,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -37,8 +38,10 @@ import pvz.drive as drive
 from pvz.device import pick_device, find_adb, sh
 from pvz.github import GH, latest_release
 from pvz import keymap
-from sync import (SAVE_PATHS, SAVES, cleared, save_paths, refresh_saves,
-                       connect)
+from sync import (SAVE_PATHS, SAVES, cleared, is_running, save_paths,
+                       refresh_saves, connect)
+# Under its own name: this file already has a progress(), for download bars.
+from sync import progress as save_progress
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CONFIG = os.path.join(HERE, 'install.json')
@@ -131,6 +134,13 @@ def scan_one(sfx, url, cfg, src):
         # alone, so only the id moves, and the recorded one becomes a 404 that
         # an install would fetch. Following the name is what keeps the choice
         # meaning what it meant.
+        #
+        # Only apk_id follows, which is where an install fetches from.
+        # apk_installed is what went on the device, written by the install and
+        # by nothing else. They were one field, and looking was enough to make
+        # the update signal disappear: this printed once, recorded the new id,
+        # and from then on the folder and the record agreed while the device
+        # still had the old build.
         if keep in apks and rec.get('apk_id') != apks[keep]:
             rec['apk_id'] = apks[keep]
             print(f'{sfx:<5} {keep} was re-uploaded, now pointing at the new file')
@@ -610,12 +620,56 @@ def wake_folder(adb, dev, pkg, wait=60):
     return base if found else None
 
 
+def pick_save(kept, tu_repo, pkg):
+    """Which save goes back after an install, the device's or the repo's.
+
+    It used to be the repo's whenever there was one, on the reasoning that the
+    repo holds what the other machine last played. That only holds while every
+    session gets pushed. Play here, install before pushing, and the older repo
+    save goes back over the newer one, which is a loss that shows no sign: the
+    file lands, the game opens, and the only trace is a level count that used
+    to be higher. So compare the two, the way sync.py has compared both ends
+    from the beginning, and put back whichever is further on.
+
+    Returns (path or None, lines to print).
+    """
+    on_repo = tu_repo and os.path.exists(tu_repo)
+    if not (kept and on_repo):
+        return (tu_repo if on_repo else kept), []
+    try:
+        here, there = save_progress(kept, pkg), save_progress(tu_repo, pkg)
+    except (Exception, SystemExit):
+        # SystemExit as well: rton.decode raises it on a file that is not a
+        # save, and a half-pulled file is exactly that. Reading one must not
+        # take the install down with it.
+        # Unreadable either side, so nothing to compare on. The repo copy is
+        # the shared one, which is the safer thing to land.
+        return tu_repo, ['could not read both saves to compare, using the repo one']
+    if here > there:
+        return kept, [f'the save on the emulator is further on than the repo, '
+                      f'{here} against {there}, putting that one back instead',
+                      'push it once the game is closed: python3 sync.py pull']
+    if there > here:
+        return tu_repo, [f'repo save is further on, {there} against {here}']
+    return tu_repo, []
+
+
 def install_one(adb, dev, sfx, cfg, force=False, fresh=False, apk_path=None):
     pkg = PKG.format(sfx)
     rec = cfg.setdefault(sfx, {})
     co, ver = installed(adb, dev, pkg)
     print(f'\n== {sfx} ==')
     print(f'   installed: {ver or "no"}')
+
+    if co and is_running(adb, dev, pkg):
+        print(f'   {sfx} is open on the emulator right now.')
+        print('   Close it from inside the game first, back to the world map or')
+        print('   out to the Android home screen, and give it a few seconds to')
+        print('   write. Anything it has not written yet is lost when the')
+        print('   installer stops it, and no copy of it exists to put back.')
+        print(f'   Then run the same command again, or --force to install anyway.')
+        if not force:
+            return False
 
     if apk_path:
         # A build handed over by hand, for when the folder will not serve it.
@@ -636,6 +690,26 @@ def install_one(adb, dev, sfx, cfg, force=False, fresh=False, apk_path=None):
         rec['apk_sha256'] = sha256(apk)
         print(f'   using {os.path.basename(apk)} '
               f'({os.path.getsize(apk) / 1048576:.0f}MB, given by hand)')
+        # Take a note of what the folder is offering while we are here. Without
+        # it the recorded id stays at whatever it was before, so every later
+        # check reports the same re-upload for ever and starts being ignored,
+        # which is worse than not checking. This records that the folder was at
+        # this file when the build went on; it does not claim the two are the
+        # same bytes, which is unknowable while Drive refuses to serve it.
+        try:
+            lp = os.path.join(HERE, 'links.json')
+            links = json.load(open(lp, encoding='utf-8'))
+            m2 = re.search(r'/folders/([\w-]+)', str(links.get(sfx) or ''))
+            if m2:
+                apks = drive.files_of_type(drive.list_folder(m2.group(1)), '.apk')
+                name = rec.get('apk_name')
+                if name in apks and apks[name] != rec.get('apk_id'):
+                    rec['apk_id'] = apks[name]
+                    if 'apk_choices' in rec:
+                        rec['apk_choices'] = apks
+                    print(f'   the folder has moved on too, noting its file')
+        except Exception:
+            pass
     else:
         apk = fetch_apk(sfx, rec, fresh=fresh)
     write_config(cfg)
@@ -647,7 +721,7 @@ def install_one(adb, dev, sfx, cfg, force=False, fresh=False, apk_path=None):
     # changed signing key can only be updated by uninstalling.
     kept = None
     if co:
-        paths = save_paths(adb, dev, [pkg])
+        paths = save_paths(adb, dev, [pkg], quiet=True)
         if paths.get(pkg):
             os.makedirs(DOWNLOADS, exist_ok=True)
             kept = os.path.join(DOWNLOADS, f'pp_{sfx}.keep')
@@ -655,6 +729,13 @@ def install_one(adb, dev, sfx, cfg, force=False, fresh=False, apk_path=None):
                            capture_output=True)
             if os.path.exists(kept) and open(kept, 'rb').read(4) == b'RTON':
                 print(f'   save held aside: {cleared(kept)} cleared')
+                # And kept for good, under its own name. The one file used to
+                # be overwritten by the next install, so by the time anyone
+                # noticed a save had gone, the copy that could have brought it
+                # back had been written over twice. Copies are a few kilobytes.
+                import shutil
+                stamp = time.strftime('%Y%m%d_%H%M%S')
+                shutil.copy(kept, os.path.join(DOWNLOADS, f'pp_{sfx}.{stamp}.keep'))
             else:
                 kept = None
 
@@ -674,6 +755,12 @@ def install_one(adb, dev, sfx, cfg, force=False, fresh=False, apk_path=None):
             print(f'   clean install failed too: {(r.stdout + r.stderr).strip()[:160]}')
             return False
     print('   APK installed')
+    # Now, and only here, does the record of what is on the device move. Reading
+    # the folder must never write this: that is what let a re-upload be reported
+    # once and then look settled while the device still had the old build.
+    if rec.get('apk_id'):
+        rec['apk_installed'] = rec['apk_id']
+        write_config(cfg)
     # A new package starts with no key mapping at all, so hand it the shared
     # one. Host side, nothing to do with the device.
     keymap.apply(pkg, force)
@@ -705,10 +792,11 @@ def install_one(adb, dev, sfx, cfg, force=False, fresh=False, apk_path=None):
             print('   OBB in place')
     write_config(cfg)
 
-    # Prefer the repo save: it is the one the other machine just played.
     refresh_saves()
     tu_repo = os.path.join(SAVES, f'pp_{sfx}.dat')
-    save = tu_repo if os.path.exists(tu_repo) else kept
+    save, said = pick_save(kept, tu_repo, pkg)
+    for line in said:
+        print(f'   {line}')
     if save:
         paths = save_paths(adb, dev, [pkg], quiet=True)
         dest = paths.get(pkg)
@@ -763,7 +851,9 @@ def apk_behind(sfx, rec):
     p = os.path.join(HERE, 'links.json')
     links = json.load(open(p, encoding='utf-8')) if os.path.exists(p) else {}
     m = re.search(r'/folders/([\w-]+)', str(links.get(sfx) or ''))
-    have = rec.get('apk_id')
+    # What went on the device, not what the folder was last seen at. Falls back
+    # for a mod recorded before the two were told apart.
+    have = rec.get('apk_installed') or rec.get('apk_id')
     if not m or not have:
         return None
     try:

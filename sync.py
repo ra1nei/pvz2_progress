@@ -109,6 +109,19 @@ def connect(adb):
     return d
 
 
+def is_running(adb, dev, pkg):
+    """True while the mod is up.
+
+    Worth asking before anything that reads or replaces a save. The game keeps
+    coins, gems and the level just finished in memory and writes pp.dat only at
+    its own moments, so while it runs the file on disk is behind the screen.
+    Read it then and the pull is short; replace the app under it and whatever
+    was unwritten goes with the process, leaving no copy anywhere and no sign
+    that anything went missing.
+    """
+    return bool(sh(adb, 'shell', 'pidof', pkg, serial=dev, check=False).strip())
+
+
 def is_save(adb, dev, path):
     """True when `path` on the device really is an RTON save."""
     r = subprocess.run([adb, '-s', dev, 'exec-out',
@@ -540,6 +553,14 @@ def to_device(adb, dev, paths, force=False):
     holding progress that never went up, which nothing could recover.
     """
     refresh_saves()
+    # Landing a save under a mod that is open achieves nothing: the game is
+    # holding its own copy and writes it out at its next saving moment, over
+    # the one just put there. Worse, it reads as having worked.
+    busy = [pkg.rsplit('_', 1)[-1] for pkg in sorted(paths)
+            if is_running(adb, dev, pkg)]
+    if busy:
+        print(f'  {", ".join(busy)} open right now: close the mod, then run '
+              f'this again, or the game writes its own copy back over this one.')
     ok = True
     for pkg, dpath in sorted(paths.items()):
         sfx = pkg.rsplit('_', 1)[-1]
@@ -579,6 +600,18 @@ def from_device(adb, dev, paths, force=False, cached=False):
     """Device -> saves/, refusing any mod that would lose progress."""
     refresh_saves()
     os.makedirs(TMP, exist_ok=True)
+    # A mod still open has not written everything it is holding: coins, gems
+    # and the level just finished sit in memory until the game reaches one of
+    # its own saving moments. Pulling then reads the file as it was, which is
+    # not what the screen says, and the difference goes unnoticed because the
+    # pull itself works fine.
+    if not cached:
+        open_now = [pkg.rsplit('_', 1)[-1] for pkg in sorted(paths)
+                    if is_running(adb, dev, pkg)]
+        if open_now:
+            print(f'  {", ".join(open_now)} still open: what the game has not '
+                  f'written yet will not be in this pull.')
+            print('  Close it and run this again to catch the rest.')
     changed = []
     for pkg, dpath in sorted(paths.items()):
         sfx = pkg.rsplit('_', 1)[-1]
