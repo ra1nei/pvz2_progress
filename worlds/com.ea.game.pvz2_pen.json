@@ -1,8 +1,8 @@
 {
  "_fingerprint": {
-  "source": "https://github.com/PvZ2OBBHost/PvZ2PenumbraOBB/releases/download/v1.3.1b/main.675.com.ea.game.pvz2_pen.obb",
-  "size": 863797248,
-  "tag": "v1.3.1b"
+  "source": "https://github.com/PvZ2OBBHost/PvZ2PenumbraOBB/releases/download/v1.3.2a/main.675.com.ea.game.pvz2_pen.obb",
+  "size": 869883904,
+  "tag": "v1.3.2a"
  },
  "_quest": {
   "world": {},
@@ -12,6 +12,7 @@
    "egypt_unlock_beach": "UNLOCK_BEACH",
    "egypt_unlock_jungle": "UNLOCK_JUNGLE",
    "egypt_unlock_dino": "UNLOCK_DINO",
+   "egypt_unlock_modern": "UNLOCK_MODERN",
    "egypt_rewardplant_garlimite": "REWARDPLANT_GARLIMITE",
    "egypt_rewardplant_sunurchin": "REWARDPLANT_SUNURCHIN",
    "egypt_rewardplant_buttercup": "REWARDPLANT_BUTTERCUP",
@@ -646,65 +647,146 @@
    ],
    "excluded": []
   },
-  "3": {
-   "name": "pirate",
-   "code": "pirate",
+  "12": {
+   "name": "modern",
+   "code": "modern",
    "order": 8,
    "counted": false,
-   "total": 10,
+   "total": 25,
    "nodes": [
     [
      1,
-     "pirate_level_1",
+     "modern_level_1",
      "normal"
     ],
     [
      2,
-     "pirate_level_2",
+     "modern_level_2",
      "normal"
     ],
     [
      3,
-     "pirate_level_3",
+     "modern_level_3",
      "normal"
     ],
     [
      4,
-     "pirate_level_4",
+     "modern_level_4",
      "normal"
     ],
     [
      5,
-     "pirate_level_5",
+     "modern_level_5",
      "normal"
     ],
     [
      6,
-     "pirate_level_6",
+     "modern_level_6",
      "normal"
     ],
     [
      7,
-     "pirate_level_7",
+     "modern_level_7",
      "normal"
     ],
     [
      8,
-     "pirate_level_8",
+     "modern_level_8",
      "normal"
     ],
     [
      9,
-     "pirate_level_9",
+     "modern_level_9",
      "normal"
     ],
     [
      10,
-     "pirate_level_10",
+     "modern_level_10",
+     "normal"
+    ],
+    [
+     11,
+     "modern_level_11",
+     "normal"
+    ],
+    [
+     12,
+     "modern_level_12",
+     "normal"
+    ],
+    [
+     13,
+     "modern_level_13",
      "miniboss"
+    ],
+    [
+     14,
+     "modern_level_14",
+     "normal"
+    ],
+    [
+     15,
+     "modern_level_15",
+     "normal"
+    ],
+    [
+     16,
+     "modern_level_16",
+     "normal"
+    ],
+    [
+     17,
+     "modern_level_17",
+     "normal"
+    ],
+    [
+     18,
+     "modern_level_18",
+     "normal"
+    ],
+    [
+     19,
+     "modern_level_19",
+     "normal"
+    ],
+    [
+     20,
+     "modern_level_20",
+     "normal"
+    ],
+    [
+     21,
+     "modern_level_21",
+     "normal"
+    ],
+    [
+     22,
+     "modern_level_22",
+     "normal"
+    ],
+    [
+     23,
+     "modern_level_23",
+     "normal"
+    ],
+    [
+     24,
+     "modern_level_24",
+     "miniboss"
+    ],
+    [
+     25,
+     "modern_level_25",
+     "boss"
     ]
    ],
-   "excluded": [],
+   "excluded": [
+    [
+     69,
+     "modern_level_dangerroom",
+     "danger"
+    ]
+   ],
    "reason": "hidden"
   },
   "5": {
@@ -1118,146 +1200,65 @@
    "excluded": [],
    "reason": "hidden"
   },
-  "12": {
-   "name": "modern",
-   "code": "modern",
+  "3": {
+   "name": "pirate",
+   "code": "pirate",
    "order": 15,
    "counted": false,
-   "total": 25,
+   "total": 10,
    "nodes": [
     [
      1,
-     "modern_level_1",
+     "pirate_level_1",
      "normal"
     ],
     [
      2,
-     "modern_level_2",
+     "pirate_level_2",
      "normal"
     ],
     [
      3,
-     "modern_level_3",
+     "pirate_level_3",
      "normal"
     ],
     [
      4,
-     "modern_level_4",
+     "pirate_level_4",
      "normal"
     ],
     [
      5,
-     "modern_level_5",
+     "pirate_level_5",
      "normal"
     ],
     [
      6,
-     "modern_level_6",
+     "pirate_level_6",
      "normal"
     ],
     [
      7,
-     "modern_level_7",
+     "pirate_level_7",
      "normal"
     ],
     [
      8,
-     "modern_level_8",
+     "pirate_level_8",
      "normal"
     ],
     [
      9,
-     "modern_level_9",
+     "pirate_level_9",
      "normal"
     ],
     [
      10,
-     "modern_level_10",
-     "normal"
-    ],
-    [
-     11,
-     "modern_level_11",
-     "normal"
-    ],
-    [
-     12,
-     "modern_level_12",
-     "normal"
-    ],
-    [
-     13,
-     "modern_level_13",
+     "pirate_level_10",
      "miniboss"
-    ],
-    [
-     14,
-     "modern_level_14",
-     "normal"
-    ],
-    [
-     15,
-     "modern_level_15",
-     "normal"
-    ],
-    [
-     16,
-     "modern_level_16",
-     "normal"
-    ],
-    [
-     17,
-     "modern_level_17",
-     "normal"
-    ],
-    [
-     18,
-     "modern_level_18",
-     "normal"
-    ],
-    [
-     19,
-     "modern_level_19",
-     "normal"
-    ],
-    [
-     20,
-     "modern_level_20",
-     "normal"
-    ],
-    [
-     21,
-     "modern_level_21",
-     "normal"
-    ],
-    [
-     22,
-     "modern_level_22",
-     "normal"
-    ],
-    [
-     23,
-     "modern_level_23",
-     "normal"
-    ],
-    [
-     24,
-     "modern_level_24",
-     "miniboss"
-    ],
-    [
-     25,
-     "modern_level_25",
-     "boss"
     ]
    ],
-   "excluded": [
-    [
-     69,
-     "modern_level_dangerroom",
-     "danger"
-    ]
-   ],
+   "excluded": [],
    "reason": "hidden"
   },
   "9": {
