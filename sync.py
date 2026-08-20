@@ -122,6 +122,45 @@ def is_running(adb, dev, pkg):
     return bool(sh(adb, 'shell', 'pidof', pkg, serial=dev, check=False).strip())
 
 
+def written_at(adb, dev, path):
+    """When the game last wrote a save, epoch seconds, or 0 if it cannot be read."""
+    out = sh(adb, 'shell', 'stat', '-c', '%Y', path, serial=dev, check=False).strip()
+    try:
+        return int(out.split()[-1])
+    except (ValueError, IndexError):
+        return 0
+
+
+def committed_at(rel):
+    """When a file in the repo last changed, epoch seconds, or 0 if never."""
+    out = git('log', '-1', '--format=%ct', '--', rel, check=False).strip()
+    try:
+        return int(out)
+    except ValueError:
+        return 0
+
+
+def older_than_repo(adb, dev, dpath, sfx, slack=3600):
+    """How far the device save predates the committed one, in seconds, or 0.
+
+    The tiebreaker for the case the level count cannot see. Two machines both
+    finished the story, so both report the same number for ever, and from then
+    on the guard waves through whichever save arrives last. A session that only
+    moved coins, gems or costumes then overwrites another machine's newer one,
+    with the count on both sides agreeing that nothing is wrong.
+
+    Written-at against committed-at settles it: a save the game has not touched
+    since before the shared copy was committed cannot be carrying anything that
+    the shared copy is missing. An hour of slack, because the emulator keeps
+    its own clock.
+    """
+    dev_at = written_at(adb, dev, dpath)
+    repo_at = committed_at(os.path.join('saves', f'pp_{sfx}.dat'))
+    if not dev_at or not repo_at:
+        return 0
+    return max(0, repo_at - dev_at - slack)
+
+
 def is_save(adb, dev, path):
     """True when `path` on the device really is an RTON save."""
     r = subprocess.run([adb, '-s', dev, 'exec-out',
@@ -641,6 +680,24 @@ def from_device(adb, dev, paths, force=False, cached=False):
                       f'{was}. This machine played on an old save.')
                 print(f'        Keep the device copy anyway with --force.')
                 continue
+            # Same count, different save. The count cannot separate them, so
+            # ask when each was written: a device copy the game has not touched
+            # since before the committed one went up is the older of the two,
+            # whatever it says about coins. This is the case that took a
+            # session on the other machine: both ends read the same number of
+            # levels for ever once the story is done, so the guard above waved
+            # a two-day-old save straight through.
+            if now == was and not same_progress(stored, dest) and not force:
+                lag = older_than_repo(adb, dev, dpath, sfx)
+                if lag:
+                    print(f'  {sfx:<5} REFUSED: both have {now} levels, but the '
+                          f'save here was last written {lag // 86400}d '
+                          f'{lag % 86400 // 3600}h before the one in saves/ was '
+                          f'committed.')
+                    print(f'        Another machine has played since. Run '
+                          f'`python3 sync.py pull` to take its copy, or --force '
+                          f'to send this one up anyway.')
+                    continue
             if now == was and same_progress(stored, dest):
                 moved = False
         if moved:
