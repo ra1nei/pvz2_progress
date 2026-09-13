@@ -1,8 +1,8 @@
 {
  "_fingerprint": {
-  "source": "https://github.com/PvZ2OBBHost/PvZ2AltverZOBB/releases/download/v1.8.2d/main.675.com.ea.game.pvz2_auz.obb",
-  "size": 1127583744,
-  "tag": "v1.8.2d"
+  "source": "https://github.com/PvZ2OBBHost/PvZ2AltverZOBB/releases/download/v1.8.3a/main.675.com.ea.game.pvz2_auz.obb",
+  "size": 1171853312,
+  "tag": "v1.8.3a"
  },
  "_quest": {
   "world": {
@@ -140,7 +140,7 @@
    "code": "egypt",
    "order": 2,
    "counted": true,
-   "total": 36,
+   "total": 47,
    "nodes": [
     [
      2,
@@ -320,6 +320,61 @@
     [
      53,
      "egypt_level_18_invasion",
+     "minigame"
+    ],
+    [
+     131,
+     "plague_3",
+     "normal"
+    ],
+    [
+     132,
+     "plague_8",
+     "normal"
+    ],
+    [
+     133,
+     "plague_9",
+     "normal"
+    ],
+    [
+     134,
+     "plague_5",
+     "normal"
+    ],
+    [
+     135,
+     "plague_7",
+     "normal"
+    ],
+    [
+     136,
+     "plague_4",
+     "normal"
+    ],
+    [
+     137,
+     "plague_2",
+     "normal"
+    ],
+    [
+     138,
+     "plague_6",
+     "normal"
+    ],
+    [
+     139,
+     "plague_1",
+     "normal"
+    ],
+    [
+     140,
+     "plague_10",
+     "miniboss"
+    ],
+    [
+     141,
+     "plague_bonus",
      "minigame"
     ]
    ],
@@ -894,7 +949,7 @@
    "code": "dark",
    "order": 6,
    "counted": true,
-   "total": 32,
+   "total": 42,
    "nodes": [
     [
      2,
@@ -1048,12 +1103,62 @@
     ],
     [
      52,
-     "dark_13_invasion",
+     "dark_15_invasion",
      "minigame"
     ],
     [
      53,
-     "dark_16_invasion",
+     "dark_19_invasion",
+     "minigame"
+    ],
+    [
+     107,
+     "halloween_08",
+     "normal"
+    ],
+    [
+     109,
+     "halloween_09",
+     "minigame"
+    ],
+    [
+     110,
+     "halloween_10",
+     "normal"
+    ],
+    [
+     111,
+     "halloween_11",
+     "minigame"
+    ],
+    [
+     112,
+     "halloween_13",
+     "minigame"
+    ],
+    [
+     113,
+     "halloween_12",
+     "minigame"
+    ],
+    [
+     114,
+     "halloween_14",
+     "minigame"
+    ],
+    [
+     115,
+     "halloween_17",
+     "miniboss"
+    ],
+    [
+     116,
+     "halloween_15",
+     "normal"
+    ],
+    [
+     117,
+     "halloween_16",
      "minigame"
     ]
    ],
@@ -2000,7 +2105,7 @@
    "code": "war",
    "order": 12,
    "counted": true,
-   "total": 28,
+   "total": 38,
    "nodes": [
     [
      2,
@@ -2099,13 +2204,13 @@
     ],
     [
      28,
-     "war_19",
-     "normal"
+     "war_gallery",
+     "minigame"
     ],
     [
      28,
-     "war_gallery",
-     "minigame"
+     "war_19",
+     "normal"
     ],
     [
      29,
@@ -2141,6 +2246,56 @@
      35,
      "war_tank",
      "minigame"
+    ],
+    [
+     42,
+     "christmas_2",
+     "normal"
+    ],
+    [
+     43,
+     "christmas_8",
+     "normal"
+    ],
+    [
+     44,
+     "christmas_4",
+     "normal"
+    ],
+    [
+     45,
+     "christmas_3",
+     "normal"
+    ],
+    [
+     46,
+     "christmas_5",
+     "minigame"
+    ],
+    [
+     47,
+     "christmas_6",
+     "normal"
+    ],
+    [
+     48,
+     "christmas_1",
+     "normal"
+    ],
+    [
+     49,
+     "christmas_9",
+     "normal"
+    ],
+    [
+     50,
+     "christmas_7",
+     "normal"
+    ],
+    [
+     51,
+     "christmas_10",
+     "miniboss"
     ]
    ],
    "excluded": [
@@ -2156,7 +2311,7 @@
    "code": "vault",
    "order": 13,
    "counted": true,
-   "total": 67,
+   "total": 71,
    "nodes": [
     [
      2,
@@ -2345,78 +2500,28 @@
     ],
     [
      40,
-     "sandbox_egypt",
+     "tutorial_2",
      "normal"
     ],
     [
      40,
-     "sandbox_pirate",
+     "sandbox_dino",
      "normal"
     ],
     [
      40,
-     "sandbox_cowboy",
+     "sandbox_eighties",
      "normal"
     ],
     [
      40,
-     "sandbox_future",
+     "tutorial_1",
      "normal"
     ],
     [
      40,
-     "sandbox_feastivus",
-     "minigame"
-    ],
-    [
-     40,
-     "sandbox_valentines",
-     "minigame"
-    ],
-    [
-     40,
-     "sandbox_spring",
-     "minigame"
-    ],
-    [
-     40,
-     "sandbox_summer",
-     "minigame"
-    ],
-    [
-     40,
-     "sandbox_halloween",
-     "minigame"
-    ],
-    [
-     40,
-     "sandbox_stpatrick",
-     "minigame"
-    ],
-    [
-     40,
-     "sandbox_birthday",
-     "minigame"
-    ],
-    [
-     40,
-     "sandbox_flying",
-     "minigame"
-    ],
-    [
-     40,
-     "sandbox_carnie",
-     "minigame"
-    ],
-    [
-     40,
-     "sandbox_carnie_hard",
-     "minigame"
-    ],
-    [
-     40,
-     "sandbox_carnie_2",
-     "minigame"
+     "sandbox_beach",
+     "normal"
     ],
     [
      40,
@@ -2430,57 +2535,12 @@
     ],
     [
      40,
-     "sandbox_carnie_4",
+     "sandbox_halloween",
      "minigame"
     ],
     [
      40,
-     "sandbox_intro",
-     "normal"
-    ],
-    [
-     40,
-     "sandbox_heroes",
-     "minigame"
-    ],
-    [
-     40,
-     "sandbox_dark",
-     "normal"
-    ],
-    [
-     40,
-     "sandbox_lostcity",
-     "normal"
-    ],
-    [
-     40,
-     "sandbox_iceage",
-     "normal"
-    ],
-    [
-     40,
-     "sandbox_eighties",
-     "normal"
-    ],
-    [
-     40,
-     "sandbox_beach",
-     "normal"
-    ],
-    [
-     40,
-     "sandbox_allworlds",
-     "miniboss"
-    ],
-    [
-     40,
-     "sandbox_allholidays",
-     "miniboss"
-    ],
-    [
-     40,
-     "sandbox_dino",
+     "sandbox_future",
      "normal"
     ],
     [
@@ -2490,8 +2550,123 @@
     ],
     [
      40,
+     "sandbox_lostcity",
+     "normal"
+    ],
+    [
+     40,
+     "sandbox_stpatrick",
+     "minigame"
+    ],
+    [
+     40,
+     "sandbox_carnie_4",
+     "minigame"
+    ],
+    [
+     40,
+     "sandbox_egypt",
+     "normal"
+    ],
+    [
+     40,
+     "sandbox_flying",
+     "minigame"
+    ],
+    [
+     40,
+     "sandbox_allholidays",
+     "miniboss"
+    ],
+    [
+     40,
+     "sandbox_intro",
+     "normal"
+    ],
+    [
+     40,
+     "sandbox_feastivus",
+     "minigame"
+    ],
+    [
+     40,
+     "sandbox_iceage",
+     "normal"
+    ],
+    [
+     40,
+     "sandbox_dark",
+     "normal"
+    ],
+    [
+     40,
+     "sandbox_heroes",
+     "minigame"
+    ],
+    [
+     40,
+     "tutorial_4",
+     "minigame"
+    ],
+    [
+     40,
+     "sandbox_pirate",
+     "normal"
+    ],
+    [
+     40,
      "sandbox_war",
      "normal"
+    ],
+    [
+     40,
+     "sandbox_birthday",
+     "minigame"
+    ],
+    [
+     40,
+     "sandbox_valentines",
+     "minigame"
+    ],
+    [
+     40,
+     "sandbox_cowboy",
+     "normal"
+    ],
+    [
+     40,
+     "sandbox_carnie_2",
+     "minigame"
+    ],
+    [
+     40,
+     "sandbox_summer",
+     "minigame"
+    ],
+    [
+     40,
+     "tutorial_3",
+     "normal"
+    ],
+    [
+     40,
+     "sandbox_allworlds",
+     "miniboss"
+    ],
+    [
+     40,
+     "sandbox_carnie_hard",
+     "minigame"
+    ],
+    [
+     40,
+     "sandbox_carnie",
+     "minigame"
+    ],
+    [
+     40,
+     "sandbox_spring",
+     "minigame"
     ]
    ],
    "excluded": []
