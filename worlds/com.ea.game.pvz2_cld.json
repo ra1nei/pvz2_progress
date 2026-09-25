@@ -1,7 +1,8 @@
 {
  "_fingerprint": {
-  "source": "https://github.com/Milkypug2/pvz2collided/releases/download/v1.1.0/main.675.com.ea.game.pvz2_cld.obb",
-  "size": 939954176
+  "source": "https://github.com/Milkypug2/pvz2collided/releases/download/v2.0.0/main.675.com.ea.game.pvz2_cld.obb",
+  "size": 911790080,
+  "tag": "v2.0.0"
  },
  "_quest": {
   "world": {},
@@ -378,7 +379,7 @@
    "code": "dino",
    "order": 5,
    "counted": true,
-   "total": 19,
+   "total": 20,
    "nodes": [
     [
      0,
@@ -474,6 +475,11 @@
      36,
      "dino_level_16",
      "boss"
+    ],
+    [
+     50,
+     "dino_level_13b",
+     "normal"
     ]
    ],
    "excluded": [
@@ -488,118 +494,106 @@
    "name": "jazz",
    "code": "jazz",
    "order": 6,
-   "counted": false,
-   "total": 20,
+   "counted": true,
+   "total": 19,
    "nodes": [
     [
      1,
-     "dark_level_1",
+     "jazz_level_1",
      "normal"
     ],
     [
-     41,
-     "dark_level_2",
+     13,
+     "jazz_level_2",
      "normal"
     ],
     [
-     42,
-     "dark_level_3",
+     14,
+     "jazz_level_3",
      "normal"
     ],
     [
-     43,
-     "dark_level_4",
-     "minigame"
-    ],
-    [
-     44,
-     "dark_level_5",
+     15,
+     "jazz_level_4",
      "normal"
     ],
     [
-     46,
-     "dark_level_6",
-     "minigame"
-    ],
-    [
-     47,
-     "dark_level_7",
+     17,
+     "jazz_level_5",
      "normal"
     ],
     [
-     48,
-     "dark_level_8",
-     "minigame"
+     18,
+     "jazz_level_6",
+     "normal"
     ],
     [
-     49,
-     "dark_level_9",
-     "minigame"
+     20,
+     "jazz_level_7",
+     "normal"
     ],
     [
-     50,
-     "dark_level_10",
+     21,
+     "jazz_level_8",
+     "normal"
+    ],
+    [
+     23,
+     "jazz_level_9",
+     "normal"
+    ],
+    [
+     24,
+     "jazz_level_12",
+     "normal"
+    ],
+    [
+     25,
+     "jazz_level_13",
+     "normal"
+    ],
+    [
+     27,
+     "jazz_level_14",
+     "normal"
+    ],
+    [
+     28,
+     "jazz_level_15",
      "miniboss"
     ],
     [
-     51,
-     "dark_level_11",
+     36,
+     "jazz_level_11",
      "normal"
     ],
     [
-     52,
-     "dark_level_12",
-     "minigame"
-    ],
-    [
-     53,
-     "dark_level_13",
-     "minigame"
-    ],
-    [
-     54,
-     "dark_level_14",
+     37,
+     "jazz_level_10",
      "normal"
     ],
     [
-     55,
-     "dark_level_15",
-     "minigame"
-    ],
-    [
-     56,
-     "dark_level_16",
+     501,
+     "jazz_ssc5_1",
      "normal"
     ],
     [
-     60,
-     "dark_level_17",
-     "minigame"
+     502,
+     "jazz_ssc5_2",
+     "normal"
     ],
     [
-     61,
-     "dark_level_18",
-     "minigame"
+     503,
+     "jazz_ssc5_3",
+     "normal"
     ],
     [
-     62,
-     "dark_level_19",
-     "minigame"
-    ],
-    [
-     68,
-     "dark_level_20",
-     "boss"
-    ]
-   ],
-   "excluded": [
-    [
-     17,
-     "dark_level_danger_room",
+     504,
+     "jazz_ssc5_4",
      "normal"
     ]
    ],
-   "reason": "hidden"
+   "excluded": []
   },
   "3": {
    "name": "pirate",
@@ -1180,7 +1174,7 @@
   "7": {
    "name": "beach",
    "code": "beach",
-   "order": 11,
+   "order": 10,
    "counted": false,
    "total": 32,
    "nodes": [
@@ -1357,7 +1351,7 @@
   "8": {
    "name": "iceage",
    "code": "iceage",
-   "order": 12,
+   "order": 11,
    "counted": false,
    "total": 30,
    "nodes": [
@@ -1524,7 +1518,7 @@
   "10": {
    "name": "eighties",
    "code": "eighties",
-   "order": 13,
+   "order": 12,
    "counted": false,
    "total": 32,
    "nodes": [
@@ -1701,7 +1695,7 @@
   "12": {
    "name": "modern",
    "code": "modern",
-   "order": 14,
+   "order": 13,
    "counted": false,
    "total": 44,
    "nodes": [
