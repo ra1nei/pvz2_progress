@@ -5,8 +5,8 @@
    "total": 112
   },
   "com.ea.game.pvz2_auz": {
-   "done": 42,
-   "total": 505
+   "done": 44,
+   "total": 545
   },
   "com.ea.game.pvz2_cld": {
    "done": 67,
@@ -47,7 +47,7 @@
  },
  "releases": {
   "pen": "v1.3.2a",
-  "auz": "v1.8.3e",
+  "auz": "v1.8.345a",
   "cld": "v2.0.0"
  },
  "totals_md5_nagged": "f4b9a6034afa312a5d5312566c6efa21",
